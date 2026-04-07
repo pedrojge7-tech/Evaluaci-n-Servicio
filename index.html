@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Evaluación por Área</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCSUNFe04kCGJga_YwqWRXuU6d9OpnSCdw",
+    authDomain: "esiinfocus.firebaseapp.com",
+    projectId: "esiinfocus",
+    storageBucket: "esiinfocus.firebasestorage.app",
+    messagingSenderId: "549381606823",
+    appId: "1:549381606823:web:59619f15786c0d04d6ba82",
+    measurementId: "G-C28XVQ7JSC"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.fb = { db, collection, addDoc, getDoc, doc };
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F5F0;--surface:#fff;--surface2:#F0EDE6;--border:#E2DDD5;
+  --text:#1A1714;--muted:#6B6560;
+  --c1:#C8846A;--c2:#7A9E8E;--c3:#B8A87A;--c4:#8A7BAE;
+  --c5:#6A8FAE;--c6:#AE7A8A;--c7:#7AAE96;--c8:#AE957A;
+  --shadow:0 2px 16px rgba(26,23,20,.07);--shadow-md:0 4px 32px rgba(26,23,20,.11);
+  --r:16px;--rs:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── LOGIN SCREEN ── */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;}
+#loginScreen ~ * { visibility: hidden; }
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:40px 36px;width:360px;box-shadow:var(--shadow-md);text-align:center;}
+.login-box h2{font-family:'DM Serif Display',serif;font-size:1.5rem;margin-bottom:6px;}
+.login-box p{font-size:.8rem;color:var(--muted);margin-bottom:24px;}
+.login-input{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none;margin-bottom:12px;transition:border-color .2s;}
+.login-input:focus{border-color:var(--c2);}
+.login-btn{width:100%;background:var(--text);color:#fff;border:none;padding:12px;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.login-btn:hover{opacity:.85;}
+.login-err{color:#8A3A2A;font-size:.75rem;margin-top:6px;display:none;}
+
+/* ── READER EYE BADGE ── */
+#readerBadge{display:none;position:fixed;bottom:18px;right:18px;background:var(--c2);color:#fff;border-radius:50px;padding:8px 14px;font-size:.72rem;font-weight:600;z-index:500;box-shadow:var(--shadow-md);align-items:center;gap:6px;pointer-events:none;}
+body.reader-mode #readerBadge{display:flex!important;}
+body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge{display:none!important;}
+
+/* ── HEADER ── */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 36px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.header-left h1{font-family:'DM Serif Display',serif;font-size:1.45rem;letter-spacing:-.02em;max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.header-left p{font-size:.75rem;color:var(--muted);margin-top:2px;font-weight:300;}
+.header-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.badge{background:var(--surface2);border:1px solid var(--border);padding:5px 12px;border-radius:50px;font-size:.72rem;color:var(--muted);font-weight:500;}
+.btn{border:none;padding:8px 18px;border-radius:50px;font-size:.78rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.btn-import{background:var(--surface2);color:var(--text);border:1.5px solid var(--border);}
+.btn-import:hover{background:var(--border);}
+.btn-share{background:var(--text);color:#fff;}
+.btn-share:hover{opacity:.8;}
+
+/* ── MAIN ── */
+.main{max-width:1400px;margin:0 auto;padding:28px 36px 60px;}
+
+/* ── FILTER BAR ── */
+.filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;margin-bottom:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow);}
+.filter-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.filter-chip{padding:6px 14px;border-radius:50px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap;}
+.filter-chip:hover{border-color:var(--c1);color:var(--c1);}
+.filter-chip.active{background:var(--text);color:#fff;border-color:var(--text);}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px;margin-bottom:22px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:visible;transition:transform .2s,box-shadow .2s;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--c1));border-radius:var(--r) var(--r) 0 0;}
+.kpi-rank{position:absolute;top:14px;right:14px;font-size:.6rem;font-weight:700;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:50px;}
+.kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 44px);}
+.kpi-score{font-family:'DM Serif Display',serif;font-size:2.1rem;color:var(--text);line-height:1;margin-bottom:4px;}
+.kpi-score sup{font-size:.85rem;font-family:'DM Sans',sans-serif;font-weight:300;}
+.kpi-bar{height:3px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-top:8px;}
+.kpi-bar-fill{height:100%;background:var(--ca,var(--c1));border-radius:4px;}
+
+/* ── CARDS & RESPONSIVE CONTAINERS ── */
+.charts-row{display:grid;gap:18px;margin-bottom:20px;}
+.cols-2{grid-template-columns:repeat(auto-fit, minmax(380px, 1fr));}
+
+.chart-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:22px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  height:100%;
+}
+.chart-hdr{margin-bottom:16px;flex-shrink:0;}
+.chart-title{font-family:'DM Serif Display',serif;font-size:.95rem;color:var(--text);line-height:1.3;}
+.chart-sub{font-size:.68rem;color:var(--muted);margin-top:2px;font-weight:300;}
+
+/* Dynamic Chart Container */
+.chart-container {
+  position: relative;
+  flex-grow: 1;
+  min-height: 220px;
+  width: 100%;
+}
+
+/* ── RANKING TABLE ── */
+.rank-list{display:flex;flex-direction:column;gap:9px;flex-grow:1;overflow-y:auto;padding-right:4px;}
+.rank-list::-webkit-scrollbar{width:4px;}
+.rank-list::-webkit-scrollbar-track{background:var(--surface2);}
+.rank-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.rank-item{border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;background:var(--surface2);display:flex;justify-content:space-between;align-items:center;min-height:48px;}
+
+/* TOOLTIPS & TRUNCATION */
+.truncated { position: relative; cursor: default; }
+
+/* El tooltip oscuro genérico para cualquier clase que esté truncada y tenga el atributo title */
+.truncated[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--text);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: .72rem;
+  font-family: 'DM Sans', sans-serif;
+  white-space: normal;
+  max-width: 340px;
+  min-width: 150px;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  line-height: 1.45;
+  word-wrap: break-word;
+}
+
+.rank-q-wrap{overflow:hidden;white-space:nowrap;font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:0;flex-grow:1;}
+.rank-q-inner{display:inline-block;white-space:nowrap;}
+
+/* Animación de desplazamiento al poner el cursor (Hover Scroll) */
+.truncated:hover .rank-q-inner, 
+.truncated:hover .q-cell-inner {
+  animation: marquee-slide 10s linear 1 forwards;
+}
+@keyframes marquee-slide { 
+  0% { transform: translateX(0); } 
+  100% { transform: translateX(-100%); } 
+}
+
+.rank-badges{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;margin-left:10px;}
+.rank-badge{padding:3px 9px;border-radius:50px;font-size:.68rem;font-weight:600;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;}
+.badge-best{background:#E8F4EF;color:#3A7A5E;}
+.badge-worst{background:#FBF0EE;color:#8A3A2A;}
+
+/* ── DETAIL TABLE ── */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);margin-bottom:20px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.78rem;}
+thead th{background:var(--surface2);padding:9px 12px;text-align:left;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--surface2);transition:background .15s;}
+tbody tr:hover{background:var(--surface2);}
+tbody tr:last-child{border-bottom:none;}
+tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
+.q-cell{max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.71rem;color:var(--muted);}
+.q-cell-inner{display:inline-block;white-space:nowrap;}
+.score-pill{display:inline-block;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
+.score-high{background:#E8F4EF;color:#3A7A5E;}
+.score-mid{background:#FFF6E8;color:#8A6A2A;}
+.score-low{background:#FBF0EE;color:#8A3A2A;}
+
+/* ── COMMENTS ── */
+.dept-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.dept-tab{padding:7px 15px;border-radius:50px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.dept-tab .dot{width:7px;height:7px;border-radius:50%;background:var(--tc,var(--c1));flex-shrink:0;}
+.dept-tab.active{background:var(--tc,var(--c1));color:#fff;border-color:var(--tc,var(--c1));}
+.dept-tab.active .dot{background:rgba(255,255,255,.5);}
+.comment-categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.cat-chip{padding:7px 15px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.cat-chip .cnt{background:var(--border);color:var(--muted);font-size:.64rem;font-weight:700;padding:1px 6px;border-radius:50px;}
+.cat-chip.active{background:var(--text);color:#fff;border-color:var(--text);}
+.cat-chip.active .cnt{background:rgba(255,255,255,.2);color:#fff;}
+.comment-list{display:flex;flex-direction:column;gap:9px;max-height:clamp(220px,40vw,400px);overflow-y:auto;padding-right:3px;flex-grow:1;}
+.comment-list::-webkit-scrollbar{width:4px;}
+.comment-list::-webkit-scrollbar-track{background:var(--surface2);}
+.comment-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.comment-item{background:var(--surface2);border-left:3px solid var(--al,var(--c1));border-radius:0 var(--rs) var(--rs) 0;padding:11px 14px;font-size:.8rem;line-height:1.55;color:var(--text);animation:fadeIn .28s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.no-comments{text-align:center;padding:36px;color:var(--muted);font-size:.82rem;font-style:italic;}
+
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,23,20,.5);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+@keyframes modalIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+.modal-box{background:var(--surface);border-radius:var(--r);padding:30px;width:500px;max-width:92vw;box-shadow:var(--shadow-md);animation:modalIn .22s ease;}
+.modal-box h2{font-family:'DM Serif Display',serif;font-size:1.2rem;margin-bottom:7px;}
+.modal-box p{font-size:.78rem;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+.link-box{display:flex;gap:8px;margin-bottom:16px;}
+.link-input{flex:1;border:1.5px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:.74rem;color:var(--muted);background:var(--surface2);outline:none;}
+.btn-copy{background:var(--c2);color:#fff;border:none;padding:9px 16px;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;white-space:nowrap;}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;}
+.btn-cancel{background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:8px 18px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;}
+.btn-reader{background:var(--text);color:#fff;border:none;padding:8px 20px;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;}
+
+.import-hint{background:#FFF6E8;border:1px solid #E8D8A0;border-radius:var(--rs);padding:11px 14px;font-size:.71rem;color:#6A5010;margin-bottom:14px;line-height:1.6;}
+.import-hint strong{display:block;margin-bottom:2px;}
+.dropzone{border:2px dashed var(--border);border-radius:var(--rs);padding:30px 20px;text-align:center;background:var(--surface2);margin-bottom:16px;cursor:pointer;transition:all .2s;position:relative;}
+.dropzone:hover,.dropzone.over{border-color:var(--c2);background:#EBF4F0;}
+.dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0;}
+.dropzone svg{margin-bottom:10px;color:var(--muted);}
+.dropzone strong{display:block;font-size:.84rem;color:var(--text);margin-bottom:3px;}
+.dropzone small{font-size:.7rem;color:var(--muted);}
+
+#radarLegend{display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center;padding:10px 8px 2px;margin-top:auto;}
+.rl-chip{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--text);font-weight:500;white-space:nowrap;}
+.rl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+.share-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--c2);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.toast{position:fixed;bottom:22px;right:22px;background:var(--text);color:#fff;padding:10px 20px;border-radius:50px;font-size:.75rem;font-weight:500;box-shadow:var(--shadow-md);z-index:1100;opacity:0;transform:translateY(8px);transition:all .28s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.ok{background:#3A7A5E;}
+.toast.err{background:#8A3A2A;}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .main{padding:18px 16px 52px;}
+  .header{padding:14px 18px;flex-wrap:wrap;gap:8px;}
+  .header-left h1{font-size:1.2rem;white-space:normal;max-width:100%;}
+  .header-right{gap:7px;}
+  .cols-2{grid-template-columns:1fr;}
+  .kpi-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+  .chart-card{padding:18px 16px;}
+  .table-card{padding:16px 14px;}
+}
+@media(max-width:640px){
+  .main{padding:14px 12px 60px;}
+  .header{padding:12px 14px;}
+  .header-left h1{font-size:1.05rem;}
+  .header-left p{font-size:.7rem;}
+  .header-right{width:100%;justify-content:flex-end;}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .kpi-score{font-size:1.75rem;}
+  .filter-bar{padding:10px 14px;gap:7px;}
+  .filter-chip{padding:5px 11px;font-size:.72rem;}
+  .chart-card{padding:16px 14px;}
+}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="width:44px;height:44px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h2>Acceso Admin</h2>
+    <p>Ingresa la contraseña para acceder al modo editor del dashboard.</p>
+    <input class="login-input" type="password" id="loginPwd" placeholder="Contraseña" autocomplete="current-password">
+    <div class="login-err" id="loginErr">Contraseña incorrecta. Intenta de nuevo.</div>
+    <button class="login-btn" id="loginBtn" style="margin-top:14px;">Ingresar</button>
+  </div>
+</div>
+
+<div id="readerBadge">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+  Solo lectura
+</div>
+
+<header class="header">
+  <div class="header-left">
+    <h1 id="dashTitle">Evaluación de Servicio — Área SIM</h1>
+    <p id="dashSubtitle"></p>
+  </div>
+  <div class="header-right">
+    <span class="badge">Admin</span>
+    <button class="btn btn-import" id="btnImport">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Importar archivo
+    </button>
+    <button class="btn btn-share" id="btnShare">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Generar modo lector
+    </button>
+  </div>
+</header>
+
+<div class="modal-overlay" id="importModal">
+  <div class="modal-box">
+    <h2>Importar nuevo archivo</h2>
+    <p>Sube un Excel con el mismo formato. El dashboard se regenera automáticamente con los datos nuevos.</p>
+    <div class="import-hint">
+      <strong>📋 Formato esperado</strong>
+      <b>Hoja 1:</b> Fila 1 = nombres de departamentos desde col B. Col A desde A2 = preguntas. Valores numéricos = puntajes (0–1 ó 1–10). Se ignoran textos y promedios automáticamente.<br>
+      <b>Hoja 2 "Comentarios":</b> Fila 1 = departamentos. Filas 2+ = comentarios por columna.
+    </div>
+    <div class="dropzone" id="dropzone">
+      <input type="file" accept=".xlsx,.xls" id="fileInput">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      <strong>Arrastra tu archivo aquí o haz clic</strong>
+      <small>Formatos: .xlsx · .xls</small>
+    </div>
+    <div class="modal-actions"><button class="btn-cancel" id="btnCloseImport">Cancelar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="shareModal">
+  <div class="modal-box">
+    <h2>Generar modo lector</h2>
+    <p>Se genera un link único para compartir con tu cliente. Solo podrá ver el dashboard, sin modificar datos.</p>
+    <div class="link-box">
+      <input class="link-input" id="linkInput" value="Haz clic en Generar para obtener el link" readonly>
+      <button class="btn-copy" id="btnCopyLink">Copiar</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btnCloseShare">Cancelar</button>
+      <button class="btn-reader" id="btnOpenReader">Generar link →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<main class="main">
+  <div class="filter-bar" id="filterBar"><span class="filter-label">Filtrar por departamento:</span></div>
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="charts-row cols-2" id="topBottomContainer">
+    <div class="chart-card">
+      <div class="chart-hdr">
+        <div class="chart-title">🏆 Top 3 Fortalezas</div>
+        <div class="chart-sub">Promedio más alto de las áreas seleccionadas</div>
+      </div>
+      <div class="rank-list" id="topList"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-hdr">
+        <div class="chart-title">🚨 Top 3 Áreas de Oportunidad</div>
+        <div class="chart-sub">Promedio más bajo de las áreas seleccionadas</div>
+      </div>
+      <div class="rank-list" id="bottomList"></div>
+    </div>
+  </div>
+
+  <div class="charts-row cols-2">
+    <div class="chart-card">
+      <div class="chart-hdr"><div class="chart-title">Promedio General por Departamento</div><div class="chart-sub">Escala 1–10 · Promedio de todas las preguntas</div></div>
+      <div class="chart-container"><canvas id="barChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-hdr"><div class="chart-title">Radar por Pregunta</div><div class="chart-sub">Comparativa entre departamentos</div></div>
+      <div class="chart-container"><canvas id="radarChart"></canvas></div>
+      <div id="radarLegend"></div>
+    </div>
+  </div>
+
+  <div class="charts-row cols-2">
+    <div class="chart-card">
+      <div class="chart-hdr"><div class="chart-title">Desempeño por Pregunta</div><div class="chart-sub">Puntuación de cada departamento en cada pregunta</div></div>
+      <div class="chart-container"><canvas id="lineChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-hdr"><div class="chart-title">Ranking por Pregunta</div><div class="chart-sub">Mejor ↑ y peor ↓ evaluado en cada pregunta</div></div>
+      <div class="rank-list" id="rankList"></div>
+    </div>
+  </div>
+
+  <div class="table-card" style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+    <div class="chart-hdr"><div class="chart-title">Tabla de Resultados Detallada</div><div class="chart-sub">Puntaje por departamento en cada pregunta</div></div>
+    <table id="detailTable"><thead></thead><tbody></tbody></table>
+  </div>
+
+  <div class="chart-card" style="margin-bottom:0">
+    <div class="chart-hdr"><div class="chart-title">Análisis de Comentarios</div><div class="chart-sub">Clasificados automáticamente · Selecciona departamento y categoría</div></div>
+    <div class="dept-tabs" id="deptTabs"></div>
+    <div class="comment-categories" id="catChips"></div>
+    <div class="comment-list" id="commentList"><div class="no-comments">Selecciona un departamento para explorar sus comentarios</div></div>
+  </div>
+</main>
+
+<script>
+// ════════════ CONSTANTS ════════════
+const PALETTE = ['#C8846A','#7A9E8E','#B8A87A','#8A7BAE','#6A8FAE','#AE7A8A','#7AAE96','#AE957A','#9E8E7A','#7AAEBE','#BE9E7A','#8EAE7A'];
+const PWD = 'Infocus123';
+
+// ════════════ STATE ════════════
+let REPORT_DATE = new Date();
+let DEPTS=['Compras AS y Corp','Compras Cedis y Trafico','Compras','Flotilla','Imprenta','Mantenimiento','Obra','SECOM'];
+let QUESTIONS=[
+  '¿Qué tan fácil es trabajar con el área para cumplir los objetivos de tu área?',
+  '¿Qué tan clara y efectiva es la comunicación con esta área?',
+  '¿Qué tan claro es el proceso para solicitar soporte o seguimiento a una solicitud?',
+  '¿Que tan claros son los procesos, las políticas y lineamientos que le aplican a tu área?',
+  '¿Como calificarías los tiempos de respuesta?',
+  '¿Como calificarías la calidad del servicio o solución proporcionado?'
+];
+let SCORES=[
+  [7.9,8.6,8.0,8.7,9.1,8.5,7.9,8.4],
+  [7.6,9.0,7.7,8.4,9.1,8.3,7.4,8.3],
+  [7.6,8.9,7.7,8.7,9.2,9.4,7.7,8.3],
+  [7.7,9.4,8.1,8.6,9.0,9.0,8.1,8.2],
+  [7.3,8.3,7.4,8.4,9.0,7.8,7.0,8.3],
+  [7.6,8.7,7.7,8.6,9.3,8.2,7.5,8.2]
+];
+let AVERAGES=DEPTS.map((_,di)=>+(SCORES.reduce((s,q)=>s+q[di],0)/SCORES.length).toFixed(2));
+let COMMENTS={
+  'Compras AS y Corp':['Tiempo de respuesta más rápida y clara','Políticas actuales y apoyo en el abasto de mercancía','Mejorar la negociación con proveedores'],
+  'Compras Cedis y Trafico':['Hasta el momento hemos trabajado bien','Mejorar en los tiempos de respuesta'],
+  'Compras':['Se tiene mucho desabasto de mercancía','Más rapidez en devoluciones, cambios o mermas con los proveedores'],
+  'Flotilla':['Que conozcan más las necesidades de la sucursal','Revisar los indicadores de rendimiento'],
+  'Imprenta':['Mejorar los tiempos de respuesta','Buena atención en general'],
+  'Mantenimiento':['Más rapidez en los servicios en la medida de lo posible','Buena área que brinda buen servicio'],
+  'Obra':['Mejor atención y respuesta','Transparencia en cotizaciones (son muy caras en lo general)'],
+  'SECOM':['Que vieran el negocio como uno mismo y buscaran el beneficio para el grupo','Agendar citas para recibo en Cedis']
+};
+
+let activeFilters = new Set(['Todos']);
+let activeDept=null, activeCat=null;
+let barChart,radarChart,lineChart;
+
+function updateSubtitle(){
+  const opts = { month: 'long', year: 'numeric' };
+  const dStr = REPORT_DATE.toLocaleDateString('es-ES', opts);
+  const capDate = dStr.charAt(0).toUpperCase() + dStr.slice(1);
+  document.getElementById('dashSubtitle').textContent = `${DEPTS.length} departamentos evaluados · ${QUESTIONS.length} preguntas · ${capDate}`;
+}
+
+// ════════════ LOGIN ════════════
+function doLogin(){
+  const v = document.getElementById('loginPwd').value.trim();
+  if(v.toLowerCase() === PWD.toLowerCase()){
+    document.getElementById('loginScreen').remove();
+    initDashboard();
+  } else {
+    const err = document.getElementById('loginErr');
+    err.style.display = 'block';
+    document.getElementById('loginPwd').value = '';
+    document.getElementById('loginPwd').focus();
+    setTimeout(() => { err.style.display = 'none'; }, 3000);
+  }
+}
+const _lb=document.getElementById('loginBtn'); if(_lb) _lb.addEventListener('click', doLogin);
+const _lp=document.getElementById('loginPwd'); if(_lp) _lp.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+// ════════════ INIT ════════════
+function initDashboard(){
+  updateSubtitle();
+  buildFilterBar();
+  const fArr = Array.from(activeFilters);
+  renderKPIs(fArr);
+  renderTopBottom(fArr);
+  renderBarChart(fArr);
+  renderRadarChart(fArr);
+  renderLineChart(fArr);
+  renderRankingList();
+  renderDetailTable(fArr);
+  renderDeptTabs();
+  const _bi=document.getElementById('btnImport'); if(_bi)_bi.addEventListener('click', openImportModal);
+  const _bs=document.getElementById('btnShare');  if(_bs)_bs.addEventListener('click', openShareModal);
+  wireModalButtons();
+  const _fi=document.getElementById('fileInput'); if(_fi)_fi.addEventListener('change', e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); });
+  
+  // Agregar listener para recalcular truncados cuando se redimensiona la ventana
+  window.addEventListener('resize', () => { requestAnimationFrame(markTruncated); });
+}
+
+// ════════════ FILTER BAR (MULTI-SELECT) ════════════
+function buildFilterBar(){
+  const fb=document.getElementById('filterBar');
+  fb.innerHTML=`<span class="filter-label">Filtrar por departamento:</span>`;
+  const allDepts=['Todos',...DEPTS];
+  allDepts.forEach(d=>{
+    const btn=document.createElement('button');
+    btn.className='filter-chip'+(activeFilters.has(d)?' active':'');
+    btn.textContent=d;
+    btn.addEventListener('click',()=>{
+      if(d === 'Todos'){
+        activeFilters.clear();
+        activeFilters.add('Todos');
+      } else {
+        activeFilters.delete('Todos');
+        if(activeFilters.has(d)){
+          activeFilters.delete(d);
+          if(activeFilters.size === 0) activeFilters.add('Todos');
+        } else {
+          activeFilters.add(d);
+        }
+      }
+      buildFilterBar();
+      const fArr = Array.from(activeFilters);
+      renderKPIs(fArr); 
+      renderTopBottom(fArr);
+      renderBarChart(fArr); 
+      renderRadarChart(fArr); 
+      renderLineChart(fArr);
+      renderDetailTable(fArr);
+    });
+    fb.appendChild(btn);
+  });
+}
+function deptColor(d){return PALETTE[DEPTS.indexOf(d)%PALETTE.length]||PALETTE[0];}
+function filteredDepts(fArr){return fArr.includes('Todos') ? DEPTS : fArr;}
+
+// ════════════ KPI CARDS ════════════
+function renderKPIs(fArr){
+  const grid=document.getElementById('kpiGrid');
+  const depts=filteredDepts(fArr);
+  const sorted=[...DEPTS].sort((a,b)=>AVERAGES[DEPTS.indexOf(b)]-AVERAGES[DEPTS.indexOf(a)]);
+  grid.innerHTML=depts.map(d=>{
+    const di=DEPTS.indexOf(d), avg=AVERAGES[di], col=deptColor(d), rank=sorted.indexOf(d)+1;
+    return `<div class="kpi-card" style="--ca:${col}">
+      <div class="kpi-rank">#${rank} de ${DEPTS.length}</div>
+      <div class="kpi-dept" title="${d}">${d}</div>
+      <div class="kpi-score">${avg.toFixed(1)}<sup>/10</sup></div>
+      <div style="font-size:.68rem;color:var(--muted);margin-top:3px;">Promedio general</div>
+      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${avg*10}%"></div></div>
+    </div>`;
+  }).join('');
+  requestAnimationFrame(markTruncated);
+}
+
+// ════════════ TOP 3 STRENGTHS / WEAKNESSES ════════════
+function renderTopBottom(fArr){
+  const depts = filteredDepts(fArr);
+  
+  const qAvgs = QUESTIONS.map((q, qi) => {
+    const vals = depts.map(d => SCORES[qi][DEPTS.indexOf(d)]).filter(v => v !== null);
+    const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+    return { q, qi, avg };
+  });
+
+  qAvgs.sort((a,b) => b.avg - a.avg);
+
+  const top = qAvgs.slice(0, 3);
+  const bottom = [...qAvgs].reverse().slice(0, 3);
+
+  const buildHTML = (arr, colorClass) => arr.map(item => `
+    <div class="rank-item">
+      <div class="rank-q-wrap" title="${item.q.replace(/"/g,'&quot;')}">
+        <span class="rank-q-inner">P${item.qi+1} · ${item.q}</span>
+      </div>
+      <div class="rank-badges">
+        <span class="rank-badge ${colorClass}">${item.avg.toFixed(2)}</span>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('topList').innerHTML = buildHTML(top, 'badge-best');
+  document.getElementById('bottomList').innerHTML = buildHTML(bottom, 'badge-worst');
+  requestAnimationFrame(markTruncated);
+}
+
+// ════════════ BAR CHART ════════════
+function renderBarChart(fArr){
+  const depts=filteredDepts(fArr);
+  const ctx=document.getElementById('barChart').getContext('2d');
+  if(barChart)barChart.destroy();
+  barChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:depts.map(d=>d.length>17?d.substring(0,15)+'…':d),
+      datasets:[{data:depts.map(d=>AVERAGES[DEPTS.indexOf(d)]),backgroundColor:depts.map(d=>deptColor(d)+'CC'),borderColor:depts.map(d=>deptColor(d)),borderWidth:2,borderRadius:8,borderSkipped:false}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:10,grid:{color:'#E2DDD5'},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:10},maxRotation:30}}}}
+  });
+}
+
+// ════════════ RADAR CHART ════════════
+function renderRadarChart(fArr){
+  const depts=filteredDepts(fArr);
+  const shortQ=QUESTIONS.map((_,i)=>`P${i+1}`);
+  const ctx=document.getElementById('radarChart').getContext('2d');
+  if(radarChart)radarChart.destroy();
+  radarChart=new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:shortQ,
+      datasets:depts.map(d=>{
+        const di=DEPTS.indexOf(d),col=deptColor(d);
+        return{label:d,data:SCORES.map(q=>q[di]??null),backgroundColor:col+'28',borderColor:col,borderWidth:2,pointBackgroundColor:col,pointRadius:3,spanGaps:true};
+      })
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:5,max:10,ticks:{stepSize:1,font:{size:9},backdropColor:'transparent'},grid:{color:'#E2DDD5'}}}}
+  });
+  const leg=document.getElementById('radarLegend');
+  if(leg) leg.innerHTML=depts.map(d=>{
+    const col=deptColor(d);
+    return `<span class="rl-chip"><span class="rl-dot" style="background:${col};box-shadow:0 0 0 2px ${col}33"></span>${d}</span>`;
+  }).join('');
+}
+
+// ════════════ LINE CHART ════════════
+function renderLineChart(fArr){
+  const depts=filteredDepts(fArr);
+  const labels=QUESTIONS.map((_,i)=>`P${i+1}`);
+  const ctx=document.getElementById('lineChart').getContext('2d');
+  if(lineChart)lineChart.destroy();
+  lineChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:depts.map(d=>{
+        const di=DEPTS.indexOf(d),col=deptColor(d);
+        return{label:d.length>16?d.substring(0,14)+'…':d,data:SCORES.map(q=>q[di]??null),borderColor:col,backgroundColor:col+'18',borderWidth:2,pointRadius:4,pointBackgroundColor:col,tension:.35,fill:depts.length===1,spanGaps:true};
+      })
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ display:true, position:'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } }
+      },
+      scales:{y:{min:5,max:10,grid:{color:'#E2DDD5'},ticks:{font:{size:11}}},x:{grid:{color:'#E2DDD5'},ticks:{font:{size:11}}}}
+    }
+  });
+}
+
+// ════════════ RANKING LIST ════════════
+function renderRankingList(){
+  const list=document.getElementById('rankList');
+  list.innerHTML=QUESTIONS.map((q,qi)=>{
+    const vals=DEPTS.map((d,di)=>({d,v:SCORES[qi][di]}))
+      .filter(x=>x.v!==null&&x.v!==undefined)
+      .sort((a,b)=>b.v-a.v);
+    if(!vals.length) return '';
+    const best=vals[0], worst=vals[vals.length-1];
+    return `<div class="rank-item">
+      <div class="rank-q-wrap" title="${q.replace(/"/g,'&quot;')}"><span class="rank-q-inner">P${qi+1} · ${q}</span></div>
+      <div class="rank-badges">
+        <span class="rank-badge badge-best" title="${best.d}">↑ ${best.d.length>16?best.d.substring(0,14)+'…':best.d} ${best.v.toFixed(1)}</span>
+        <span class="rank-badge badge-worst" title="${worst.d}">↓ ${worst.d.length>16?worst.d.substring(0,14)+'…':worst.d} ${worst.v.toFixed(1)}</span>
+      </div>
+    </div>`;
+  }).join('');
+  requestAnimationFrame(markTruncated);
+}
+
+// ════════════ TOOLTIPS DINÁMICOS ════════════
+function markTruncated(){
+  document.querySelectorAll('.rank-q-wrap, .q-cell, thead th, .kpi-dept, .rank-badge').forEach(el=>{
+    const inner = el.querySelector('.rank-q-inner, .q-cell-inner') || el;
+    // Compara si el texto interno es más grande que su contenedor
+    const isTruncated = inner.scrollWidth > el.clientWidth;
+    el.classList.toggle('truncated', isTruncated);
+  });
+}
+
+// ════════════ DETAIL TABLE ════════════
+function renderDetailTable(fArr){
+  const depts=filteredDepts(fArr);
+  const tbl=document.getElementById('detailTable');
+  tbl.querySelector('thead').innerHTML=`<tr><th class="q-col">Pregunta</th>${depts.map(d=>`<th title="${d}">${d.length>14?d.substring(0,13)+'…':d}</th>`).join('')}<th>Promedio</th></tr>`;
+  let body='';
+  QUESTIONS.forEach((q,qi)=>{
+    const vals=depts.map(d=>SCORES[qi][DEPTS.indexOf(d)]);
+    const numVals=vals.filter(v=>v!==null);
+    const avg=numVals.length?(numVals.reduce((s,v)=>s+v,0)/numVals.length).toFixed(2):'—';
+    body+=`<tr><td class="q-cell" title="${q.replace(/"/g,'&quot;')}"><span class="q-cell-inner">P${qi+1} · ${q}</span></td>${vals.map(v=>{if(v===null)return`<td>—</td>`;const cls=v>=9?'score-high':v>=8?'score-mid':'score-low';return`<td><span class="score-pill ${cls}">${v.toFixed(1)}</span></td>`;}).join('')}<td><b>${avg}</b></td></tr>`;
+  });
+  body+=`<tr style="background:var(--surface2);font-weight:600"><td style="font-weight:600;color:var(--text);font-size:.78rem">Promedio General</td>${depts.map(d=>{const avg=AVERAGES[DEPTS.indexOf(d)];const cls=avg>=9?'score-high':avg>=8?'score-mid':'score-low';return`<td><span class="score-pill ${cls}">${avg.toFixed(2)}</span></td>`;}).join('')}<td><b>${(depts.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/depts.length).toFixed(2)}</b></td></tr>`;
+  tbl.querySelector('tbody').innerHTML=body;
+  requestAnimationFrame(markTruncated);
+}
+
+// ════════════ COMMENTS ════════════
+function classifyComment(text){
+  if(!text) return 'Sin comentarios';
+  const t=text.toLowerCase().trim();
+  if(/^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x)$/.test(t)) return 'Sin comentarios';
+  if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar/)) return 'Tiempos de respuesta';
+  if(t.match(/comunic|avisar|claro|transparencia|información/)) return 'Comunicación';
+  if(t.match(/abasto|mercancía|proveedor|merma|desabasto|material|inventario/)) return 'Abasto y Proveedores';
+  if(t.match(/proceso|política|lineamiento|cita|cedis|indicador/)) return 'Procesos y Políticas';
+  if(t.match(/costo|cotizaci|precio|cara|caro|presupuesto/)) return 'Costos y Presupuestos';
+  if(t.match(/necesidad|negocio|beneficio|sucursal|rendimiento/)) return 'Visión de Negocio';
+  if(t.match(/atención|trato|empatía|amable|respuesta/)) return 'Atención y Trato';
+  if(t.match(/calidad|excelente|buen|bien|apoyo|servicio/)) return 'Calidad de servicio';
+  if(t.match(/mejorar|falta|oportunidad|detalle/)) return 'Áreas de mejora';
+  return 'Observaciones específicas';
+}
+
+function renderDeptTabs(){
+  const c=document.getElementById('deptTabs');
+  c.innerHTML='';
+  DEPTS.forEach((d,di)=>{
+    const col=PALETTE[di%PALETTE.length];
+    const btn=document.createElement('button');
+    btn.className='dept-tab';
+    btn.style.setProperty('--tc',col);
+    btn.innerHTML=`<span class="dot"></span>${d}`;
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.dept-tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderCatChips(d,di);
+      renderComments(d,null);
+    });
+    c.appendChild(btn);
+  });
+}
+
+function renderCatChips(dept,di){
+  const comments=COMMENTS[dept]||[];
+  const cats={};
+  comments.forEach(c=>{const cat=classifyComment(c);(cats[cat]=cats[cat]||[]).push(c);});
+  const container=document.getElementById('catChips');
+  container.innerHTML='';
+
+  const makeChip=(label,count,onClick)=>{
+    const btn=document.createElement('button');
+    btn.className='cat-chip';
+    btn.innerHTML=`${label}<span class="cnt">${count}</span>`;
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      onClick();
+    });
+    return btn;
+  };
+
+  const allChip=makeChip('Todos',comments.length,()=>renderComments(dept,null));
+  allChip.classList.add('active');
+  container.appendChild(allChip);
+
+  Object.entries(cats).sort((a,b)=>b[1].length-a[1].length).forEach(([cat,list])=>{
+    container.appendChild(makeChip(cat,list.length,()=>renderComments(dept,cat)));
+  });
+}
+
+function renderComments(dept,cat){
+  const list=document.getElementById('commentList');
+  const all=COMMENTS[dept]||[];
+  const filtered=cat?all.filter(c=>classifyComment(c)===cat):all;
+  const col=PALETTE[DEPTS.indexOf(dept)%PALETTE.length];
+  if(!filtered.length){list.innerHTML='<div class="no-comments">Sin comentarios</div>';return;}
+  list.innerHTML=filtered.map(c=>`<div class="comment-item" style="--al:${col}">${c}</div>`).join('');
+}
+
+// ════════════ MODALS ════════════
+function openShareModal(){document.getElementById('shareModal').classList.add('open');}
+function closeShareModal(){document.getElementById('shareModal').classList.remove('open');}
+function openImportModal(){document.getElementById('importModal').classList.add('open');}
+function closeImportModal(){document.getElementById('importModal').classList.remove('open');document.getElementById('fileInput').value='';}
+
+function wireModalButtons(){
+  document.getElementById('btnCloseImport').addEventListener('click', closeImportModal);
+  document.getElementById('btnCloseShare').addEventListener('click', ()=>{ closeShareModal(); const b=document.getElementById('btnOpenReader'); if(b){b.textContent='Generar link →';b.disabled=false;} });
+  document.getElementById('btnOpenReader').addEventListener('click', generateReaderLink);
+  document.getElementById('btnCopyLink').addEventListener('click', copyLink);
+}
+
+// ════════════ FIREBASE: GENERAR LINK CORTOS ════════════
+async function generateReaderLink(){
+  const btn = document.getElementById('btnOpenReader');
+  if(btn){ btn.textContent='Subiendo a la nube…'; btn.disabled=true; }
+
+  try {
+    const payload = {
+      depts:    DEPTS,
+      qs:       QUESTIONS,
+      scores:   JSON.stringify(SCORES), 
+      comments: COMMENTS,
+      title:    document.getElementById('dashTitle').textContent,
+      timestamp: REPORT_DATE.toISOString()
+    };
+
+    const docRef = await window.fb.addDoc(window.fb.collection(window.fb.db, "reportes"), payload);
+    
+    const base = window.location.origin + window.location.pathname;
+    const link = base + '?mode=reader&id=' + docRef.id;
+
+    const inp = document.getElementById('linkInput');
+    if(inp) inp.value = link;
+
+    if(btn){ btn.textContent='Abrir →'; btn.disabled=false; btn.onclick=()=>window.open(link,'_blank'); }
+
+    navigator.clipboard.writeText(link).catch(()=>{});
+    showToast('✅ Link guardado en la nube y copiado','ok');
+
+  } catch(err){
+    console.error(err);
+    if(btn){ btn.textContent='Generar link →'; btn.disabled=false; }
+    showToast('❌ Error guardando en Firebase','err');
+  }
+}
+
+function copyLink(){
+  const inp = document.getElementById('linkInput');
+  if(!inp || !inp.value || inp.value.startsWith('Haz clic')) return;
+  navigator.clipboard.writeText(inp.value).then(()=>{
+    const btn = document.getElementById('btnCopyLink');
+    if(btn){ btn.textContent='¡Copiado!'; setTimeout(()=>btn.textContent='Copiar', 2000); }
+  });
+}
+
+// ════════════ FIREBASE: LEER EL LINK CORTO ════════════
+async function tryLoadFromURL(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('mode') !== 'reader') return false;
+
+  const reportId = params.get('id');
+  if(!reportId) return false;
+
+  document.body.classList.add('reader-mode');
+  const ls = document.getElementById('loginScreen');
+  if(ls) ls.remove();
+
+  const loader = document.createElement('div');
+  loader.id = 'hashLoader';
+  loader.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;';
+  loader.innerHTML = '<div class="share-spinner" style="width:40px;height:40px;border-width:3px;"></div><p style="font-family:\'DM Sans\',sans-serif;font-size:.82rem;color:var(--muted);">Descargando reporte seguro…</p>';
+  document.body.appendChild(loader);
+
+  try {
+    const docRef = window.fb.doc(window.fb.db, "reportes", reportId);
+    const docSnap = await window.fb.getDoc(docRef);
+
+    if(docSnap.exists()){
+      const raw = docSnap.data();
+      DEPTS     = raw.depts;
+      QUESTIONS = raw.qs;
+      SCORES    = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
+      COMMENTS  = raw.comments;
+      if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
+      AVERAGES  = DEPTS.map((_,di)=>{
+        const vals=SCORES.map(q=>q[di]).filter(v=>v!==null);
+        return vals.length?+(vals.reduce((s,v)=>s+v,0)/vals.length).toFixed(2):0;
+      });
+
+      const t = document.getElementById('dashTitle');
+      if(t && raw.title) t.textContent = raw.title;
+
+      loader.remove();
+      initDashboard();
+      return true;
+    } else {
+      throw new Error("El reporte no existe");
+    }
+
+  } catch(err){
+    console.error('Error cargando URL:', err);
+    loader.innerHTML = '<p style="font-family:\'DM Sans\',sans-serif;color:#8A3A2A;font-size:.85rem;padding:20px;text-align:center;">No se pudo cargar el dashboard.<br>El link es inválido o no tienes permisos de Firebase.</p>';
+    return true;
+  }
+}
+
+// ════════════ IMPORTAR EXCEL ════════════
+function handleFile(file){
+  if(!file)return;
+  showToast('⏳ Leyendo archivo...');
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+      const ws1=wb.Sheets[wb.SheetNames[0]];
+      const s1=XLSX.utils.sheet_to_json(ws1,{header:1,defval:null,raw:true});
+      const hdr=s1[0]||[];
+      const newDepts=[];
+      for(let c=1;c<hdr.length;c++){if(hdr[c]&&String(hdr[c]).trim())newDepts.push(String(hdr[c]).trim());}
+      const newQ=[], newSc=[];
+      for(let r=1;r<s1.length;r++){
+        const row=s1[r]||[];
+        const cell=row[0];
+        if(cell===null||cell===undefined)continue;
+        const txt=String(cell).trim();
+        if(!txt||!isNaN(Number(txt)))continue;
+        const vals=[];
+        for(let c=1;c<=newDepts.length;c++){
+          const v=row[c];
+          if(v===null||v===undefined||typeof v==='object'){vals.push(null);continue;}
+          const str=String(v).trim().toUpperCase();
+          if(!str||str==='NA'){vals.push(null);continue;}
+          const n=parseFloat(str.replace(',','.'));
+          vals.push(isNaN(n)?null:n<=1?+(n*10).toFixed(2):+n.toFixed(2));
+        }
+        if(vals.every(v=>v===null))continue;
+        newQ.push(txt);
+        newSc.push(vals);
+      }
+      const newComm={};newDepts.forEach(d=>{newComm[d]=[];});
+      if(wb.SheetNames.length>1){
+        const ws2=wb.Sheets[wb.SheetNames[1]];
+        const s2=XLSX.utils.sheet_to_json(ws2,{header:1,defval:null});
+        const h2=s2[0]||[];
+        const cDepts=[];
+        for(let c=0;c<h2.length;c++){if(h2[c])cDepts.push({name:String(h2[c]).trim(),col:c});}
+        for(let r=1;r<s2.length;r++){
+          const row=s2[r]||[];
+          cDepts.forEach(({name,col})=>{
+            const cell=row[col];
+            if(!cell)return;
+            const txt=String(cell).trim();
+            if(!txt)return;
+            const target=newDepts.find(d=>d===name)||newDepts.find(d=>d.toLowerCase()===name.toLowerCase());
+            if(target)newComm[target].push(txt);
+          });
+        }
+      }
+      closeImportModal();
+      rebuildDashboard(newDepts,newQ,newSc,newComm,file.name);
+      showToast(`✅ Datos cargados con éxito`,'ok');
+    }catch(err){console.error(err);showToast('❌ Error en el archivo','err');}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function rebuildDashboard(newDepts,newQ,newSc,newComm,fname){
+  DEPTS=newDepts;QUESTIONS=newQ;SCORES=newSc;COMMENTS=newComm;
+  REPORT_DATE = new Date();
+  AVERAGES=newDepts.map((_,di)=>{
+    const vals=newSc.map(q=>q[di]).filter(v=>v!==null);
+    return vals.length?+(vals.reduce((s,v)=>s+v,0)/vals.length).toFixed(2):0;
+  });
+  document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
+  
+  activeFilters.clear();
+  activeFilters.add('Todos');
+  activeDept=null;activeCat=null;
+  
+  initDashboard(); 
+  
+  document.getElementById('commentList').innerHTML='<div class="no-comments">Selecciona un departamento</div>';
+  document.getElementById('catChips').innerHTML='';
+}
+
+function showToast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>t.className='toast',3500);
+}
+
+// ════════════ INICIALIZACIÓN ════════════
+(async ()=>{
+  while(!window.fb) {
+    await new Promise(r => setTimeout(r, 50));
+  }
+
+  const loaded = await tryLoadFromURL();
+  if(!loaded){
+    if(document.body.classList.contains('reader-mode')){
+      const ls=document.getElementById('loginScreen');
+      if(ls) ls.remove();
+      initDashboard();
+    } else {
+      const lp=document.getElementById('loginPwd');
+      if(lp) lp.focus();
+    }
+  }
+})();
+</script>
+</body>
+</html>
