@@ -76,6 +76,18 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow);}
 .filter-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;margin-top:6px;min-width:160px;}
 
+/* Contenedor scrollable para el filtro de departamentos para móviles */
+#filterBarDept {
+  flex-direction: column; 
+  align-items: flex-start;
+  max-height: 280px; 
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#filterBarDept::-webkit-scrollbar{width:4px;}
+#filterBarDept::-webkit-scrollbar-track{background:var(--surface2);}
+#filterBarDept::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
 /* Grouping classes for departments within directions */
 .filter-dir-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 14px; background: var(--surface2); border-radius: var(--rs); border: 1px solid var(--border); width: 100%; margin-bottom: 4px; }
 .filter-dir-group-title { font-size: .65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; min-width: 90px; }
@@ -98,7 +110,10 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--c1));border-radius:var(--r) var(--r) 0 0;}
 .kpi-rank{position:absolute;top:14px;right:14px;font-size:.6rem;font-weight:700;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:50px;}
-.kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 44px);}
+
+/* Padding derecho forzado para evitar que el texto choque con el ranking en celulares */
+.kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:75px;}
+
 .kpi-dept-inner{display:inline-block;white-space:nowrap;}
 .kpi-score{font-family:'DM Serif Display',serif;font-size:2.1rem;color:var(--text);line-height:1;margin-bottom:4px;}
 .kpi-score sup{font-size:.85rem;font-family:'DM Sans',sans-serif;font-weight:300;}
@@ -167,10 +182,35 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .rank-q-wrap{overflow:hidden;white-space:nowrap;font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:0;flex-grow:1;}
 .rank-q-inner{display:inline-block;white-space:nowrap;}
 
-/* Animación de desplazamiento al poner el cursor (Hover Scroll) en tablas y kpis */
+/* Estructura Blindada Anti-Recorte para las pastillas del Ranking */
+.rank-badges{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;margin-left:10px;}
+.rank-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 9px;
+  border-radius: 50px;
+  font-size: .68rem;
+  font-weight: 600;
+  max-width: 160px; /* Ancho máximo de la pastilla */
+}
+/* El contenedor del nombre se puede encoger (flex: 1 1 auto) y recortar */
+.rb-name-wrap {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex: 1 1 auto;
+}
+.rb-name-inner {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Animación de desplazamiento al poner el cursor (Hover Scroll) en tablas, kpis y badges blindados */
 .truncated:hover .rank-q-inner, 
 .truncated:hover .q-cell-inner,
-.truncated:hover .kpi-dept-inner {
+.truncated:hover .kpi-dept-inner,
+.truncated:hover .rb-name-inner {
   animation: marquee-slide 10s linear 1 forwards;
 }
 @keyframes marquee-slide { 
@@ -178,8 +218,6 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
   100% { transform: translateX(-100%); } 
 }
 
-.rank-badges{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;margin-left:10px;}
-.rank-badge{padding:3px 9px;border-radius:50px;font-size:.68rem;font-weight:600;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;}
 .badge-best{background:#E8F4EF;color:#3A7A5E;}
 .badge-worst{background:#FBF0EE;color:#8A3A2A;}
 
@@ -265,17 +303,21 @@ tbody td:last-child { border-right: none; }
   .kpi-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
   .chart-card{padding:18px 16px;}
   .table-card{padding:16px 14px;}
-  .filter-bar{flex-direction:column;align-items:stretch;}
   .filter-label{margin-bottom:4px;}
 }
 @media(max-width:640px){
   .main{padding:14px 12px 60px;}
-  .header{padding:12px 14px;}
-  .header-left h1{font-size:1.05rem;}
-  .header-left p{font-size:.7rem;}
+  /* Reducir el tamaño del header para que no estorbe en celulares */
+  .header{padding:10px 14px;}
+  .header-left h1{font-size:1.1rem; line-height: 1.2;}
+  .header-left p{font-size:.65rem; margin-top: 1px;}
   .header-right{width:100%;justify-content:flex-end;}
+  
   .kpi-grid{grid-template-columns:1fr 1fr;gap:10px;}
-  .kpi-score{font-size:1.75rem;}
+  .kpi-card { padding: 14px 16px; }
+  .kpi-score{font-size:1.6rem;}
+  
+  /* Ajuste de filtros */
   .filter-bar{padding:10px 14px;gap:7px;}
   .filter-chip{padding:5px 11px;font-size:.72rem;}
   .chart-card{padding:16px 14px;}
@@ -358,7 +400,7 @@ tbody td:last-child { border-right: none; }
 
 <main class="main">
   <div class="filter-bar" id="filterBarDir" style="margin-bottom:8px;"></div>
-  <div class="filter-bar" id="filterBarDept" style="flex-direction:column; align-items:flex-start;"></div>
+  <div class="filter-bar" id="filterBarDept" ></div>
 
   <div id="kpiContainer"></div>
 
@@ -423,7 +465,7 @@ let barChart, radarChart, lineChart;
 
 // ════════════ INYECCIÓN DE PROMEDIOS POR DIRECCIÓN ════════════
 function injectDirectionAverages() {
-  if (DEPTS.length === 0) return; // Salir si no hay datos
+  if (DEPTS.length === 0) return; 
 
   const dirs = Array.from(new Set(Object.values(DEPT_TO_DIR)));
   
@@ -505,7 +547,6 @@ function getVisibleDepts() {
   const deptsInDirs = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
   
   if (activeDepts.has('Todos')) {
-    // Si elige "Todos", mostramos solo los departamentos reales para no saturar
     return deptsInDirs.filter(d => !d.startsWith('PROM. '));
   }
   return deptsInDirs.filter(d => activeDepts.has(d));
@@ -522,11 +563,10 @@ function getDeptsGroupedByDir(deptList) {
 }
 
 function buildFilters() {
-  // 1. DIRS FILTER BAR
   const fbDir = document.getElementById('filterBarDir');
   fbDir.innerHTML = `<span class="filter-label">Filtrar por Dirección:</span>`;
   
-  if (DIRS.length === 0) return; // Si está limpio, no mostrar botones fantasma
+  if (DIRS.length === 0) return; 
 
   const allDirs = ['Todas', ...DIRS];
   allDirs.forEach(dir => {
@@ -553,7 +593,6 @@ function buildFilters() {
     fbDir.appendChild(btn);
   });
 
-  // 2. DEPTS FILTER BAR (Grouped)
   const fbDept = document.getElementById('filterBarDept');
   fbDept.innerHTML = `<div style="display:flex; width:100%; align-items:center; gap:10px; margin-bottom:8px;">
     <span class="filter-label" style="margin:0;">Filtrar por Entidad:</span>
@@ -576,7 +615,6 @@ function buildFilters() {
     groupDiv.className = 'filter-dir-group';
     groupDiv.innerHTML = `<span class="filter-dir-group-title truncated" title="${dir}">${dir}</span>`;
     
-    // Generar el botón de PROMEDIO primero
     const promName = `PROM. ${dir}`;
     if (DEPTS.includes(promName)) {
       const btnProm = document.createElement('button');
@@ -599,7 +637,6 @@ function buildFilters() {
       groupDiv.appendChild(btnProm);
     }
 
-    // Generar el resto de departamentos reales
     dList.forEach(d => {
       if (d.startsWith('PROM. ')) return; 
       
@@ -659,7 +696,6 @@ function renderKPIs(orderedDepts){
       <h3 class="kpi-dir-title truncated" title="${dir}">${dir}</h3>
       <div class="kpi-grid">`;
     
-    // Primero pintar los promedios (si están seleccionados)
     const promDepts = dList.filter(d => d.startsWith('PROM. '));
     const realDepts = dList.filter(d => !d.startsWith('PROM. '));
 
@@ -693,7 +729,7 @@ function renderBarChart(orderedDepts){
   barChart=new Chart(ctx,{
     type:'bar',
     data:{
-      labels: orderedDepts, // Pasamos el nombre completo para que Tooltip lo muestre
+      labels: orderedDepts, 
       datasets:[{
         data:orderedDepts.map(d=>AVERAGES[DEPTS.indexOf(d)]),
         backgroundColor:orderedDepts.map(d=>deptColor(d)+'CC'),
@@ -715,10 +751,11 @@ function renderBarChart(orderedDepts){
           grid:{display:false},
           ticks:{
             font:{size:10},
-            maxRotation:30,
+            maxRotation:45,
+            minRotation:45,
             callback: function(val, index) {
               let label = orderedDepts[index];
-              return label.length > 15 ? label.substring(0, 15) + '…' : label;
+              return label.length > 12 ? label.substring(0, 12) + '…' : label;
             }
           }
         }
@@ -746,7 +783,7 @@ function renderRadarChart(orderedDepts){
         const di=DEPTS.indexOf(d),col=deptColor(d);
         const isProm = d.startsWith('PROM. ');
         return {
-          label: d, // Pasamos el nombre completo
+          label: d, 
           data:SCORES.map(q=>q[di]??null),
           backgroundColor:col+(isProm?'1A':'28'),
           borderColor:col,
@@ -787,7 +824,7 @@ function renderLineChart(orderedDepts){
         const di=DEPTS.indexOf(d),col=deptColor(d);
         const isProm = d.startsWith('PROM. ');
         return {
-          label: d, // Nombre completo asegurado para leyenda y tooltip
+          label: d, 
           data:SCORES.map(q=>q[di]??null),
           borderColor:col,
           backgroundColor:col+'18',
@@ -821,11 +858,21 @@ function renderRankingList(orderedDepts){
       .sort((a,b)=>b.v-a.v);
     if(!vals.length) return '';
     const best=vals[0], worst=vals[vals.length-1];
+    
+    // Pastillas blindadas con flexbox para que la calificación no se esconda jamás
     return `<div class="rank-item">
       <div class="rank-q-wrap truncated" title="${q.replace(/"/g,'&quot;')}"><span class="rank-q-inner">P${qi+1} · ${q}</span></div>
       <div class="rank-badges">
-        <span class="rank-badge badge-best truncated" title="${best.d}">↑ ${best.d} ${best.v.toFixed(1)}</span>
-        <span class="rank-badge badge-worst truncated" title="${worst.d}">↓ ${worst.d} ${worst.v.toFixed(1)}</span>
+        <div class="rank-badge badge-best truncated" title="${best.d}">
+          <span style="flex-shrink:0">↑</span>
+          <div class="rb-name-wrap"><span class="rb-name-inner">${best.d}</span></div>
+          <span style="flex-shrink:0; margin-left:2px;">${best.v.toFixed(1)}</span>
+        </div>
+        <div class="rank-badge badge-worst truncated" title="${worst.d}">
+          <span style="flex-shrink:0">↓</span>
+          <div class="rb-name-wrap"><span class="rb-name-inner">${worst.d}</span></div>
+          <span style="flex-shrink:0; margin-left:2px;">${worst.v.toFixed(1)}</span>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -836,8 +883,9 @@ function renderRankingList(orderedDepts){
 function markTruncated(){
   const selectors = '.rank-q-wrap, .q-cell, thead th, .kpi-dept, .rank-badge, .chart-title, .filter-chip, .filter-dir-group-title, .rl-chip';
   document.querySelectorAll(selectors).forEach(el=>{
-    const inner = el.querySelector('.rank-q-inner, .q-cell-inner, .kpi-dept-inner') || el;
-    const isTruncated = inner.scrollWidth > el.clientWidth;
+    const inner = el.querySelector('.rank-q-inner, .q-cell-inner, .kpi-dept-inner, .rb-name-inner') || el;
+    const wrapper = el.querySelector('.rb-name-wrap') || el; 
+    const isTruncated = inner.scrollWidth > wrapper.clientWidth;
     el.classList.toggle('truncated', isTruncated);
   });
 }
@@ -905,7 +953,6 @@ function classifyComment(text){
   
   if(/^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x)$/.test(t)) return 'Sin comentarios';
   
-  // Categorías súper detalladas y específicas
   if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar/)) return 'Tiempos de Respuesta';
   if(t.match(/comunic|avisar|claro|transparencia|información|notificar/)) return 'Comunicación y Claridad';
   if(t.match(/abasto|mercancía|proveedor|merma|desabasto|material|inventario/)) return 'Abasto y Proveedores';
@@ -918,7 +965,6 @@ function classifyComment(text){
   if(t.match(/capacitaci|entrenamiento|enseñar|curso/)) return 'Capacitación y Desarrollo';
   if(t.match(/herramienta|sistema|equipo|plataforma|software/)) return 'Herramientas y Sistemas';
   
-  // Reemplazo estricto en vez de algo general
   return 'Requerimientos Operativos'; 
 }
 
@@ -926,7 +972,6 @@ function renderDeptTabs(orderedDepts){
   const c=document.getElementById('deptTabs');
   c.innerHTML='';
   
-  // Ignorar promedios fantasma para los comentarios
   const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
   if(realDepts.length === 0) return;
 
