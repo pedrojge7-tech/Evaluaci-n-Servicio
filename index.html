@@ -76,18 +76,6 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow);}
 .filter-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;margin-top:6px;min-width:160px;}
 
-/* Contenedor scrollable para el filtro de departamentos para móviles */
-#filterBarDept {
-  flex-direction: column; 
-  align-items: flex-start;
-  max-height: 280px; 
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-#filterBarDept::-webkit-scrollbar{width:4px;}
-#filterBarDept::-webkit-scrollbar-track{background:var(--surface2);}
-#filterBarDept::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-
 /* Grouping classes for departments within directions */
 .filter-dir-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 14px; background: var(--surface2); border-radius: var(--rs); border: 1px solid var(--border); width: 100%; margin-bottom: 4px; }
 .filter-dir-group-title { font-size: .65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; min-width: 90px; }
@@ -110,10 +98,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--c1));border-radius:var(--r) var(--r) 0 0;}
 .kpi-rank{position:absolute;top:14px;right:14px;font-size:.6rem;font-weight:700;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:50px;}
-
-/* Padding derecho forzado para evitar que el texto choque con el ranking en celulares */
-.kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:75px;}
-
+.kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 44px);}
 .kpi-dept-inner{display:inline-block;white-space:nowrap;}
 .kpi-score{font-family:'DM Serif Display',serif;font-size:2.1rem;color:var(--text);line-height:1;margin-bottom:4px;}
 .kpi-score sup{font-size:.85rem;font-family:'DM Sans',sans-serif;font-weight:300;}
@@ -280,21 +265,17 @@ tbody td:last-child { border-right: none; }
   .kpi-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
   .chart-card{padding:18px 16px;}
   .table-card{padding:16px 14px;}
+  .filter-bar{flex-direction:column;align-items:stretch;}
   .filter-label{margin-bottom:4px;}
 }
 @media(max-width:640px){
   .main{padding:14px 12px 60px;}
-  /* Reducir el tamaño del header para que no estorbe en celulares */
-  .header{padding:10px 14px;}
-  .header-left h1{font-size:1.1rem; line-height: 1.2;}
-  .header-left p{font-size:.65rem; margin-top: 1px;}
+  .header{padding:12px 14px;}
+  .header-left h1{font-size:1.05rem;}
+  .header-left p{font-size:.7rem;}
   .header-right{width:100%;justify-content:flex-end;}
-  
   .kpi-grid{grid-template-columns:1fr 1fr;gap:10px;}
-  .kpi-card { padding: 14px 16px; }
-  .kpi-score{font-size:1.6rem;}
-  
-  /* Ajuste de filtros */
+  .kpi-score{font-size:1.75rem;}
   .filter-bar{padding:10px 14px;gap:7px;}
   .filter-chip{padding:5px 11px;font-size:.72rem;}
   .chart-card{padding:16px 14px;}
@@ -377,7 +358,7 @@ tbody td:last-child { border-right: none; }
 
 <main class="main">
   <div class="filter-bar" id="filterBarDir" style="margin-bottom:8px;"></div>
-  <div class="filter-bar" id="filterBarDept" ></div>
+  <div class="filter-bar" id="filterBarDept" style="flex-direction:column; align-items:flex-start;"></div>
 
   <div id="kpiContainer"></div>
 
@@ -734,11 +715,10 @@ function renderBarChart(orderedDepts){
           grid:{display:false},
           ticks:{
             font:{size:10},
-            maxRotation:45,
-            minRotation:45,
+            maxRotation:30,
             callback: function(val, index) {
               let label = orderedDepts[index];
-              return label.length > 12 ? label.substring(0, 12) + '…' : label;
+              return label.length > 15 ? label.substring(0, 15) + '…' : label;
             }
           }
         }
