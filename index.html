@@ -76,20 +76,22 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow);}
 .filter-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;margin-top:6px;min-width:160px;}
 
-/* Contenedor scrollable para el filtro de departamentos para móviles */
+/* Contenedor vertical simétrico para el filtro de departamentos */
 #filterBarDept {
   flex-direction: column; 
-  align-items: flex-start;
-  max-height: 280px; 
+  flex-wrap: nowrap; /* Evita que se hagan columnas horizontales */
+  align-items: stretch;
+  max-height: 350px; 
   overflow-y: auto;
+  overflow-x: hidden; /* Cero scroll horizontal */
+  padding-right: 8px; /* Espacio para el scrollbar */
   -webkit-overflow-scrolling: touch;
 }
 #filterBarDept::-webkit-scrollbar{width:4px;}
 #filterBarDept::-webkit-scrollbar-track{background:var(--surface2);}
 #filterBarDept::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
-/* Grouping classes for departments within directions */
-.filter-dir-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 14px; background: var(--surface2); border-radius: var(--rs); border: 1px solid var(--border); width: 100%; margin-bottom: 4px; }
+.filter-dir-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 14px; background: var(--surface2); border-radius: var(--rs); border: 1px solid var(--border); width: 100%; margin-bottom: 6px; }
 .filter-dir-group-title { font-size: .65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; min-width: 90px; }
 
 .filter-chip{padding:6px 14px;border-radius:50px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;}
@@ -97,7 +99,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .filter-chip.active{background:var(--text);color:#fff;border-color:var(--text);}
 .filter-chip-dir.active { background: var(--c2); border-color: var(--c2); }
 
-/* Especial style para los chips de Promedios (color dinámico) */
+/* Especial style para los chips de Promedios */
 .filter-chip-prom { border-color: var(--prom-col, var(--c3)); color: var(--prom-col, var(--c3)); font-weight: 700; background: #fff; }
 .filter-chip-prom:hover { border-color: var(--prom-col, var(--c3)); color: var(--prom-col, var(--c3)); background: var(--surface2); }
 .filter-chip-prom.active { background: var(--prom-col, var(--c3)); color: #fff; border-color: var(--prom-col, var(--c3)); }
@@ -111,8 +113,8 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--c1));border-radius:var(--r) var(--r) 0 0;}
 .kpi-rank{position:absolute;top:14px;right:14px;font-size:.6rem;font-weight:700;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:50px;}
 
-/* Padding derecho forzado para evitar que el texto choque con el ranking en celulares */
-.kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:75px;}
+/* Padding derecho para evitar colisión con el Ranking. Reducido a 60px para no cortar muy temprano */
+.kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:60px;}
 
 .kpi-dept-inner{display:inline-block;white-space:nowrap;}
 .kpi-score{font-family:'DM Serif Display',serif;font-size:2.1rem;color:var(--text);line-height:1;margin-bottom:4px;}
@@ -157,7 +159,6 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 /* TOOLTIPS & TRUNCATION GLOBALES */
 .truncated { position: relative; cursor: default; }
 
-/* Tooltip oscuro genérico súper poderoso para textos largos */
 .truncated[title]:hover::after {
   content: attr(title);
   position: absolute;
@@ -192,9 +193,8 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
   border-radius: 50px;
   font-size: .68rem;
   font-weight: 600;
-  max-width: 160px; /* Ancho máximo de la pastilla */
+  max-width: 180px; 
 }
-/* El contenedor del nombre se puede encoger (flex: 1 1 auto) y recortar */
 .rb-name-wrap {
   overflow: hidden;
   white-space: nowrap;
@@ -232,7 +232,8 @@ tbody tr:last-child{border-bottom:none;}
 tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;text-align:center;border-right:1px dashed var(--surface2);}
 tbody td:first-child { text-align: left; }
 tbody td:last-child { border-right: none; }
-.q-cell{max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.71rem;color:var(--muted);}
+/* Aumentado a 350px para evitar recortes tan tempranos */
+.q-cell{max-width:350px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.71rem;color:var(--muted);}
 .q-cell-inner{display:inline-block;white-space:nowrap;}
 .score-pill{display:inline-block;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
 .score-high{background:#E8F4EF;color:#3A7A5E;}
@@ -696,6 +697,7 @@ function renderKPIs(orderedDepts){
       <h3 class="kpi-dir-title truncated" title="${dir}">${dir}</h3>
       <div class="kpi-grid">`;
     
+    // Primero pintar los promedios
     const promDepts = dList.filter(d => d.startsWith('PROM. '));
     const realDepts = dList.filter(d => !d.startsWith('PROM. '));
 
@@ -859,7 +861,7 @@ function renderRankingList(orderedDepts){
     if(!vals.length) return '';
     const best=vals[0], worst=vals[vals.length-1];
     
-    // Pastillas blindadas con flexbox para que la calificación no se esconda jamás
+    // Pastillas blindadas con flexbox para evitar recortes numéricos
     return `<div class="rank-item">
       <div class="rank-q-wrap truncated" title="${q.replace(/"/g,'&quot;')}"><span class="rank-q-inner">P${qi+1} · ${q}</span></div>
       <div class="rank-badges">
@@ -946,13 +948,19 @@ function renderDetailTable(orderedDepts){
   requestAnimationFrame(markTruncated);
 }
 
-// ════════════ COMMENTS (Grouped) ════════════
+// ════════════ COMMENTS (Grouped, con filtro de basura) ════════════
 function classifyComment(text){
-  if(!text) return 'Sin comentarios';
-  const t=text.toLowerCase().trim();
+  if(!text) return 'Ignorar';
+  const t = text.toLowerCase().trim();
   
-  if(/^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x)$/.test(t)) return 'Sin comentarios';
+  // REGEX DE COMENTARIOS INÚTILES (Cortesía, vacíos, o muy genéricos)
+  const uselessRegex = /^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x|todo ok|ok|no tengo tema|felicidades|todo bien|sin observaciones|ninguna observaci.n|no tengo comentarios.*|todo excelente|excelente|muy bien|bien|sin detalle)$/i;
   
+  if(uselessRegex.test(t)) return 'Ignorar';
+  if(t.length < 5 && !t.match(/mal|peor/)) return 'Ignorar'; // Filtrar textos cortísimos que no aporten
+  if(t.includes('no tengo') || t.includes('ningún comentario')) return 'Ignorar';
+  
+  // Categorías súper detalladas y específicas
   if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar/)) return 'Tiempos de Respuesta';
   if(t.match(/comunic|avisar|claro|transparencia|información|notificar/)) return 'Comunicación y Claridad';
   if(t.match(/abasto|mercancía|proveedor|merma|desabasto|material|inventario/)) return 'Abasto y Proveedores';
@@ -1006,17 +1014,24 @@ function renderDeptTabs(orderedDepts){
 }
 
 function renderCatChips(dept){
-  const comments=COMMENTS[dept]||[];
-  const cats={};
-  comments.forEach(c=>{const cat=classifyComment(c);(cats[cat]=cats[cat]||[]).push(c);});
-  const container=document.getElementById('catChips');
+  const rawComments = COMMENTS[dept]||[];
+  // Omitimos los comentarios basura por completo
+  const validComments = rawComments.filter(c => classifyComment(c) !== 'Ignorar');
+  
+  const cats = {};
+  validComments.forEach(c => {
+    const cat = classifyComment(c);
+    (cats[cat] = cats[cat] || []).push(c);
+  });
+  
+  const container = document.getElementById('catChips');
   container.innerHTML='';
 
   const makeChip=(label,count,onClick)=>{
-    const btn=document.createElement('button');
-    btn.className='cat-chip truncated';
+    const btn = document.createElement('button');
+    btn.className = 'cat-chip truncated';
     btn.title = label;
-    btn.innerHTML=`${label}<span class="cnt">${count}</span>`;
+    btn.innerHTML = `${label}<span class="cnt">${count}</span>`;
     btn.addEventListener('click',()=>{
       document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
       btn.classList.add('active');
@@ -1025,23 +1040,26 @@ function renderCatChips(dept){
     return btn;
   };
 
-  const allChip=makeChip('Todos',comments.length,()=>renderComments(dept,null));
+  const allChip = makeChip('Todos', validComments.length, () => renderComments(dept, null));
   allChip.classList.add('active');
   container.appendChild(allChip);
 
   Object.entries(cats).sort((a,b)=>b[1].length-a[1].length).forEach(([cat,list])=>{
-    container.appendChild(makeChip(cat,list.length,()=>renderComments(dept,cat)));
+    container.appendChild(makeChip(cat, list.length, () => renderComments(dept, cat)));
   });
   requestAnimationFrame(markTruncated);
 }
 
 function renderComments(dept,cat){
   const list=document.getElementById('commentList');
-  const all=COMMENTS[dept]||[];
-  const filtered=cat?all.filter(c=>classifyComment(c)===cat):all;
-  const col=deptColor(dept);
-  if(!filtered.length){list.innerHTML='<div class="no-comments">Sin comentarios</div>';return;}
-  list.innerHTML=filtered.map(c=>`<div class="comment-item" style="--al:${col}">${c}</div>`).join('');
+  const rawComments = COMMENTS[dept]||[];
+  const validComments = rawComments.filter(c => classifyComment(c) !== 'Ignorar');
+  
+  const filtered = cat ? validComments.filter(c => classifyComment(c) === cat) : validComments;
+  const col = deptColor(dept);
+  
+  if(!filtered.length){list.innerHTML='<div class="no-comments">No hay comentarios que mostrar</div>';return;}
+  list.innerHTML = filtered.map(c => `<div class="comment-item" style="--al:${col}">${c}</div>`).join('');
 }
 
 // ════════════ MODALS ════════════
@@ -1065,7 +1083,7 @@ async function generateReaderLink(){
   try {
     const payload = {
       dirs:     DIRS,
-      depts:    DEPTS.filter(d => !d.startsWith('PROM. ')), // Guardar solo los reales, los promedios se calculan al descargar
+      depts:    DEPTS.filter(d => !d.startsWith('PROM. ')), 
       deptMap:  DEPT_TO_DIR,
       qs:       QUESTIONS,
       scores:   JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
@@ -1143,7 +1161,6 @@ async function tryLoadFromURL(){
       COMMENTS  = raw.comments;
       if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
       
-      // Asegurar que existan los promedios al cargar
       injectDirectionAverages();
 
       const t = document.getElementById('dashTitle');
@@ -1184,7 +1201,6 @@ function handleFile(file){
       
       let currentDir = "General";
       
-      // Leer hoja 1 (Scores)
       for(let c=1; c<hdrDept.length; c++){
         if(hdrDir[c] !== null && hdrDir[c] !== undefined && String(hdrDir[c]).trim() !== '') {
           currentDir = String(hdrDir[c]).trim();
@@ -1201,7 +1217,7 @@ function handleFile(file){
       }
 
       const newQ=[], newSc=[];
-      for(let r=2; r<s1.length; r++){ // Fila 3 en adelante
+      for(let r=2; r<s1.length; r++){ 
         const row=s1[r]||[];
         const cell=row[0];
         if(cell===null||cell===undefined)continue;
@@ -1223,12 +1239,10 @@ function handleFile(file){
         newSc.push(vals);
       }
       
-      // Leer hoja 2 (Comentarios)
       const newComm={}; newDepts.forEach(d=>{newComm[d]=[];});
       if(wb.SheetNames.length>1){
         const ws2=wb.Sheets[wb.SheetNames[1]];
         const s2=XLSX.utils.sheet_to_json(ws2,{header:1,defval:null});
-        // Fila 2 de la Hoja 2 tiene los departamentos
         const hdrDept2=s2[1]||[];
         const cDepts=[];
         
@@ -1236,7 +1250,7 @@ function handleFile(file){
           if(hdrDept2[c]) cDepts.push({name:String(hdrDept2[c]).trim(),col:c});
         }
         
-        for(let r=2;r<s2.length;r++){ // Fila 3 en adelante son comentarios
+        for(let r=2;r<s2.length;r++){ 
           const row=s2[r]||[];
           cDepts.forEach(({name,col})=>{
             const cell=row[col];
@@ -1266,7 +1280,7 @@ function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, fname){
   COMMENTS = nComm;
   REPORT_DATE = new Date();
   
-  injectDirectionAverages(); // Recalcular los promedios fantasma
+  injectDirectionAverages(); 
   
   document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
   
