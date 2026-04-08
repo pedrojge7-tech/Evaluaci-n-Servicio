@@ -108,12 +108,12 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .kpi-dir-section { margin-bottom: 28px; }
 .kpi-dir-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--text); margin-bottom: 12px; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
 
-/* Contenedor scrolleable de las tarjetas */
+/* Contenedor scrolleable de las tarjetas - ajustado a 1.5 filas aprox */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill,minmax(185px,1fr));
   gap: 14px;
-  max-height: 380px; /* Aprox 3 filas de tarjetas */
+  max-height: 220px; /* Aprox 1.5 filas para indicar que hay scroll oculto */
   overflow-y: auto;
   overflow-x: hidden;
   padding: 4px 8px 8px 4px; /* Espacio para que no se corten las sombras */
@@ -248,6 +248,7 @@ tbody tr:last-child{border-bottom:none;}
 tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;text-align:center;border-right:1px dashed var(--surface2);}
 tbody td:first-child { text-align: left; }
 tbody td:last-child { border-right: none; }
+/* Aumentado a 350px para evitar recortes tan tempranos */
 .q-cell{max-width:350px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.71rem;color:var(--muted);}
 .q-cell-inner{display:inline-block;white-space:nowrap;}
 .score-pill{display:inline-block;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
@@ -323,6 +324,7 @@ tbody td:last-child { border-right: none; }
 }
 @media(max-width:640px){
   .main{padding:14px 12px 60px;}
+  /* Reducir el tamaño del header para que no estorbe en celulares */
   .header{padding:10px 14px;}
   .header-left h1{font-size:1.1rem; line-height: 1.2;}
   .header-left p{font-size:.65rem; margin-top: 1px;}
@@ -332,6 +334,7 @@ tbody td:last-child { border-right: none; }
   .kpi-card { padding: 14px 16px; }
   .kpi-score{font-size:1.6rem;}
   
+  /* Ajuste de filtros */
   .filter-bar{padding:10px 14px;gap:7px;}
   .filter-chip{padding:5px 11px;font-size:.72rem;}
   .chart-card{padding:16px 14px;}
@@ -457,12 +460,14 @@ tbody td:last-child { border-right: none; }
 <script>
 // ════════════ CONSTANTS ════════════
 const PALETTE = ['#C8846A','#7A9E8E','#B8A87A','#8A7BAE','#6A8FAE','#AE7A8A','#7AAE96','#AE957A','#9E8E7A','#7AAEBE','#BE9E7A','#8EAE7A'];
+// Colores fuertes y distintos específicamente para los promedios de dirección
 const PROM_PALETTE = ['#8A3A2A', '#3A7A5E', '#4A6A8A', '#8A6A2A', '#7A4A6A', '#3A6A5E']; 
 const PWD = 'Infocus123';
 
 // ════════════ STATE ════════════
 let REPORT_DATE = new Date();
 
+// Estado limpio inicial sin mock data
 let DIRS = [];
 let DEPTS = [];
 let DEPT_TO_DIR = {};
@@ -693,7 +698,7 @@ function updateAllViews() {
   renderDeptTabs(orderedDepts);
 }
 
-// ════════════ KPI CARDS (Grouped) ════════════
+// ════════════ KPI CARDS (Grouped & Ordered) ════════════
 function renderKPIs(orderedDepts){
   const container = document.getElementById('kpiContainer');
   container.innerHTML = '';
@@ -708,8 +713,9 @@ function renderKPIs(orderedDepts){
       <h3 class="kpi-dir-title truncated" title="${dir}">${dir}</h3>
       <div class="kpi-grid">`;
     
+    // Separamos promedio y lo demás, y ordenamos el resto de mayor a menor
     const promDepts = dList.filter(d => d.startsWith('PROM. '));
-    const realDepts = dList.filter(d => !d.startsWith('PROM. '));
+    const realDepts = dList.filter(d => !d.startsWith('PROM. ')).sort((a,b) => AVERAGES[DEPTS.indexOf(b)] - AVERAGES[DEPTS.indexOf(a)]);
 
     [...promDepts, ...realDepts].forEach(d => {
       const di = DEPTS.indexOf(d), avg = AVERAGES[di], col = deptColor(d);
