@@ -72,20 +72,34 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 /* ── MAIN ── */
 .main{max-width:1400px;margin:0 auto;padding:28px 36px 60px;}
 
-/* ── FILTER BAR ── */
-.filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;margin-bottom:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow);}
-.filter-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
-.filter-chip{padding:6px 14px;border-radius:50px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap;}
+/* ── FILTERS ── */
+.filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow);}
+.filter-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;margin-top:6px;min-width:160px;}
+
+/* Grouping classes for departments within directions */
+.filter-dir-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 14px; background: var(--surface2); border-radius: var(--rs); border: 1px solid var(--border); width: 100%; margin-bottom: 4px; }
+.filter-dir-group-title { font-size: .65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; min-width: 90px; }
+
+.filter-chip{padding:6px 14px;border-radius:50px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;}
 .filter-chip:hover{border-color:var(--c1);color:var(--c1);}
 .filter-chip.active{background:var(--text);color:#fff;border-color:var(--text);}
+.filter-chip-dir.active { background: var(--c2); border-color: var(--c2); }
+
+/* Especial style para los chips de Promedios (color dinámico) */
+.filter-chip-prom { border-color: var(--prom-col, var(--c3)); color: var(--prom-col, var(--c3)); font-weight: 700; background: #fff; }
+.filter-chip-prom:hover { border-color: var(--prom-col, var(--c3)); color: var(--prom-col, var(--c3)); background: var(--surface2); }
+.filter-chip-prom.active { background: var(--prom-col, var(--c3)); color: #fff; border-color: var(--prom-col, var(--c3)); }
 
 /* ── KPI CARDS ── */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px;margin-bottom:22px;}
+.kpi-dir-section { margin-bottom: 28px; }
+.kpi-dir-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--text); margin-bottom: 12px; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px;}
 .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:visible;transition:transform .2s,box-shadow .2s;}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--c1));border-radius:var(--r) var(--r) 0 0;}
 .kpi-rank{position:absolute;top:14px;right:14px;font-size:.6rem;font-weight:700;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:50px;}
 .kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100% - 44px);}
+.kpi-dept-inner{display:inline-block;white-space:nowrap;}
 .kpi-score{font-family:'DM Serif Display',serif;font-size:2.1rem;color:var(--text);line-height:1;margin-bottom:4px;}
 .kpi-score sup{font-size:.85rem;font-family:'DM Sans',sans-serif;font-weight:300;}
 .kpi-bar{height:3px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-top:8px;}
@@ -125,10 +139,10 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .rank-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 .rank-item{border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;background:var(--surface2);display:flex;justify-content:space-between;align-items:center;min-height:48px;}
 
-/* TOOLTIPS & TRUNCATION */
+/* TOOLTIPS & TRUNCATION GLOBALES */
 .truncated { position: relative; cursor: default; }
 
-/* El tooltip oscuro genérico para cualquier clase que esté truncada y tenga el atributo title */
+/* Tooltip oscuro genérico súper poderoso para textos largos */
 .truncated[title]:hover::after {
   content: attr(title);
   position: absolute;
@@ -141,9 +155,9 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
   font-size: .72rem;
   font-family: 'DM Sans', sans-serif;
   white-space: normal;
-  max-width: 340px;
+  max-width: 360px;
   min-width: 150px;
-  z-index: 1000;
+  z-index: 9999;
   box-shadow: var(--shadow-md);
   pointer-events: none;
   line-height: 1.45;
@@ -153,9 +167,10 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .rank-q-wrap{overflow:hidden;white-space:nowrap;font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:0;flex-grow:1;}
 .rank-q-inner{display:inline-block;white-space:nowrap;}
 
-/* Animación de desplazamiento al poner el cursor (Hover Scroll) */
+/* Animación de desplazamiento al poner el cursor (Hover Scroll) en tablas y kpis */
 .truncated:hover .rank-q-inner, 
-.truncated:hover .q-cell-inner {
+.truncated:hover .q-cell-inner,
+.truncated:hover .kpi-dept-inner {
   animation: marquee-slide 10s linear 1 forwards;
 }
 @keyframes marquee-slide { 
@@ -171,11 +186,14 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 /* ── DETAIL TABLE ── */
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);margin-bottom:20px;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:.78rem;}
-thead th{background:var(--surface2);padding:9px 12px;text-align:left;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
+thead th{background:var(--surface2);padding:9px 12px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-right:1px solid var(--border);white-space:nowrap;text-align:center;}
+thead th:last-child { border-right: none; }
 tbody tr{border-bottom:1px solid var(--surface2);transition:background .15s;}
 tbody tr:hover{background:var(--surface2);}
 tbody tr:last-child{border-bottom:none;}
-tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
+tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;text-align:center;border-right:1px dashed var(--surface2);}
+tbody td:first-child { text-align: left; }
+tbody td:last-child { border-right: none; }
 .q-cell{max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.71rem;color:var(--muted);}
 .q-cell-inner{display:inline-block;white-space:nowrap;}
 .score-pill{display:inline-block;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
@@ -184,7 +202,7 @@ tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
 .score-low{background:#FBF0EE;color:#8A3A2A;}
 
 /* ── COMMENTS ── */
-.dept-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.dept-tabs{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
 .dept-tab{padding:7px 15px;border-radius:50px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
 .dept-tab .dot{width:7px;height:7px;border-radius:50%;background:var(--tc,var(--c1));flex-shrink:0;}
 .dept-tab.active{background:var(--tc,var(--c1));color:#fff;border-color:var(--tc,var(--c1));}
@@ -247,6 +265,8 @@ tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
   .kpi-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
   .chart-card{padding:18px 16px;}
   .table-card{padding:16px 14px;}
+  .filter-bar{flex-direction:column;align-items:stretch;}
+  .filter-label{margin-bottom:4px;}
 }
 @media(max-width:640px){
   .main{padding:14px 12px 60px;}
@@ -284,7 +304,7 @@ tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
 
 <header class="header">
   <div class="header-left">
-    <h1 id="dashTitle">Evaluación de Servicio — Área SIM</h1>
+    <h1 id="dashTitle">Evaluación de Servicio</h1>
     <p id="dashSubtitle"></p>
   </div>
   <div class="header-right">
@@ -306,8 +326,8 @@ tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
     <p>Sube un Excel con el mismo formato. El dashboard se regenera automáticamente con los datos nuevos.</p>
     <div class="import-hint">
       <strong>📋 Formato esperado</strong>
-      <b>Hoja 1:</b> Fila 1 = nombres de departamentos desde col B. Col A desde A2 = preguntas. Valores numéricos = puntajes (0–1 ó 1–10). Se ignoran textos y promedios automáticamente.<br>
-      <b>Hoja 2 "Comentarios":</b> Fila 1 = departamentos. Filas 2+ = comentarios por columna.
+      <b>Hoja 1:</b> Fila 1 = Direcciones. Fila 2 = Departamentos. A partir de A3 = Preguntas. Valores numéricos = puntajes. Se ignoran textos y promedios.<br>
+      <b>Hoja 2 "Comentarios":</b> Fila 1 = Direcciones. Fila 2 = Departamentos. Fila 3+ = comentarios por columna.
     </div>
     <div class="dropzone" id="dropzone">
       <input type="file" accept=".xlsx,.xls" id="fileInput">
@@ -337,33 +357,18 @@ tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
 <div class="toast" id="toast"></div>
 
 <main class="main">
-  <div class="filter-bar" id="filterBar"><span class="filter-label">Filtrar por departamento:</span></div>
-  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="filter-bar" id="filterBarDir" style="margin-bottom:8px;"></div>
+  <div class="filter-bar" id="filterBarDept" style="flex-direction:column; align-items:flex-start;"></div>
 
-  <div class="charts-row cols-2" id="topBottomContainer">
-    <div class="chart-card">
-      <div class="chart-hdr">
-        <div class="chart-title">🏆 Top 3 Fortalezas</div>
-        <div class="chart-sub">Promedio más alto de las áreas seleccionadas</div>
-      </div>
-      <div class="rank-list" id="topList"></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-hdr">
-        <div class="chart-title">🚨 Top 3 Áreas de Oportunidad</div>
-        <div class="chart-sub">Promedio más bajo de las áreas seleccionadas</div>
-      </div>
-      <div class="rank-list" id="bottomList"></div>
-    </div>
-  </div>
+  <div id="kpiContainer"></div>
 
   <div class="charts-row cols-2">
     <div class="chart-card">
-      <div class="chart-hdr"><div class="chart-title">Promedio General por Departamento</div><div class="chart-sub">Escala 1–10 · Promedio de todas las preguntas</div></div>
+      <div class="chart-hdr"><div class="chart-title">Promedio General por Entidad</div><div class="chart-sub">Escala 1–10 · Promedio de todas las preguntas</div></div>
       <div class="chart-container"><canvas id="barChart"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-hdr"><div class="chart-title">Radar por Pregunta</div><div class="chart-sub">Comparativa entre departamentos</div></div>
+      <div class="chart-hdr"><div class="chart-title">Radar por Pregunta</div><div class="chart-sub">Comparativa entre entidades filtradas</div></div>
       <div class="chart-container"><canvas id="radarChart"></canvas></div>
       <div id="radarLegend"></div>
     </div>
@@ -371,7 +376,7 @@ tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
 
   <div class="charts-row cols-2">
     <div class="chart-card">
-      <div class="chart-hdr"><div class="chart-title">Desempeño por Pregunta</div><div class="chart-sub">Puntuación de cada departamento en cada pregunta</div></div>
+      <div class="chart-hdr"><div class="chart-title">Desempeño por Pregunta</div><div class="chart-sub">Puntuación de cada entidad en cada pregunta</div></div>
       <div class="chart-container"><canvas id="lineChart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -381,7 +386,7 @@ tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
   </div>
 
   <div class="table-card" style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
-    <div class="chart-hdr"><div class="chart-title">Tabla de Resultados Detallada</div><div class="chart-sub">Puntaje por departamento en cada pregunta</div></div>
+    <div class="chart-hdr"><div class="chart-title">Tabla de Resultados Detallada</div><div class="chart-sub">Puntaje por entidad en cada pregunta</div></div>
     <table id="detailTable"><thead></thead><tbody></tbody></table>
   </div>
 
@@ -396,48 +401,68 @@ tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;}
 <script>
 // ════════════ CONSTANTS ════════════
 const PALETTE = ['#C8846A','#7A9E8E','#B8A87A','#8A7BAE','#6A8FAE','#AE7A8A','#7AAE96','#AE957A','#9E8E7A','#7AAEBE','#BE9E7A','#8EAE7A'];
+// Colores fuertes y distintos específicamente para los promedios de dirección
+const PROM_PALETTE = ['#8A3A2A', '#3A7A5E', '#4A6A8A', '#8A6A2A', '#7A4A6A', '#3A6A5E']; 
 const PWD = 'Infocus123';
 
 // ════════════ STATE ════════════
 let REPORT_DATE = new Date();
-let DEPTS=['Compras AS y Corp','Compras Cedis y Trafico','Compras','Flotilla','Imprenta','Mantenimiento','Obra','SECOM'];
-let QUESTIONS=[
-  '¿Qué tan fácil es trabajar con el área para cumplir los objetivos de tu área?',
-  '¿Qué tan clara y efectiva es la comunicación con esta área?',
-  '¿Qué tan claro es el proceso para solicitar soporte o seguimiento a una solicitud?',
-  '¿Que tan claros son los procesos, las políticas y lineamientos que le aplican a tu área?',
-  '¿Como calificarías los tiempos de respuesta?',
-  '¿Como calificarías la calidad del servicio o solución proporcionado?'
-];
-let SCORES=[
-  [7.9,8.6,8.0,8.7,9.1,8.5,7.9,8.4],
-  [7.6,9.0,7.7,8.4,9.1,8.3,7.4,8.3],
-  [7.6,8.9,7.7,8.7,9.2,9.4,7.7,8.3],
-  [7.7,9.4,8.1,8.6,9.0,9.0,8.1,8.2],
-  [7.3,8.3,7.4,8.4,9.0,7.8,7.0,8.3],
-  [7.6,8.7,7.7,8.6,9.3,8.2,7.5,8.2]
-];
-let AVERAGES=DEPTS.map((_,di)=>+(SCORES.reduce((s,q)=>s+q[di],0)/SCORES.length).toFixed(2));
-let COMMENTS={
-  'Compras AS y Corp':['Tiempo de respuesta más rápida y clara','Políticas actuales y apoyo en el abasto de mercancía','Mejorar la negociación con proveedores'],
-  'Compras Cedis y Trafico':['Hasta el momento hemos trabajado bien','Mejorar en los tiempos de respuesta'],
-  'Compras':['Se tiene mucho desabasto de mercancía','Más rapidez en devoluciones, cambios o mermas con los proveedores'],
-  'Flotilla':['Que conozcan más las necesidades de la sucursal','Revisar los indicadores de rendimiento'],
-  'Imprenta':['Mejorar los tiempos de respuesta','Buena atención en general'],
-  'Mantenimiento':['Más rapidez en los servicios en la medida de lo posible','Buena área que brinda buen servicio'],
-  'Obra':['Mejor atención y respuesta','Transparencia en cotizaciones (son muy caras en lo general)'],
-  'SECOM':['Que vieran el negocio como uno mismo y buscaran el beneficio para el grupo','Agendar citas para recibo en Cedis']
-};
 
-let activeFilters = new Set(['Todos']);
-let activeDept=null, activeCat=null;
-let barChart,radarChart,lineChart;
+// Estado limpio inicial sin mock data
+let DIRS = [];
+let DEPTS = [];
+let DEPT_TO_DIR = {};
+let QUESTIONS = [];
+let SCORES = [];
+let AVERAGES = [];
+let COMMENTS = {};
+
+let activeDirs = new Set(['Todas']);
+let activeDepts = new Set(['Todos']);
+let barChart, radarChart, lineChart;
+
+// ════════════ INYECCIÓN DE PROMEDIOS POR DIRECCIÓN ════════════
+function injectDirectionAverages() {
+  if (DEPTS.length === 0) return; // Salir si no hay datos
+
+  const dirs = Array.from(new Set(Object.values(DEPT_TO_DIR)));
+  
+  dirs.forEach(dir => {
+    const promName = `PROM. ${dir}`;
+    
+    if (!DEPTS.includes(promName)) {
+      DEPTS.push(promName);
+      DEPT_TO_DIR[promName] = dir;
+      COMMENTS[promName] = []; 
+    }
+
+    const dirDepts = DEPTS.filter(d => DEPT_TO_DIR[d] === dir && !d.startsWith('PROM. '));
+    const diProm = DEPTS.indexOf(promName);
+
+    SCORES.forEach((qScores) => {
+       const validScores = dirDepts.map(d => qScores[DEPTS.indexOf(d)]).filter(v => v !== null && v !== undefined);
+       const avg = validScores.length ? validScores.reduce((a,b)=>a+b,0)/validScores.length : null;
+       qScores[diProm] = avg !== null ? +(avg.toFixed(2)) : null;
+    });
+  });
+
+  AVERAGES = DEPTS.map((_, di) => {
+    const vals = SCORES.map(q => q[di]).filter(v => v !== null);
+    return vals.length ? +(vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(2) : 0;
+  });
+}
 
 function updateSubtitle(){
+  if (DEPTS.length === 0) {
+    document.getElementById('dashSubtitle').textContent = "Aún no hay datos. Haz clic en 'Importar archivo' para comenzar.";
+    return;
+  }
+  
   const opts = { month: 'long', year: 'numeric' };
   const dStr = REPORT_DATE.toLocaleDateString('es-ES', opts);
   const capDate = dStr.charAt(0).toUpperCase() + dStr.slice(1);
-  document.getElementById('dashSubtitle').textContent = `${DEPTS.length} departamentos evaluados · ${QUESTIONS.length} preguntas · ${capDate}`;
+  const realDeptsCount = DEPTS.filter(d => !d.startsWith('PROM. ')).length;
+  document.getElementById('dashSubtitle').textContent = `${realDeptsCount} departamentos · ${DIRS.length} direcciones · ${QUESTIONS.length} preguntas · ${capDate}`;
 }
 
 // ════════════ LOGIN ════════════
@@ -460,260 +485,482 @@ const _lp=document.getElementById('loginPwd'); if(_lp) _lp.addEventListener('key
 // ════════════ INIT ════════════
 function initDashboard(){
   updateSubtitle();
-  buildFilterBar();
-  const fArr = Array.from(activeFilters);
-  renderKPIs(fArr);
-  renderTopBottom(fArr);
-  renderBarChart(fArr);
-  renderRadarChart(fArr);
-  renderLineChart(fArr);
-  renderRankingList();
-  renderDetailTable(fArr);
-  renderDeptTabs();
+  buildFilters();
+  updateAllViews();
   const _bi=document.getElementById('btnImport'); if(_bi)_bi.addEventListener('click', openImportModal);
   const _bs=document.getElementById('btnShare');  if(_bs)_bs.addEventListener('click', openShareModal);
   wireModalButtons();
   const _fi=document.getElementById('fileInput'); if(_fi)_fi.addEventListener('change', e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); });
   
-  // Agregar listener para recalcular truncados cuando se redimensiona la ventana
   window.addEventListener('resize', () => { requestAnimationFrame(markTruncated); });
 }
 
-// ════════════ FILTER BAR (MULTI-SELECT) ════════════
-function buildFilterBar(){
-  const fb=document.getElementById('filterBar');
-  fb.innerHTML=`<span class="filter-label">Filtrar por departamento:</span>`;
-  const allDepts=['Todos',...DEPTS];
-  allDepts.forEach(d=>{
-    const btn=document.createElement('button');
-    btn.className='filter-chip'+(activeFilters.has(d)?' active':'');
-    btn.textContent=d;
-    btn.addEventListener('click',()=>{
-      if(d === 'Todos'){
-        activeFilters.clear();
-        activeFilters.add('Todos');
+// ════════════ FILTERS (DIR & DEPT) ════════════
+function getAllowedDirs() {
+  return activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
+}
+
+function getVisibleDepts() {
+  const allowedDirs = getAllowedDirs();
+  const deptsInDirs = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
+  
+  if (activeDepts.has('Todos')) {
+    // Si elige "Todos", mostramos solo los departamentos reales para no saturar
+    return deptsInDirs.filter(d => !d.startsWith('PROM. '));
+  }
+  return deptsInDirs.filter(d => activeDepts.has(d));
+}
+
+function getDeptsGroupedByDir(deptList) {
+  const groups = {};
+  deptList.forEach(d => {
+    const dir = DEPT_TO_DIR[d] || 'General';
+    if(!groups[dir]) groups[dir] = [];
+    groups[dir].push(d);
+  });
+  return groups;
+}
+
+function buildFilters() {
+  // 1. DIRS FILTER BAR
+  const fbDir = document.getElementById('filterBarDir');
+  fbDir.innerHTML = `<span class="filter-label">Filtrar por Dirección:</span>`;
+  
+  if (DIRS.length === 0) return; // Si está limpio, no mostrar botones fantasma
+
+  const allDirs = ['Todas', ...DIRS];
+  allDirs.forEach(dir => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-chip filter-chip-dir truncated' + (activeDirs.has(dir) ? ' active' : '');
+    btn.textContent = dir;
+    btn.title = dir;
+    btn.addEventListener('click', () => {
+      if(dir === 'Todas'){
+        activeDirs.clear();
+        activeDirs.add('Todas');
       } else {
-        activeFilters.delete('Todos');
-        if(activeFilters.has(d)){
-          activeFilters.delete(d);
-          if(activeFilters.size === 0) activeFilters.add('Todos');
+        activeDirs.delete('Todas');
+        if(activeDirs.has(dir)){
+          activeDirs.delete(dir);
+          if(activeDirs.size === 0) activeDirs.add('Todas');
         } else {
-          activeFilters.add(d);
+          activeDirs.add(dir);
         }
       }
-      buildFilterBar();
-      const fArr = Array.from(activeFilters);
-      renderKPIs(fArr); 
-      renderTopBottom(fArr);
-      renderBarChart(fArr); 
-      renderRadarChart(fArr); 
-      renderLineChart(fArr);
-      renderDetailTable(fArr);
+      buildFilters(); 
+      updateAllViews();
     });
-    fb.appendChild(btn);
+    fbDir.appendChild(btn);
   });
-}
-function deptColor(d){return PALETTE[DEPTS.indexOf(d)%PALETTE.length]||PALETTE[0];}
-function filteredDepts(fArr){return fArr.includes('Todos') ? DEPTS : fArr;}
 
-// ════════════ KPI CARDS ════════════
-function renderKPIs(fArr){
-  const grid=document.getElementById('kpiGrid');
-  const depts=filteredDepts(fArr);
-  const sorted=[...DEPTS].sort((a,b)=>AVERAGES[DEPTS.indexOf(b)]-AVERAGES[DEPTS.indexOf(a)]);
-  grid.innerHTML=depts.map(d=>{
-    const di=DEPTS.indexOf(d), avg=AVERAGES[di], col=deptColor(d), rank=sorted.indexOf(d)+1;
-    return `<div class="kpi-card" style="--ca:${col}">
-      <div class="kpi-rank">#${rank} de ${DEPTS.length}</div>
-      <div class="kpi-dept" title="${d}">${d}</div>
-      <div class="kpi-score">${avg.toFixed(1)}<sup>/10</sup></div>
-      <div style="font-size:.68rem;color:var(--muted);margin-top:3px;">Promedio general</div>
-      <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${avg*10}%"></div></div>
-    </div>`;
-  }).join('');
-  requestAnimationFrame(markTruncated);
-}
-
-// ════════════ TOP 3 STRENGTHS / WEAKNESSES ════════════
-function renderTopBottom(fArr){
-  const depts = filteredDepts(fArr);
+  // 2. DEPTS FILTER BAR (Grouped)
+  const fbDept = document.getElementById('filterBarDept');
+  fbDept.innerHTML = `<div style="display:flex; width:100%; align-items:center; gap:10px; margin-bottom:8px;">
+    <span class="filter-label" style="margin:0;">Filtrar por Entidad:</span>
+    <button class="filter-chip ${activeDepts.has('Todos') ? 'active' : ''}" id="btnDeptTodos">Todos los Deptos</button>
+  </div>`;
   
-  const qAvgs = QUESTIONS.map((q, qi) => {
-    const vals = depts.map(d => SCORES[qi][DEPTS.indexOf(d)]).filter(v => v !== null);
-    const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
-    return { q, qi, avg };
+  document.getElementById('btnDeptTodos').addEventListener('click', () => {
+    activeDepts.clear();
+    activeDepts.add('Todos');
+    buildFilters();
+    updateAllViews();
   });
 
-  qAvgs.sort((a,b) => b.avg - a.avg);
+  const allowedDirs = getAllowedDirs();
+  const allAllowedDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
+  const groups = getDeptsGroupedByDir(allAllowedDepts);
 
-  const top = qAvgs.slice(0, 3);
-  const bottom = [...qAvgs].reverse().slice(0, 3);
+  for (const [dir, dList] of Object.entries(groups)) {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'filter-dir-group';
+    groupDiv.innerHTML = `<span class="filter-dir-group-title truncated" title="${dir}">${dir}</span>`;
+    
+    // Generar el botón de PROMEDIO primero
+    const promName = `PROM. ${dir}`;
+    if (DEPTS.includes(promName)) {
+      const btnProm = document.createElement('button');
+      btnProm.className = 'filter-chip filter-chip-prom truncated' + (activeDepts.has(promName) ? ' active' : '');
+      const pColor = deptColor(promName);
+      btnProm.style.setProperty('--prom-col', pColor); 
+      btnProm.innerHTML = `⭐ Promedio`;
+      btnProm.title = `Promedio general de ${dir}`;
+      btnProm.addEventListener('click', () => {
+        activeDepts.delete('Todos');
+        if(activeDepts.has(promName)){
+          activeDepts.delete(promName);
+          if(activeDepts.size === 0) activeDepts.add('Todos');
+        } else {
+          activeDepts.add(promName);
+        }
+        buildFilters();
+        updateAllViews();
+      });
+      groupDiv.appendChild(btnProm);
+    }
 
-  const buildHTML = (arr, colorClass) => arr.map(item => `
-    <div class="rank-item">
-      <div class="rank-q-wrap" title="${item.q.replace(/"/g,'&quot;')}">
-        <span class="rank-q-inner">P${item.qi+1} · ${item.q}</span>
-      </div>
-      <div class="rank-badges">
-        <span class="rank-badge ${colorClass}">${item.avg.toFixed(2)}</span>
-      </div>
-    </div>
-  `).join('');
+    // Generar el resto de departamentos reales
+    dList.forEach(d => {
+      if (d.startsWith('PROM. ')) return; 
+      
+      const btn = document.createElement('button');
+      btn.className = 'filter-chip truncated' + (activeDepts.has(d) ? ' active' : '');
+      btn.textContent = d;
+      btn.title = d;
+      btn.addEventListener('click', () => {
+        activeDepts.delete('Todos');
+        if(activeDepts.has(d)){
+          activeDepts.delete(d);
+          if(activeDepts.size === 0) activeDepts.add('Todos');
+        } else {
+          activeDepts.add(d);
+        }
+        buildFilters();
+        updateAllViews();
+      });
+      groupDiv.appendChild(btn);
+    });
+    fbDept.appendChild(groupDiv);
+  }
+}
 
-  document.getElementById('topList').innerHTML = buildHTML(top, 'badge-best');
-  document.getElementById('bottomList').innerHTML = buildHTML(bottom, 'badge-worst');
+function deptColor(d) { 
+  if (d.startsWith('PROM. ')) {
+    const dirName = d.replace('PROM. ', '');
+    const idx = DIRS.indexOf(dirName);
+    return PROM_PALETTE[idx % PROM_PALETTE.length] || '#1A1714'; 
+  }
+  return PALETTE[DEPTS.indexOf(d) % PALETTE.length] || PALETTE[0]; 
+}
+
+function updateAllViews() {
+  const orderedDepts = getVisibleDepts(); 
+  renderKPIs(orderedDepts);
+  renderBarChart(orderedDepts);
+  renderRadarChart(orderedDepts);
+  renderLineChart(orderedDepts);
+  renderRankingList(orderedDepts);
+  renderDetailTable(orderedDepts);
+  renderDeptTabs(orderedDepts);
+}
+
+// ════════════ KPI CARDS (Grouped) ════════════
+function renderKPIs(orderedDepts){
+  const container = document.getElementById('kpiContainer');
+  container.innerHTML = '';
+  
+  if(orderedDepts.length === 0) return;
+
+  const groups = getDeptsGroupedByDir(orderedDepts);
+  const sortedGlobal = [...DEPTS].filter(d=>!d.startsWith('PROM. ')).sort((a,b)=>AVERAGES[DEPTS.indexOf(b)]-AVERAGES[DEPTS.indexOf(a)]);
+
+  for (const [dir, dList] of Object.entries(groups)) {
+    let sectionHTML = `<div class="kpi-dir-section">
+      <h3 class="kpi-dir-title truncated" title="${dir}">${dir}</h3>
+      <div class="kpi-grid">`;
+    
+    // Primero pintar los promedios (si están seleccionados)
+    const promDepts = dList.filter(d => d.startsWith('PROM. '));
+    const realDepts = dList.filter(d => !d.startsWith('PROM. '));
+
+    [...promDepts, ...realDepts].forEach(d => {
+      const di = DEPTS.indexOf(d), avg = AVERAGES[di], col = deptColor(d);
+      const isProm = d.startsWith('PROM. ');
+      const rankHtml = isProm ? '' : `<div class="kpi-rank">#${sortedGlobal.indexOf(d)+1} de ${sortedGlobal.length}</div>`;
+      const displayName = isProm ? `⭐ Promedio ${dir}` : d;
+
+      sectionHTML += `<div class="kpi-card" style="--ca:${col}">
+        ${rankHtml}
+        <div class="kpi-dept truncated" title="${displayName.replace(/"/g,'&quot;')}"><span class="kpi-dept-inner">${displayName}</span></div>
+        <div class="kpi-score">${avg.toFixed(1)}<sup>/10</sup></div>
+        <div style="font-size:.68rem;color:var(--muted);margin-top:3px;">Promedio general</div>
+        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${avg*10}%"></div></div>
+      </div>`;
+    });
+    
+    sectionHTML += `</div></div>`;
+    container.innerHTML += sectionHTML;
+  }
   requestAnimationFrame(markTruncated);
 }
 
-// ════════════ BAR CHART ════════════
-function renderBarChart(fArr){
-  const depts=filteredDepts(fArr);
+// ════════════ CHARTS ════════════
+function renderBarChart(orderedDepts){
   const ctx=document.getElementById('barChart').getContext('2d');
   if(barChart)barChart.destroy();
+  if(orderedDepts.length === 0) return;
+
   barChart=new Chart(ctx,{
     type:'bar',
     data:{
-      labels:depts.map(d=>d.length>17?d.substring(0,15)+'…':d),
-      datasets:[{data:depts.map(d=>AVERAGES[DEPTS.indexOf(d)]),backgroundColor:depts.map(d=>deptColor(d)+'CC'),borderColor:depts.map(d=>deptColor(d)),borderWidth:2,borderRadius:8,borderSkipped:false}]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:10,grid:{color:'#E2DDD5'},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:10},maxRotation:30}}}}
-  });
-}
-
-// ════════════ RADAR CHART ════════════
-function renderRadarChart(fArr){
-  const depts=filteredDepts(fArr);
-  const shortQ=QUESTIONS.map((_,i)=>`P${i+1}`);
-  const ctx=document.getElementById('radarChart').getContext('2d');
-  if(radarChart)radarChart.destroy();
-  radarChart=new Chart(ctx,{
-    type:'radar',
-    data:{
-      labels:shortQ,
-      datasets:depts.map(d=>{
-        const di=DEPTS.indexOf(d),col=deptColor(d);
-        return{label:d,data:SCORES.map(q=>q[di]??null),backgroundColor:col+'28',borderColor:col,borderWidth:2,pointBackgroundColor:col,pointRadius:3,spanGaps:true};
-      })
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{min:5,max:10,ticks:{stepSize:1,font:{size:9},backdropColor:'transparent'},grid:{color:'#E2DDD5'}}}}
-  });
-  const leg=document.getElementById('radarLegend');
-  if(leg) leg.innerHTML=depts.map(d=>{
-    const col=deptColor(d);
-    return `<span class="rl-chip"><span class="rl-dot" style="background:${col};box-shadow:0 0 0 2px ${col}33"></span>${d}</span>`;
-  }).join('');
-}
-
-// ════════════ LINE CHART ════════════
-function renderLineChart(fArr){
-  const depts=filteredDepts(fArr);
-  const labels=QUESTIONS.map((_,i)=>`P${i+1}`);
-  const ctx=document.getElementById('lineChart').getContext('2d');
-  if(lineChart)lineChart.destroy();
-  lineChart=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels,
-      datasets:depts.map(d=>{
-        const di=DEPTS.indexOf(d),col=deptColor(d);
-        return{label:d.length>16?d.substring(0,14)+'…':d,data:SCORES.map(q=>q[di]??null),borderColor:col,backgroundColor:col+'18',borderWidth:2,pointRadius:4,pointBackgroundColor:col,tension:.35,fill:depts.length===1,spanGaps:true};
-      })
+      labels: orderedDepts, // Pasamos el nombre completo para que Tooltip lo muestre
+      datasets:[{
+        data:orderedDepts.map(d=>AVERAGES[DEPTS.indexOf(d)]),
+        backgroundColor:orderedDepts.map(d=>deptColor(d)+'CC'),
+        borderColor:orderedDepts.map(d=>deptColor(d)),
+        borderWidth:2,
+        borderRadius:8,
+        borderSkipped:false
+      }]
     },
     options:{
       responsive:true,
       maintainAspectRatio:false,
       plugins:{
-        legend:{ display:true, position:'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } }
+        legend:{display:false}
       },
+      scales:{
+        y:{min:0,max:10,grid:{color:'#E2DDD5'},ticks:{font:{size:11}}},
+        x:{
+          grid:{display:false},
+          ticks:{
+            font:{size:10},
+            maxRotation:30,
+            callback: function(val, index) {
+              let label = orderedDepts[index];
+              return label.length > 15 ? label.substring(0, 15) + '…' : label;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderRadarChart(orderedDepts){
+  const shortQ=QUESTIONS.map((_,i)=>`P${i+1}`);
+  const ctx=document.getElementById('radarChart').getContext('2d');
+  if(radarChart)radarChart.destroy();
+  
+  const leg=document.getElementById('radarLegend');
+  if(orderedDepts.length === 0) {
+    if(leg) leg.innerHTML = '';
+    return;
+  }
+
+  radarChart=new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:shortQ,
+      datasets:orderedDepts.map(d=>{
+        const di=DEPTS.indexOf(d),col=deptColor(d);
+        const isProm = d.startsWith('PROM. ');
+        return {
+          label: d, // Pasamos el nombre completo
+          data:SCORES.map(q=>q[di]??null),
+          backgroundColor:col+(isProm?'1A':'28'),
+          borderColor:col,
+          borderWidth:isProm?3:2,
+          borderDash:isProm?[5,5]:[],
+          pointBackgroundColor:col,
+          pointRadius:isProm?4:3,
+          spanGaps:true
+        };
+      })
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{r:{min:5,max:10,ticks:{stepSize:1,font:{size:9},backdropColor:'transparent'},grid:{color:'#E2DDD5'}}}
+    }
+  });
+  
+  if(leg) leg.innerHTML=orderedDepts.map(d=>{
+    const col=deptColor(d);
+    const isProm = d.startsWith('PROM. ');
+    return `<span class="rl-chip truncated" title="${d.replace(/"/g,'&quot;')}" style="${isProm?'font-weight:700;':''}"><span class="rl-dot" style="background:${col};box-shadow:0 0 0 2px ${col}33"></span>${d}</span>`;
+  }).join('');
+}
+
+function renderLineChart(orderedDepts){
+  const labels=QUESTIONS.map((_,i)=>`P${i+1}`);
+  const ctx=document.getElementById('lineChart').getContext('2d');
+  if(lineChart)lineChart.destroy();
+  if(orderedDepts.length === 0) return;
+
+  lineChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:orderedDepts.map(d=>{
+        const di=DEPTS.indexOf(d),col=deptColor(d);
+        const isProm = d.startsWith('PROM. ');
+        return {
+          label: d, // Nombre completo asegurado para leyenda y tooltip
+          data:SCORES.map(q=>q[di]??null),
+          borderColor:col,
+          backgroundColor:col+'18',
+          borderWidth:isProm?3:2,
+          borderDash:isProm?[5,5]:[],
+          pointRadius:isProm?5:4,
+          pointBackgroundColor:col,
+          tension:.35,
+          fill:orderedDepts.length===1,
+          spanGaps:true
+        };
+      })
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{ legend:{ display:true, position:'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } } },
       scales:{y:{min:5,max:10,grid:{color:'#E2DDD5'},ticks:{font:{size:11}}},x:{grid:{color:'#E2DDD5'},ticks:{font:{size:11}}}}
     }
   });
 }
 
 // ════════════ RANKING LIST ════════════
-function renderRankingList(){
+function renderRankingList(orderedDepts){
   const list=document.getElementById('rankList');
+  if(!orderedDepts.length) { list.innerHTML=''; return; }
+
   list.innerHTML=QUESTIONS.map((q,qi)=>{
-    const vals=DEPTS.map((d,di)=>({d,v:SCORES[qi][di]}))
+    const vals=orderedDepts.map(d=>({d, v:SCORES[qi][DEPTS.indexOf(d)]}))
       .filter(x=>x.v!==null&&x.v!==undefined)
       .sort((a,b)=>b.v-a.v);
     if(!vals.length) return '';
     const best=vals[0], worst=vals[vals.length-1];
     return `<div class="rank-item">
-      <div class="rank-q-wrap" title="${q.replace(/"/g,'&quot;')}"><span class="rank-q-inner">P${qi+1} · ${q}</span></div>
+      <div class="rank-q-wrap truncated" title="${q.replace(/"/g,'&quot;')}"><span class="rank-q-inner">P${qi+1} · ${q}</span></div>
       <div class="rank-badges">
-        <span class="rank-badge badge-best" title="${best.d}">↑ ${best.d.length>16?best.d.substring(0,14)+'…':best.d} ${best.v.toFixed(1)}</span>
-        <span class="rank-badge badge-worst" title="${worst.d}">↓ ${worst.d.length>16?worst.d.substring(0,14)+'…':worst.d} ${worst.v.toFixed(1)}</span>
+        <span class="rank-badge badge-best truncated" title="${best.d}">↑ ${best.d} ${best.v.toFixed(1)}</span>
+        <span class="rank-badge badge-worst truncated" title="${worst.d}">↓ ${worst.d} ${worst.v.toFixed(1)}</span>
       </div>
     </div>`;
   }).join('');
   requestAnimationFrame(markTruncated);
 }
 
-// ════════════ TOOLTIPS DINÁMICOS ════════════
+// ════════════ TOOLTIPS Y ANIMACIÓN SCROLL DINÁMICOS ════════════
 function markTruncated(){
-  document.querySelectorAll('.rank-q-wrap, .q-cell, thead th, .kpi-dept, .rank-badge').forEach(el=>{
-    const inner = el.querySelector('.rank-q-inner, .q-cell-inner') || el;
-    // Compara si el texto interno es más grande que su contenedor
+  const selectors = '.rank-q-wrap, .q-cell, thead th, .kpi-dept, .rank-badge, .chart-title, .filter-chip, .filter-dir-group-title, .rl-chip';
+  document.querySelectorAll(selectors).forEach(el=>{
+    const inner = el.querySelector('.rank-q-inner, .q-cell-inner, .kpi-dept-inner') || el;
     const isTruncated = inner.scrollWidth > el.clientWidth;
     el.classList.toggle('truncated', isTruncated);
   });
 }
 
-// ════════════ DETAIL TABLE ════════════
-function renderDetailTable(fArr){
-  const depts=filteredDepts(fArr);
+// ════════════ DETAIL TABLE (Grouped by Dir) ════════════
+function renderDetailTable(orderedDepts){
   const tbl=document.getElementById('detailTable');
-  tbl.querySelector('thead').innerHTML=`<tr><th class="q-col">Pregunta</th>${depts.map(d=>`<th title="${d}">${d.length>14?d.substring(0,13)+'…':d}</th>`).join('')}<th>Promedio</th></tr>`;
+  if(!orderedDepts.length) { tbl.querySelector('thead').innerHTML=''; tbl.querySelector('tbody').innerHTML=''; return; }
+
+  const groups = getDeptsGroupedByDir(orderedDepts);
+  
+  let tr1 = `<tr><th rowspan="2" class="q-col">Pregunta</th>`;
+  let tr2 = `<tr>`;
+  
+  const flatCols = []; 
+
+  for(const [dir, dList] of Object.entries(groups)) {
+    tr1 += `<th colspan="${dList.length}" class="truncated" title="${dir}" style="text-align:center; border-bottom:1px solid var(--border); background:var(--surface)">${dir}</th>`;
+    dList.forEach(d => {
+      flatCols.push(d);
+      const displayName = d.startsWith('PROM. ') ? '⭐ Promedio' : d;
+      tr2 += `<th class="truncated" title="${d}">${displayName}</th>`;
+    });
+  }
+  tr1 += `<th rowspan="2" class="truncated" title="Promedio Visible">Promedio Visible</th></tr>`;
+  tr2 += `</tr>`;
+  
+  tbl.querySelector('thead').innerHTML = tr1 + tr2;
+
   let body='';
   QUESTIONS.forEach((q,qi)=>{
-    const vals=depts.map(d=>SCORES[qi][DEPTS.indexOf(d)]);
-    const numVals=vals.filter(v=>v!==null);
-    const avg=numVals.length?(numVals.reduce((s,v)=>s+v,0)/numVals.length).toFixed(2):'—';
-    body+=`<tr><td class="q-cell" title="${q.replace(/"/g,'&quot;')}"><span class="q-cell-inner">P${qi+1} · ${q}</span></td>${vals.map(v=>{if(v===null)return`<td>—</td>`;const cls=v>=9?'score-high':v>=8?'score-mid':'score-low';return`<td><span class="score-pill ${cls}">${v.toFixed(1)}</span></td>`;}).join('')}<td><b>${avg}</b></td></tr>`;
+    const vals = flatCols.map(d=>SCORES[qi][DEPTS.indexOf(d)]);
+    const numVals = vals.filter(v=>v!==null);
+    const avg = numVals.length?(numVals.reduce((s,v)=>s+v,0)/numVals.length).toFixed(2):'—';
+    
+    body+=`<tr>
+      <td class="q-cell truncated" title="${q.replace(/"/g,'&quot;')}"><span class="q-cell-inner">P${qi+1} · ${q}</span></td>
+      ${vals.map(v=>{
+        if(v===null)return`<td>—</td>`;
+        const cls=v>=9?'score-high':v>=8?'score-mid':'score-low';
+        return`<td><span class="score-pill ${cls}">${v.toFixed(1)}</span></td>`;
+      }).join('')}
+      <td><b>${avg}</b></td>
+    </tr>`;
   });
-  body+=`<tr style="background:var(--surface2);font-weight:600"><td style="font-weight:600;color:var(--text);font-size:.78rem">Promedio General</td>${depts.map(d=>{const avg=AVERAGES[DEPTS.indexOf(d)];const cls=avg>=9?'score-high':avg>=8?'score-mid':'score-low';return`<td><span class="score-pill ${cls}">${avg.toFixed(2)}</span></td>`;}).join('')}<td><b>${(depts.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/depts.length).toFixed(2)}</b></td></tr>`;
+  
+  body+=`<tr style="background:var(--surface2);font-weight:600">
+    <td class="truncated" title="Promedio General" style="font-weight:600;color:var(--text);font-size:.78rem;text-align:left;">Promedio General</td>
+    ${flatCols.map(d=>{
+      const avg=AVERAGES[DEPTS.indexOf(d)];
+      const cls=avg>=9?'score-high':avg>=8?'score-mid':'score-low';
+      return`<td><span class="score-pill ${cls}">${avg.toFixed(2)}</span></td>`;
+    }).join('')}
+    <td><b>${(flatCols.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/flatCols.length).toFixed(2)}</b></td>
+  </tr>`;
+  
   tbl.querySelector('tbody').innerHTML=body;
   requestAnimationFrame(markTruncated);
 }
 
-// ════════════ COMMENTS ════════════
+// ════════════ COMMENTS (Grouped) ════════════
 function classifyComment(text){
   if(!text) return 'Sin comentarios';
   const t=text.toLowerCase().trim();
+  
   if(/^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x)$/.test(t)) return 'Sin comentarios';
-  if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar/)) return 'Tiempos de respuesta';
-  if(t.match(/comunic|avisar|claro|transparencia|información/)) return 'Comunicación';
+  
+  // Categorías súper detalladas y específicas
+  if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar/)) return 'Tiempos de Respuesta';
+  if(t.match(/comunic|avisar|claro|transparencia|información|notificar/)) return 'Comunicación y Claridad';
   if(t.match(/abasto|mercancía|proveedor|merma|desabasto|material|inventario/)) return 'Abasto y Proveedores';
-  if(t.match(/proceso|política|lineamiento|cita|cedis|indicador/)) return 'Procesos y Políticas';
+  if(t.match(/proceso|política|lineamiento|cita|cedis|indicador|auditor/)) return 'Procesos y Políticas';
   if(t.match(/costo|cotizaci|precio|cara|caro|presupuesto/)) return 'Costos y Presupuestos';
-  if(t.match(/necesidad|negocio|beneficio|sucursal|rendimiento/)) return 'Visión de Negocio';
-  if(t.match(/atención|trato|empatía|amable|respuesta/)) return 'Atención y Trato';
-  if(t.match(/calidad|excelente|buen|bien|apoyo|servicio/)) return 'Calidad de servicio';
-  if(t.match(/mejorar|falta|oportunidad|detalle/)) return 'Áreas de mejora';
-  return 'Observaciones específicas';
+  if(t.match(/necesidad|negocio|beneficio|sucursal|rendimiento|ventas/)) return 'Visión de Negocio';
+  if(t.match(/atención|trato|empatía|amable|respuesta|apoyo/)) return 'Atención y Trato';
+  if(t.match(/calidad|excelente|buen|bien|servicio/)) return 'Calidad de Servicio';
+  if(t.match(/mejorar|falta|oportunidad|detalle/)) return 'Áreas de Mejora Detectadas';
+  if(t.match(/capacitaci|entrenamiento|enseñar|curso/)) return 'Capacitación y Desarrollo';
+  if(t.match(/herramienta|sistema|equipo|plataforma|software/)) return 'Herramientas y Sistemas';
+  
+  // Reemplazo estricto en vez de algo general
+  return 'Requerimientos Operativos'; 
 }
 
-function renderDeptTabs(){
+function renderDeptTabs(orderedDepts){
   const c=document.getElementById('deptTabs');
   c.innerHTML='';
-  DEPTS.forEach((d,di)=>{
-    const col=PALETTE[di%PALETTE.length];
-    const btn=document.createElement('button');
-    btn.className='dept-tab';
-    btn.style.setProperty('--tc',col);
-    btn.innerHTML=`<span class="dot"></span>${d}`;
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.dept-tab').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      renderCatChips(d,di);
-      renderComments(d,null);
+  
+  // Ignorar promedios fantasma para los comentarios
+  const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
+  if(realDepts.length === 0) return;
+
+  const groups = getDeptsGroupedByDir(realDepts);
+  
+  for (const [dir, dList] of Object.entries(groups)) {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'filter-dir-group';
+    groupDiv.innerHTML = `<span class="filter-dir-group-title truncated" title="${dir}">${dir}</span>`;
+    
+    dList.forEach(d => {
+      const col = deptColor(d);
+      const btn = document.createElement('button');
+      btn.className = 'dept-tab truncated';
+      btn.style.setProperty('--tc', col);
+      btn.title = d;
+      btn.innerHTML = `<span class="dot"></span>${d}`;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderCatChips(d);
+        renderComments(d, null);
+      });
+      groupDiv.appendChild(btn);
     });
-    c.appendChild(btn);
-  });
+    c.appendChild(groupDiv);
+  }
+  
+  document.getElementById('commentList').innerHTML='<div class="no-comments">Selecciona un departamento</div>';
+  document.getElementById('catChips').innerHTML='';
+  requestAnimationFrame(markTruncated);
 }
 
-function renderCatChips(dept,di){
+function renderCatChips(dept){
   const comments=COMMENTS[dept]||[];
   const cats={};
   comments.forEach(c=>{const cat=classifyComment(c);(cats[cat]=cats[cat]||[]).push(c);});
@@ -722,7 +969,8 @@ function renderCatChips(dept,di){
 
   const makeChip=(label,count,onClick)=>{
     const btn=document.createElement('button');
-    btn.className='cat-chip';
+    btn.className='cat-chip truncated';
+    btn.title = label;
     btn.innerHTML=`${label}<span class="cnt">${count}</span>`;
     btn.addEventListener('click',()=>{
       document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
@@ -739,13 +987,14 @@ function renderCatChips(dept,di){
   Object.entries(cats).sort((a,b)=>b[1].length-a[1].length).forEach(([cat,list])=>{
     container.appendChild(makeChip(cat,list.length,()=>renderComments(dept,cat)));
   });
+  requestAnimationFrame(markTruncated);
 }
 
 function renderComments(dept,cat){
   const list=document.getElementById('commentList');
   const all=COMMENTS[dept]||[];
   const filtered=cat?all.filter(c=>classifyComment(c)===cat):all;
-  const col=PALETTE[DEPTS.indexOf(dept)%PALETTE.length];
+  const col=deptColor(dept);
   if(!filtered.length){list.innerHTML='<div class="no-comments">Sin comentarios</div>';return;}
   list.innerHTML=filtered.map(c=>`<div class="comment-item" style="--al:${col}">${c}</div>`).join('');
 }
@@ -770,9 +1019,11 @@ async function generateReaderLink(){
 
   try {
     const payload = {
-      depts:    DEPTS,
+      dirs:     DIRS,
+      depts:    DEPTS.filter(d => !d.startsWith('PROM. ')), // Guardar solo los reales, los promedios se calculan al descargar
+      deptMap:  DEPT_TO_DIR,
       qs:       QUESTIONS,
-      scores:   JSON.stringify(SCORES), 
+      scores:   JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
       comments: COMMENTS,
       title:    document.getElementById('dashTitle').textContent,
       timestamp: REPORT_DATE.toISOString()
@@ -831,15 +1082,24 @@ async function tryLoadFromURL(){
 
     if(docSnap.exists()){
       const raw = docSnap.data();
+      
+      if(raw.dirs && raw.deptMap) {
+        DIRS = raw.dirs;
+        DEPT_TO_DIR = raw.deptMap;
+      } else {
+        DIRS = ['General'];
+        DEPT_TO_DIR = {};
+        raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General');
+      }
+
       DEPTS     = raw.depts;
       QUESTIONS = raw.qs;
       SCORES    = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
       COMMENTS  = raw.comments;
       if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
-      AVERAGES  = DEPTS.map((_,di)=>{
-        const vals=SCORES.map(q=>q[di]).filter(v=>v!==null);
-        return vals.length?+(vals.reduce((s,v)=>s+v,0)/vals.length).toFixed(2):0;
-      });
+      
+      // Asegurar que existan los promedios al cargar
+      injectDirectionAverages();
 
       const t = document.getElementById('dashTitle');
       if(t && raw.title) t.textContent = raw.title;
@@ -868,37 +1128,70 @@ function handleFile(file){
       const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
       const ws1=wb.Sheets[wb.SheetNames[0]];
       const s1=XLSX.utils.sheet_to_json(ws1,{header:1,defval:null,raw:true});
-      const hdr=s1[0]||[];
-      const newDepts=[];
-      for(let c=1;c<hdr.length;c++){if(hdr[c]&&String(hdr[c]).trim())newDepts.push(String(hdr[c]).trim());}
+      
+      const hdrDir = s1[0] || [];   // Fila 1
+      const hdrDept = s1[1] || [];  // Fila 2
+      
+      const newDirsSet = new Set();
+      const newDepts = [];
+      const newDeptToDir = {};
+      const validCols = []; 
+      
+      let currentDir = "General";
+      
+      // Leer hoja 1 (Scores)
+      for(let c=1; c<hdrDept.length; c++){
+        if(hdrDir[c] !== null && hdrDir[c] !== undefined && String(hdrDir[c]).trim() !== '') {
+          currentDir = String(hdrDir[c]).trim();
+        }
+        
+        const dNameCell = hdrDept[c];
+        if(dNameCell && String(dNameCell).trim()){
+          const dName = String(dNameCell).trim();
+          newDepts.push(dName);
+          newDeptToDir[dName] = currentDir;
+          newDirsSet.add(currentDir);
+          validCols.push({ colIndex: c, dName: dName });
+        }
+      }
+
       const newQ=[], newSc=[];
-      for(let r=1;r<s1.length;r++){
+      for(let r=2; r<s1.length; r++){ // Fila 3 en adelante
         const row=s1[r]||[];
         const cell=row[0];
         if(cell===null||cell===undefined)continue;
         const txt=String(cell).trim();
         if(!txt||!isNaN(Number(txt)))continue;
+        
         const vals=[];
-        for(let c=1;c<=newDepts.length;c++){
-          const v=row[c];
-          if(v===null||v===undefined||typeof v==='object'){vals.push(null);continue;}
+        validCols.forEach(vc => {
+          const v = row[vc.colIndex];
+          if(v===null||v===undefined||typeof v==='object'){ vals.push(null); return; }
           const str=String(v).trim().toUpperCase();
-          if(!str||str==='NA'){vals.push(null);continue;}
+          if(!str||str==='NA'){ vals.push(null); return; }
           const n=parseFloat(str.replace(',','.'));
           vals.push(isNaN(n)?null:n<=1?+(n*10).toFixed(2):+n.toFixed(2));
-        }
+        });
+        
         if(vals.every(v=>v===null))continue;
         newQ.push(txt);
         newSc.push(vals);
       }
-      const newComm={};newDepts.forEach(d=>{newComm[d]=[];});
+      
+      // Leer hoja 2 (Comentarios)
+      const newComm={}; newDepts.forEach(d=>{newComm[d]=[];});
       if(wb.SheetNames.length>1){
         const ws2=wb.Sheets[wb.SheetNames[1]];
         const s2=XLSX.utils.sheet_to_json(ws2,{header:1,defval:null});
-        const h2=s2[0]||[];
+        // Fila 2 de la Hoja 2 tiene los departamentos
+        const hdrDept2=s2[1]||[];
         const cDepts=[];
-        for(let c=0;c<h2.length;c++){if(h2[c])cDepts.push({name:String(h2[c]).trim(),col:c});}
-        for(let r=1;r<s2.length;r++){
+        
+        for(let c=1;c<hdrDept2.length;c++){
+          if(hdrDept2[c]) cDepts.push({name:String(hdrDept2[c]).trim(),col:c});
+        }
+        
+        for(let r=2;r<s2.length;r++){ // Fila 3 en adelante son comentarios
           const row=s2[r]||[];
           cDepts.forEach(({name,col})=>{
             const cell=row[col];
@@ -910,31 +1203,32 @@ function handleFile(file){
           });
         }
       }
+      
       closeImportModal();
-      rebuildDashboard(newDepts,newQ,newSc,newComm,file.name);
+      rebuildDashboard(Array.from(newDirsSet), newDepts, newDeptToDir, newQ, newSc, newComm, file.name);
       showToast(`✅ Datos cargados con éxito`,'ok');
     }catch(err){console.error(err);showToast('❌ Error en el archivo','err');}
   };
   reader.readAsArrayBuffer(file);
 }
 
-function rebuildDashboard(newDepts,newQ,newSc,newComm,fname){
-  DEPTS=newDepts;QUESTIONS=newQ;SCORES=newSc;COMMENTS=newComm;
+function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, fname){
+  DIRS = nDirs;
+  DEPTS = nDepts;
+  DEPT_TO_DIR = nMap;
+  QUESTIONS = nQ;
+  SCORES = nSc;
+  COMMENTS = nComm;
   REPORT_DATE = new Date();
-  AVERAGES=newDepts.map((_,di)=>{
-    const vals=newSc.map(q=>q[di]).filter(v=>v!==null);
-    return vals.length?+(vals.reduce((s,v)=>s+v,0)/vals.length).toFixed(2):0;
-  });
+  
+  injectDirectionAverages(); // Recalcular los promedios fantasma
+  
   document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
   
-  activeFilters.clear();
-  activeFilters.add('Todos');
-  activeDept=null;activeCat=null;
+  activeDirs.clear(); activeDirs.add('Todas');
+  activeDepts.clear(); activeDepts.add('Todos');
   
   initDashboard(); 
-  
-  document.getElementById('commentList').innerHTML='<div class="no-comments">Selecciona un departamento</div>';
-  document.getElementById('catChips').innerHTML='';
 }
 
 function showToast(msg,type=''){
