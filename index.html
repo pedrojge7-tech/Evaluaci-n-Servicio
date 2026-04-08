@@ -79,12 +79,12 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 /* Contenedor vertical simétrico para el filtro de departamentos */
 #filterBarDept {
   flex-direction: column; 
-  flex-wrap: nowrap; /* Evita que se hagan columnas horizontales */
+  flex-wrap: nowrap; 
   align-items: stretch;
   max-height: 350px; 
   overflow-y: auto;
-  overflow-x: hidden; /* Cero scroll horizontal */
-  padding-right: 8px; /* Espacio para el scrollbar */
+  overflow-x: hidden; 
+  padding-right: 8px; 
   -webkit-overflow-scrolling: touch;
 }
 #filterBarDept::-webkit-scrollbar{width:4px;}
@@ -99,7 +99,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .filter-chip.active{background:var(--text);color:#fff;border-color:var(--text);}
 .filter-chip-dir.active { background: var(--c2); border-color: var(--c2); }
 
-/* Especial style para los chips de Promedios */
+/* Especial style para los chips de Promedios (color dinámico) */
 .filter-chip-prom { border-color: var(--prom-col, var(--c3)); color: var(--prom-col, var(--c3)); font-weight: 700; background: #fff; }
 .filter-chip-prom:hover { border-color: var(--prom-col, var(--c3)); color: var(--prom-col, var(--c3)); background: var(--surface2); }
 .filter-chip-prom.active { background: var(--prom-col, var(--c3)); color: #fff; border-color: var(--prom-col, var(--c3)); }
@@ -111,10 +111,11 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:visible;transition:transform .2s,box-shadow .2s;}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--c1));border-radius:var(--r) var(--r) 0 0;}
-.kpi-rank{position:absolute;top:14px;right:14px;font-size:.6rem;font-weight:700;color:var(--muted);background:var(--surface2);padding:2px 7px;border-radius:50px;}
 
-/* Padding derecho para evitar colisión con el Ranking. Reducido a 60px para no cortar muy temprano */
-.kpi-dept{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:60px;}
+/* Blindaje Flexbox para tarjetas KPI (Evita que el ranking pise al nombre) */
+.kpi-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; width: 100%; }
+.kpi-dept { font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; margin-bottom: 0; padding-right: 0; }
+.kpi-rank { font-size: .6rem; font-weight: 700; color: var(--muted); background: var(--surface2); padding: 2px 7px; border-radius: 50px; flex-shrink: 0; }
 
 .kpi-dept-inner{display:inline-block;white-space:nowrap;}
 .kpi-score{font-family:'DM Serif Display',serif;font-size:2.1rem;color:var(--text);line-height:1;margin-bottom:4px;}
@@ -682,7 +683,7 @@ function updateAllViews() {
   renderDeptTabs(orderedDepts);
 }
 
-// ════════════ KPI CARDS (Grouped) ════════════
+// ════════════ KPI CARDS (Grouped & Anti-Overlap Flexbox) ════════════
 function renderKPIs(orderedDepts){
   const container = document.getElementById('kpiContainer');
   container.innerHTML = '';
@@ -697,7 +698,6 @@ function renderKPIs(orderedDepts){
       <h3 class="kpi-dir-title truncated" title="${dir}">${dir}</h3>
       <div class="kpi-grid">`;
     
-    // Primero pintar los promedios
     const promDepts = dList.filter(d => d.startsWith('PROM. '));
     const realDepts = dList.filter(d => !d.startsWith('PROM. '));
 
@@ -708,8 +708,10 @@ function renderKPIs(orderedDepts){
       const displayName = isProm ? `⭐ Promedio ${dir}` : d;
 
       sectionHTML += `<div class="kpi-card" style="--ca:${col}">
-        ${rankHtml}
-        <div class="kpi-dept truncated" title="${displayName.replace(/"/g,'&quot;')}"><span class="kpi-dept-inner">${displayName}</span></div>
+        <div class="kpi-header-row">
+          <div class="kpi-dept truncated" title="${displayName.replace(/"/g,'&quot;')}"><span class="kpi-dept-inner">${displayName}</span></div>
+          ${rankHtml}
+        </div>
         <div class="kpi-score">${avg.toFixed(1)}<sup>/10</sup></div>
         <div style="font-size:.68rem;color:var(--muted);margin-top:3px;">Promedio general</div>
         <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${avg*10}%"></div></div>
@@ -948,32 +950,40 @@ function renderDetailTable(orderedDepts){
   requestAnimationFrame(markTruncated);
 }
 
-// ════════════ COMMENTS (Grouped, con filtro de basura) ════════════
+// ════════════ COMMENTS (Grouped, Mega Strict Classification) ════════════
 function classifyComment(text){
   if(!text) return 'Ignorar';
   const t = text.toLowerCase().trim();
   
   // REGEX DE COMENTARIOS INÚTILES (Cortesía, vacíos, o muy genéricos)
-  const uselessRegex = /^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x|todo ok|ok|no tengo tema|felicidades|todo bien|sin observaciones|ninguna observaci.n|no tengo comentarios.*|todo excelente|excelente|muy bien|bien|sin detalle)$/i;
+  const uselessRegex = /^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x|todo ok|ok|no tengo tema|felicidades|todo bien|sin observaciones|ninguna observaci.n|no tengo comentarios.*|todo excelente|excelente|muy bien|bien|sin detalle|ninguno por el momento|no aplica|desconozco.*|no conozco.*|no interact.o.*|no tengo contacto.*|ignoro.*|no hay comentarios)$/i;
   
   if(uselessRegex.test(t)) return 'Ignorar';
-  if(t.length < 5 && !t.match(/mal|peor/)) return 'Ignorar'; // Filtrar textos cortísimos que no aporten
-  if(t.includes('no tengo') || t.includes('ningún comentario')) return 'Ignorar';
+  if(t.length < 5 && !t.match(/mal|peor/)) return 'Ignorar'; 
+  if(t.includes('no tengo') || t.includes('ningún comentario') || t.includes('desconozco') || t.includes('no interact')) return 'Ignorar';
   
   // Categorías súper detalladas y específicas
-  if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar/)) return 'Tiempos de Respuesta';
-  if(t.match(/comunic|avisar|claro|transparencia|información|notificar/)) return 'Comunicación y Claridad';
-  if(t.match(/abasto|mercancía|proveedor|merma|desabasto|material|inventario/)) return 'Abasto y Proveedores';
-  if(t.match(/proceso|política|lineamiento|cita|cedis|indicador|auditor/)) return 'Procesos y Políticas';
-  if(t.match(/costo|cotizaci|precio|cara|caro|presupuesto/)) return 'Costos y Presupuestos';
-  if(t.match(/necesidad|negocio|beneficio|sucursal|rendimiento|ventas/)) return 'Visión de Negocio';
-  if(t.match(/atención|trato|empatía|amable|respuesta|apoyo/)) return 'Atención y Trato';
-  if(t.match(/calidad|excelente|buen|bien|servicio/)) return 'Calidad de Servicio';
-  if(t.match(/mejorar|falta|oportunidad|detalle/)) return 'Áreas de Mejora Detectadas';
-  if(t.match(/capacitaci|entrenamiento|enseñar|curso/)) return 'Capacitación y Desarrollo';
-  if(t.match(/herramienta|sistema|equipo|plataforma|software/)) return 'Herramientas y Sistemas';
+  if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar|demora|retraso|lento/)) return 'Tiempos de Respuesta';
+  if(t.match(/comunicaci|avisar|claro|transparencia|informaci.n|notificar|respuesta|contestar|seguimiento|retroalimentaci|aviso/)) return 'Comunicación y Seguimiento';
+  if(t.match(/abasto|mercanc.a|proveedor|merma|desabasto|material|inventario|surtido|faltante|insumo/)) return 'Abasto y Proveedores';
+  if(t.match(/proceso|pol.tica|lineamiento|regla|norma|burocracia|tr.mite|auditor.a|cuadrado/)) return 'Procesos y Burocracia';
+  if(t.match(/costo|cotizaci.n|precio|cara|caro|presupuesto|gasto|ahorro|inversi/)) return 'Costos y Presupuestos';
+  if(t.match(/necesidad|negocio|beneficio|sucursal|rendimiento|ventas|estrategia|mercado|realidad/)) return 'Visión de Negocio y Mercado';
+  if(t.match(/atenci.n|trato|empat.a|amable|actitud|disposici.n|apoyo|servicio/)) return 'Actitud y Trato al Cliente';
+  if(t.match(/calidad|exactitud|precisi.n|error|equivocaci.n|correcto|falla en/)) return 'Calidad y Precisión del Trabajo';
+  if(t.match(/capacitaci|entrenamiento|enseñar|curso|aprender|gu.a/)) return 'Capacitación y Desarrollo';
+  if(t.match(/herramienta|sistema|equipo|plataforma|software|portal|red/)) return 'Sistemas y Tecnología';
+  if(t.match(/personal|plantilla|recursos humanos|gente|vacante|contrataci.n|rotaci.n/)) return 'Gestión de Personal';
+  if(t.match(/mantenimiento|limpieza|instalaci|reparaci/)) return 'Mantenimiento e Instalaciones';
+  if(t.match(/log.stica|ruta|entrega|env.o|transporte|chofer|camiones|veh.culo/)) return 'Logística y Entregas';
+  if(t.match(/n.mina|pago|sueldo|salario|compensaci|bono|deducci/)) return 'Nóminas y Pagos';
+  if(t.match(/innovaci|nuevo|creativo|idea|mejora continua/)) return 'Innovación y Mejora Continua';
+  if(t.match(/seguridad|riesgo|peligro|accidente|protecci/)) return 'Seguridad y Riesgos';
+  if(t.match(/organizaci|planeaci|orden|coordinaci/)) return 'Planeación y Organización';
+  if(t.match(/liderazgo|jefe|gerente|direcci.n|coordinador|supervisor/)) return 'Liderazgo y Gestión';
+  if(t.match(/soluci.n|resolver|problema/)) return 'Resolución de Problemas';
   
-  return 'Requerimientos Operativos'; 
+  return 'Observaciones Operativas Específicas'; 
 }
 
 function renderDeptTabs(orderedDepts){
@@ -1015,7 +1025,6 @@ function renderDeptTabs(orderedDepts){
 
 function renderCatChips(dept){
   const rawComments = COMMENTS[dept]||[];
-  // Omitimos los comentarios basura por completo
   const validComments = rawComments.filter(c => classifyComment(c) !== 'Ignorar');
   
   const cats = {};
