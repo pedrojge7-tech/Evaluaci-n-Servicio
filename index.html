@@ -107,7 +107,22 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 /* ── KPI CARDS ── */
 .kpi-dir-section { margin-bottom: 28px; }
 .kpi-dir-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--text); margin-bottom: 12px; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px;}
+
+/* Contenedor scrolleable de las tarjetas */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(185px,1fr));
+  gap: 14px;
+  max-height: 380px; /* Aprox 3 filas de tarjetas */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 8px 8px 4px; /* Espacio para que no se corten las sombras */
+  -webkit-overflow-scrolling: touch;
+}
+.kpi-grid::-webkit-scrollbar { width: 4px; }
+.kpi-grid::-webkit-scrollbar-track { background: transparent; }
+.kpi-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
 .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:visible;transition:transform .2s,box-shadow .2s;}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--c1));border-radius:var(--r) var(--r) 0 0;}
@@ -233,7 +248,6 @@ tbody tr:last-child{border-bottom:none;}
 tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;text-align:center;border-right:1px dashed var(--surface2);}
 tbody td:first-child { text-align: left; }
 tbody td:last-child { border-right: none; }
-/* Aumentado a 350px para evitar recortes tan tempranos */
 .q-cell{max-width:350px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.71rem;color:var(--muted);}
 .q-cell-inner{display:inline-block;white-space:nowrap;}
 .score-pill{display:inline-block;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
@@ -309,7 +323,6 @@ tbody td:last-child { border-right: none; }
 }
 @media(max-width:640px){
   .main{padding:14px 12px 60px;}
-  /* Reducir el tamaño del header para que no estorbe en celulares */
   .header{padding:10px 14px;}
   .header-left h1{font-size:1.1rem; line-height: 1.2;}
   .header-left p{font-size:.65rem; margin-top: 1px;}
@@ -319,7 +332,6 @@ tbody td:last-child { border-right: none; }
   .kpi-card { padding: 14px 16px; }
   .kpi-score{font-size:1.6rem;}
   
-  /* Ajuste de filtros */
   .filter-bar{padding:10px 14px;gap:7px;}
   .filter-chip{padding:5px 11px;font-size:.72rem;}
   .chart-card{padding:16px 14px;}
@@ -445,14 +457,12 @@ tbody td:last-child { border-right: none; }
 <script>
 // ════════════ CONSTANTS ════════════
 const PALETTE = ['#C8846A','#7A9E8E','#B8A87A','#8A7BAE','#6A8FAE','#AE7A8A','#7AAE96','#AE957A','#9E8E7A','#7AAEBE','#BE9E7A','#8EAE7A'];
-// Colores fuertes y distintos específicamente para los promedios de dirección
 const PROM_PALETTE = ['#8A3A2A', '#3A7A5E', '#4A6A8A', '#8A6A2A', '#7A4A6A', '#3A6A5E']; 
 const PWD = 'Infocus123';
 
 // ════════════ STATE ════════════
 let REPORT_DATE = new Date();
 
-// Estado limpio inicial sin mock data
 let DIRS = [];
 let DEPTS = [];
 let DEPT_TO_DIR = {};
@@ -683,7 +693,7 @@ function updateAllViews() {
   renderDeptTabs(orderedDepts);
 }
 
-// ════════════ KPI CARDS (Grouped & Anti-Overlap Flexbox) ════════════
+// ════════════ KPI CARDS (Grouped) ════════════
 function renderKPIs(orderedDepts){
   const container = document.getElementById('kpiContainer');
   container.innerHTML = '';
@@ -863,7 +873,6 @@ function renderRankingList(orderedDepts){
     if(!vals.length) return '';
     const best=vals[0], worst=vals[vals.length-1];
     
-    // Pastillas blindadas con flexbox para evitar recortes numéricos
     return `<div class="rank-item">
       <div class="rank-q-wrap truncated" title="${q.replace(/"/g,'&quot;')}"><span class="rank-q-inner">P${qi+1} · ${q}</span></div>
       <div class="rank-badges">
@@ -955,35 +964,35 @@ function classifyComment(text){
   if(!text) return 'Ignorar';
   const t = text.toLowerCase().trim();
   
-  // REGEX DE COMENTARIOS INÚTILES (Cortesía, vacíos, o muy genéricos)
+  // REGEX MEGA ESTRICTO DE COMENTARIOS INÚTILES
   const uselessRegex = /^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x|todo ok|ok|no tengo tema|felicidades|todo bien|sin observaciones|ninguna observaci.n|no tengo comentarios.*|todo excelente|excelente|muy bien|bien|sin detalle|ninguno por el momento|no aplica|desconozco.*|no conozco.*|no interact.o.*|no tengo contacto.*|ignoro.*|no hay comentarios)$/i;
   
   if(uselessRegex.test(t)) return 'Ignorar';
   if(t.length < 5 && !t.match(/mal|peor/)) return 'Ignorar'; 
   if(t.includes('no tengo') || t.includes('ningún comentario') || t.includes('desconozco') || t.includes('no interact')) return 'Ignorar';
   
-  // Categorías súper detalladas y específicas
+  // 20 Categorías corporativas hiper detalladas
+  if(t.match(/sistema|software|portal|plataforma|red|conexi.n|aplicaci.n/)) return 'Sistemas y Tecnología';
   if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar|demora|retraso|lento/)) return 'Tiempos de Respuesta';
   if(t.match(/comunicaci|avisar|claro|transparencia|informaci.n|notificar|respuesta|contestar|seguimiento|retroalimentaci|aviso/)) return 'Comunicación y Seguimiento';
+  if(t.match(/proceso|burocracia|tr.mite|lento|papelo|firmas|autorizaci.n|pol.tica/)) return 'Procesos y Burocracia';
   if(t.match(/abasto|mercanc.a|proveedor|merma|desabasto|material|inventario|surtido|faltante|insumo/)) return 'Abasto y Proveedores';
-  if(t.match(/proceso|pol.tica|lineamiento|regla|norma|burocracia|tr.mite|auditor.a|cuadrado/)) return 'Procesos y Burocracia';
+  if(t.match(/log.stica|ruta|entrega|env.o|transporte|chofer|camiones|veh.culo/)) return 'Logística y Entregas';
+  if(t.match(/capacitaci|entrenamiento|enseñar|curso|aprender|gu.a|induccion/)) return 'Capacitación y Desarrollo';
   if(t.match(/costo|cotizaci.n|precio|cara|caro|presupuesto|gasto|ahorro|inversi/)) return 'Costos y Presupuestos';
   if(t.match(/necesidad|negocio|beneficio|sucursal|rendimiento|ventas|estrategia|mercado|realidad/)) return 'Visión de Negocio y Mercado';
   if(t.match(/atenci.n|trato|empat.a|amable|actitud|disposici.n|apoyo|servicio/)) return 'Actitud y Trato al Cliente';
   if(t.match(/calidad|exactitud|precisi.n|error|equivocaci.n|correcto|falla en/)) return 'Calidad y Precisión del Trabajo';
-  if(t.match(/capacitaci|entrenamiento|enseñar|curso|aprender|gu.a/)) return 'Capacitación y Desarrollo';
-  if(t.match(/herramienta|sistema|equipo|plataforma|software|portal|red/)) return 'Sistemas y Tecnología';
-  if(t.match(/personal|plantilla|recursos humanos|gente|vacante|contrataci.n|rotaci.n/)) return 'Gestión de Personal';
-  if(t.match(/mantenimiento|limpieza|instalaci|reparaci/)) return 'Mantenimiento e Instalaciones';
-  if(t.match(/log.stica|ruta|entrega|env.o|transporte|chofer|camiones|veh.culo/)) return 'Logística y Entregas';
-  if(t.match(/n.mina|pago|sueldo|salario|compensaci|bono|deducci/)) return 'Nóminas y Pagos';
-  if(t.match(/innovaci|nuevo|creativo|idea|mejora continua/)) return 'Innovación y Mejora Continua';
-  if(t.match(/seguridad|riesgo|peligro|accidente|protecci/)) return 'Seguridad y Riesgos';
-  if(t.match(/organizaci|planeaci|orden|coordinaci/)) return 'Planeación y Organización';
-  if(t.match(/liderazgo|jefe|gerente|direcci.n|coordinador|supervisor/)) return 'Liderazgo y Gestión';
-  if(t.match(/soluci.n|resolver|problema/)) return 'Resolución de Problemas';
+  if(t.match(/personal|plantilla|recursos humanos|gente|vacante|contrataci.n|rotaci.n|faltas/)) return 'Gestión de Personal';
+  if(t.match(/mantenimiento|limpieza|instalaci|reparaci|obra|construcci/)) return 'Mantenimiento e Instalaciones';
+  if(t.match(/n.mina|pago|sueldo|salario|compensaci|bono|deducci|finiquito/)) return 'Nóminas y Pagos';
+  if(t.match(/innovaci|nuevo|creativo|idea|mejora continua|propuesta/)) return 'Innovación y Mejora Continua';
+  if(t.match(/seguridad|riesgo|peligro|accidente|protecci|equipo de protecci/)) return 'Seguridad y Riesgos';
+  if(t.match(/organizaci|planeaci|orden|coordinaci|estructura/)) return 'Planeación y Organización';
+  if(t.match(/liderazgo|jefe|gerente|direcci.n|coordinador|supervisor|mando/)) return 'Liderazgo y Gestión';
+  if(t.match(/soluci.n|resolver|problema|conflicto/)) return 'Resolución de Problemas';
   
-  return 'Observaciones Operativas Específicas'; 
+  return 'Requerimientos Operativos'; 
 }
 
 function renderDeptTabs(orderedDepts){
@@ -1067,7 +1076,7 @@ function renderComments(dept,cat){
   const filtered = cat ? validComments.filter(c => classifyComment(c) === cat) : validComments;
   const col = deptColor(dept);
   
-  if(!filtered.length){list.innerHTML='<div class="no-comments">No hay comentarios que mostrar</div>';return;}
+  if(!filtered.length){list.innerHTML='<div class="no-comments">No hay comentarios relevantes que mostrar</div>';return;}
   list.innerHTML = filtered.map(c => `<div class="comment-item" style="--al:${col}">${c}</div>`).join('');
 }
 
