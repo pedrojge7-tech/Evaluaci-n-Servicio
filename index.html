@@ -222,7 +222,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
   white-space: nowrap;
 }
 
-/* Animación de desplazamiento al poner el cursor (Hover Scroll) */
+/* Animación de desplazamiento al poner el cursor (Hover Scroll) en tablas, kpis y badges blindados */
 .truncated:hover .rank-q-inner, 
 .truncated:hover .q-cell-inner,
 .truncated:hover .kpi-dept-inner,
@@ -248,6 +248,7 @@ tbody tr:last-child{border-bottom:none;}
 tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;text-align:center;border-right:1px dashed var(--surface2);}
 tbody td:first-child { text-align: left; }
 tbody td:last-child { border-right: none; }
+/* Aumentado a 350px para evitar recortes tan tempranos */
 .q-cell{max-width:350px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.71rem;color:var(--muted);}
 .q-cell-inner{display:inline-block;white-space:nowrap;}
 .score-pill{display:inline-block;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
@@ -320,6 +321,42 @@ tbody td:last-child { border-right: none; }
 .toast.ok{background:#3A7A5E;}
 .toast.err{background:#8A3A2A;}
 
+/* ── MODO IMPRESIÓN (PDF) ── */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    animation: none !important;
+  }
+  body { background: #fff; color: #000; overflow: visible !important; }
+  
+  .header-right, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept { 
+    display: none !important; 
+  }
+  
+  .main { padding: 0 !important; }
+  .kpi-grid, .rank-list, .comment-list, .table-card, #radarLegend {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  
+  .truncated, .rank-q-wrap, .rank-q-inner, .q-cell, .q-cell-inner, .kpi-dept, .kpi-dept-inner, .rb-name-wrap, .rb-name-inner, .filter-chip, .rank-badge {
+    white-space: normal !important;
+    overflow: visible !important;
+    max-width: none !important;
+    text-overflow: clip !important;
+  }
+  
+  .chart-card, .kpi-card, tr, .comment-item, .filter-dir-group {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  
+  .charts-row { display: block !important; }
+  .chart-card { margin-bottom: 20px !important; border: 1px solid #E2DDD5 !important; box-shadow: none !important; }
+}
+
 /* RESPONSIVE */
 @media(max-width:960px){
   .main{padding:18px 16px 52px;}
@@ -376,6 +413,10 @@ tbody td:last-child { border-right: none; }
   </div>
   <div class="header-right">
     <span class="badge">Admin</span>
+    <button class="btn btn-import" id="btnExportPDF" style="margin-right: 6px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      PDF
+    </button>
     <button class="btn btn-import" id="btnImport">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Importar archivo
@@ -468,12 +509,14 @@ tbody td:last-child { border-right: none; }
 <script>
 // ════════════ CONSTANTS ════════════
 const PALETTE = ['#C8846A','#7A9E8E','#B8A87A','#8A7BAE','#6A8FAE','#AE7A8A','#7AAE96','#AE957A','#9E8E7A','#7AAEBE','#BE9E7A','#8EAE7A'];
+// Colores fuertes y distintos específicamente para los promedios de dirección
 const PROM_PALETTE = ['#8A3A2A', '#3A7A5E', '#4A6A8A', '#8A6A2A', '#7A4A6A', '#3A6A5E']; 
 const PWD = 'Infocus123';
 
 // ════════════ STATE ════════════
 let REPORT_DATE = new Date();
 
+// Estado limpio inicial sin mock data
 let DIRS = [];
 let DEPTS = [];
 let DEPT_TO_DIR = {};
@@ -1015,13 +1058,24 @@ function renderDeptTabs(orderedDepts){
   if(realDepts.length === 0) return;
 
   const groups = getDeptsGroupedByDir(realDepts);
+  let renderedDirs = 0;
   
   for (const [dir, dList] of Object.entries(groups)) {
+    // Verificar si ESTA dirección tiene algún departamento con comentarios válidos
+    const deptsWithComments = dList.filter(d => {
+      const raw = COMMENTS[d] || [];
+      return raw.some(comment => classifyComment(comment) !== 'Ignorar');
+    });
+
+    // Si la dirección no tiene ni un solo comentario válido, no la mostramos
+    if(deptsWithComments.length === 0) continue;
+
+    renderedDirs++;
     const groupDiv = document.createElement('div');
     groupDiv.className = 'filter-dir-group';
     groupDiv.innerHTML = `<span class="filter-dir-group-title truncated" title="${dir}">${dir}</span>`;
     
-    dList.forEach(d => {
+    deptsWithComments.forEach(d => {
       const col = deptColor(d);
       const btn = document.createElement('button');
       btn.className = 'dept-tab truncated';
@@ -1039,8 +1093,15 @@ function renderDeptTabs(orderedDepts){
     c.appendChild(groupDiv);
   }
   
-  document.getElementById('commentList').innerHTML='<div class="no-comments">Selecciona un departamento</div>';
-  document.getElementById('catChips').innerHTML='';
+  if(renderedDirs === 0){
+    c.innerHTML = '<div class="no-comments" style="padding:20px 0;">No hay comentarios en las áreas seleccionadas.</div>';
+    document.getElementById('catChips').innerHTML='';
+    document.getElementById('commentList').innerHTML='';
+  } else {
+    document.getElementById('commentList').innerHTML='<div class="no-comments">Selecciona un departamento para ver sus comentarios</div>';
+    document.getElementById('catChips').innerHTML='';
+  }
+
   requestAnimationFrame(markTruncated);
 }
 
@@ -1100,6 +1161,10 @@ function closeImportModal(){document.getElementById('importModal').classList.rem
 
 function wireModalButtons(){
   document.getElementById('btnCloseImport').addEventListener('click', closeImportModal);
+  
+  // NATIVO: Guardar como PDF usando el menú de impresión del navegador
+  document.getElementById('btnExportPDF').addEventListener('click', () => { window.print(); });
+  
   document.getElementById('btnCloseShare').addEventListener('click', ()=>{ closeShareModal(); const b=document.getElementById('btnOpenReader'); if(b){b.textContent='Generar link →';b.disabled=false;} });
   document.getElementById('btnOpenReader').addEventListener('click', generateReaderLink);
   document.getElementById('btnCopyLink').addEventListener('click', copyLink);
