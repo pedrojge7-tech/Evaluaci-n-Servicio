@@ -76,17 +76,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow);}
 .filter-label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;margin-top:6px;min-width:160px;}
 
-/* Contenedor vertical simétrico para el filtro de departamentos */
-#filterBarDept {
-  flex-direction: column; 
-  flex-wrap: nowrap; 
-  align-items: stretch;
-  max-height: 350px; 
-  overflow-y: auto;
-  overflow-x: hidden; 
-  padding-right: 8px; 
-  -webkit-overflow-scrolling: touch;
-}
+#filterBarDept { flex-direction: column; flex-wrap: nowrap; align-items: stretch; max-height: 350px; overflow-y: auto; overflow-x: hidden; padding-right: 8px; -webkit-overflow-scrolling: touch; }
 #filterBarDept::-webkit-scrollbar{width:4px;}
 #filterBarDept::-webkit-scrollbar-track{background:var(--surface2);}
 #filterBarDept::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
@@ -98,36 +88,21 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .filter-chip:hover{border-color:var(--c1);color:var(--c1);}
 .filter-chip.active{background:var(--text);color:#fff;border-color:var(--text);}
 .filter-chip-dir.active { background: var(--c2); border-color: var(--c2); }
-
-/* Especial style para los chips de Promedios (color dinámico) */
 .filter-chip-prom { border-color: var(--prom-col, var(--c3)); color: var(--prom-col, var(--c3)); font-weight: 700; background: #fff; }
-.filter-chip-prom:hover { border-color: var(--prom-col, var(--c3)); color: var(--prom-col, var(--c3)); background: var(--surface2); }
-.filter-chip-prom.active { background: var(--prom-col, var(--c3)); color: #fff; border-color: var(--prom-col, var(--c3)); }
+.filter-chip-prom.active { background: var(--prom-col, var(--c3)); color: #fff; }
 
 /* ── KPI CARDS ── */
 .kpi-dir-section { margin-bottom: 28px; }
 .kpi-dir-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--text); margin-bottom: 12px; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
-
-/* Contenedor scrolleable de las tarjetas - ajustado a 1.5 filas aprox */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(185px,1fr));
-  gap: 14px;
-  max-height: 220px; 
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 4px 8px 8px 4px; 
-  -webkit-overflow-scrolling: touch;
-}
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(185px,1fr)); gap: 14px; max-height: 220px; overflow-y: auto; overflow-x: hidden; padding: 4px 8px 8px 4px; -webkit-overflow-scrolling: touch; }
 .kpi-grid::-webkit-scrollbar { width: 4px; }
 .kpi-grid::-webkit-scrollbar-track { background: transparent; }
 .kpi-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:visible;transition:transform .2s,box-shadow .2s;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:visible;transition:transform .2s; display: flex; flex-direction: column;}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ca,var(--c1));border-radius:var(--r) var(--r) 0 0;}
 
-/* Blindaje Flexbox para tarjetas KPI (Evita que el ranking pise al nombre) */
 .kpi-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px; width: 100%; }
 .kpi-dept { font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; margin-bottom: 0; padding-right: 0; }
 .kpi-rank { font-size: .6rem; font-weight: 700; color: var(--muted); background: var(--surface2); padding: 2px 7px; border-radius: 50px; flex-shrink: 0; }
@@ -138,117 +113,45 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .kpi-bar{height:3px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-top:8px;}
 .kpi-bar-fill{height:100%;background:var(--ca,var(--c1));border-radius:4px;}
 
-/* ── CARDS & RESPONSIVE CONTAINERS ── */
+/* ── CARDS & CHARTS ── */
 .charts-row{display:grid;gap:18px;margin-bottom:20px;}
 .cols-2{grid-template-columns:repeat(auto-fit, minmax(380px, 1fr));}
-
-.chart-card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r);
-  padding:22px;
-  box-shadow:var(--shadow);
-  display:flex;
-  flex-direction:column;
-  min-width:0;
-  height:100%;
-}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;height:100%;}
 .chart-hdr{margin-bottom:16px;flex-shrink:0;}
 .chart-title{font-family:'DM Serif Display',serif;font-size:.95rem;color:var(--text);line-height:1.3;}
 .chart-sub{font-size:.68rem;color:var(--muted);margin-top:2px;font-weight:300;}
+.chart-container { position: relative; height: 280px; width: 100%; flex-shrink: 0; }
 
-/* Candado de altura para que los gráficos no crezcan a lo loco */
-.chart-container {
-  position: relative;
-  height: 280px; 
-  width: 100%;
-  flex-shrink: 0;
-}
+#radarLegend{ display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center; padding:10px 8px 2px;margin-top:16px; max-height: 90px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+#radarLegend::-webkit-scrollbar{width:4px;}
+#radarLegend::-webkit-scrollbar-track{background:var(--surface2);}
+#radarLegend::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.rl-chip{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--text);font-weight:500;white-space:nowrap;}
+.rl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
 
-/* ── RANKING TABLE ── */
+/* ── RANKING & TABLES ── */
 .rank-list{display:flex;flex-direction:column;gap:9px;flex-grow:1;overflow-y:auto;padding-right:4px;}
 .rank-list::-webkit-scrollbar{width:4px;}
 .rank-list::-webkit-scrollbar-track{background:var(--surface2);}
 .rank-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 .rank-item{border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;background:var(--surface2);display:flex;justify-content:space-between;align-items:center;min-height:48px;}
 
-/* TOOLTIPS & TRUNCATION GLOBALES */
-.truncated { position: relative; cursor: default; }
-
-.truncated[title]:hover::after {
-  content: attr(title);
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  background: var(--text);
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: .72rem;
-  font-family: 'DM Sans', sans-serif;
-  white-space: normal;
-  max-width: 360px;
-  min-width: 150px;
-  z-index: 9999;
-  box-shadow: var(--shadow-md);
-  pointer-events: none;
-  line-height: 1.45;
-  word-wrap: break-word;
-}
-
 .rank-q-wrap{overflow:hidden;white-space:nowrap;font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:0;flex-grow:1;}
 .rank-q-inner{display:inline-block;white-space:nowrap;}
-
-/* Estructura Blindada Anti-Recorte para las pastillas del Ranking */
 .rank-badges{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;margin-left:10px;}
-.rank-badge{
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 9px;
-  border-radius: 50px;
-  font-size: .68rem;
-  font-weight: 600;
-  max-width: 180px; 
-}
-.rb-name-wrap {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  flex: 1 1 auto;
-}
-.rb-name-inner {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-/* Animación de desplazamiento al poner el cursor (Hover Scroll) en tablas, kpis y badges blindados */
-.truncated:hover .rank-q-inner, 
-.truncated:hover .q-cell-inner,
-.truncated:hover .kpi-dept-inner,
-.truncated:hover .rb-name-inner {
-  animation: marquee-slide 10s linear 1 forwards;
-}
-@keyframes marquee-slide { 
-  0% { transform: translateX(0); } 
-  100% { transform: translateX(-100%); } 
-}
-
+.rank-badge{ display: inline-flex; align-items: center; gap: 3px; padding: 3px 9px; border-radius: 50px; font-size: .68rem; font-weight: 600; max-width: 180px; }
+.rb-name-wrap { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex: 1 1 auto; }
+.rb-name-inner { display: inline-block; white-space: nowrap; }
 .badge-best{background:#E8F4EF;color:#3A7A5E;}
 .badge-worst{background:#FBF0EE;color:#8A3A2A;}
 
-/* ── DETAIL TABLE ── */
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);margin-bottom:20px;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:.78rem;}
 thead th{background:var(--surface2);padding:9px 12px;font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-right:1px solid var(--border);white-space:nowrap;text-align:center;}
-thead th:last-child { border-right: none; }
 tbody tr{border-bottom:1px solid var(--surface2);transition:background .15s;}
 tbody tr:hover{background:var(--surface2);}
-tbody tr:last-child{border-bottom:none;}
 tbody td{padding:10px 12px;color:var(--text);vertical-align:middle;text-align:center;border-right:1px dashed var(--surface2);}
 tbody td:first-child { text-align: left; }
-tbody td:last-child { border-right: none; }
-/* Aumentado a 350px para evitar recortes tan tempranos */
 .q-cell{max-width:350px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.71rem;color:var(--muted);}
 .q-cell-inner{display:inline-block;white-space:nowrap;}
 .score-pill{display:inline-block;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:600;}
@@ -262,6 +165,15 @@ tbody td:last-child { border-right: none; }
 .dept-tab .dot{width:7px;height:7px;border-radius:50%;background:var(--tc,var(--c1));flex-shrink:0;}
 .dept-tab.active{background:var(--tc,var(--c1));color:#fff;border-color:var(--tc,var(--c1));}
 .dept-tab.active .dot{background:rgba(255,255,255,.5);}
+
+/* Botones Especiales Consolidado/General */
+.btn-consolidado { background: #1A1714; color: #fff; border: none; font-weight: 700; margin-bottom: 10px; }
+.btn-consolidado .dot { background: #FFD700 !important; }
+.btn-consolidado.active { background: #000; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
+
+.dept-tab-general { font-weight: 700; color: var(--text); border-color: var(--border); }
+.dept-tab-general.active { background: var(--text); color: #fff; }
+
 .comment-categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
 .cat-chip{padding:7px 15px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
 .cat-chip .cnt{background:var(--border);color:var(--muted);font-size:.64rem;font-weight:700;padding:1px 6px;border-radius:50px;}
@@ -273,9 +185,11 @@ tbody td:last-child { border-right: none; }
 .comment-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 .comment-item{background:var(--surface2);border-left:3px solid var(--al,var(--c1));border-radius:0 var(--rs) var(--rs) 0;padding:11px 14px;font-size:.8rem;line-height:1.55;color:var(--text);animation:fadeIn .28s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
-.no-comments{text-align:center;padding:36px;color:var(--muted);font-size:.82rem;font-style:italic;}
+.no-comments{text-align:center;padding:36px;color:var(--muted);font-size:.82rem;font-style:italic; width: 100%;}
 
-/* ── MODALS ── */
+#commentsChartContainer { display:none; position:relative; height:320px; width:100%; margin-top:10px; animation:fadeIn .3s ease; }
+
+/* ── MODALS (RESTAURADOS) ── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(26,23,20,.5);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.open{display:flex;}
 @keyframes modalIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
@@ -298,21 +212,6 @@ tbody td:last-child { border-right: none; }
 .dropzone strong{display:block;font-size:.84rem;color:var(--text);margin-bottom:3px;}
 .dropzone small{font-size:.7rem;color:var(--muted);}
 
-/* Límite de altura y scroll para la leyenda del Radar (para que no empuje el gráfico) */
-#radarLegend{
-  display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center;
-  padding:10px 8px 2px;margin-top:16px;
-  max-height: 90px; 
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-#radarLegend::-webkit-scrollbar{width:4px;}
-#radarLegend::-webkit-scrollbar-track{background:var(--surface2);}
-#radarLegend::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
-
-.rl-chip{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--text);font-weight:500;white-space:nowrap;}
-.rl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-
 .share-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--c2);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
@@ -321,38 +220,23 @@ tbody td:last-child { border-right: none; }
 .toast.ok{background:#3A7A5E;}
 .toast.err{background:#8A3A2A;}
 
+/* ── TOOLTIPS ANIMATION ── */
+.truncated[title]:hover::after {
+  content: attr(title); position: absolute; top: calc(100% + 6px); left: 0; background: var(--text); color: #fff;
+  padding: 8px 12px; border-radius: 8px; font-size: .72rem; white-space: normal; max-width: 360px; z-index: 9999;
+  box-shadow: var(--shadow-md); pointer-events: none; line-height: 1.45;
+}
+.truncated:hover .rank-q-inner, .truncated:hover .q-cell-inner, .truncated:hover .kpi-dept-inner, .truncated:hover .rb-name-inner { animation: marquee-slide 10s linear 1 forwards; }
+
 /* ── MODO IMPRESIÓN (PDF) ── */
 @media print {
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    animation: none !important;
-  }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; animation: none !important; }
   body { background: #fff; color: #000; overflow: visible !important; }
-  
-  .header-right, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept { 
-    display: none !important; 
-  }
-  
+  .header-right, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept { display: none !important; }
   .main { padding: 0 !important; }
-  .kpi-grid, .rank-list, .comment-list, .table-card, #radarLegend {
-    max-height: none !important;
-    overflow: visible !important;
-    height: auto !important;
-  }
-  
-  .truncated, .rank-q-wrap, .rank-q-inner, .q-cell, .q-cell-inner, .kpi-dept, .kpi-dept-inner, .rb-name-wrap, .rb-name-inner, .filter-chip, .rank-badge {
-    white-space: normal !important;
-    overflow: visible !important;
-    max-width: none !important;
-    text-overflow: clip !important;
-  }
-  
-  .chart-card, .kpi-card, tr, .comment-item, .filter-dir-group {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
-  
+  .kpi-grid, .rank-list, .comment-list, .table-card, #radarLegend { max-height: none !important; overflow: visible !important; height: auto !important; }
+  .truncated, .rank-q-wrap, .rank-q-inner, .q-cell, .q-cell-inner, .kpi-dept, .kpi-dept-inner, .rb-name-wrap, .rb-name-inner, .filter-chip, .rank-badge { white-space: normal !important; overflow: visible !important; max-width: none !important; text-overflow: clip !important; }
+  .chart-card, .kpi-card, tr, .comment-item, .filter-dir-group { break-inside: avoid !important; page-break-inside: avoid !important; }
   .charts-row { display: block !important; }
   .chart-card { margin-bottom: 20px !important; border: 1px solid #E2DDD5 !important; box-shadow: none !important; }
 }
@@ -367,19 +251,15 @@ tbody td:last-child { border-right: none; }
   .kpi-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
   .chart-card{padding:18px 16px;}
   .table-card{padding:16px 14px;}
-  .filter-label{margin-bottom:4px;}
 }
 @media(max-width:640px){
   .main{padding:14px 12px 60px;}
   .header{padding:10px 14px;}
   .header-left h1{font-size:1.1rem; line-height: 1.2;}
-  .header-left p{font-size:.65rem; margin-top: 1px;}
   .header-right{width:100%;justify-content:flex-end;}
-  
   .kpi-grid{grid-template-columns:1fr 1fr;gap:10px;}
   .kpi-card { padding: 14px 16px; }
   .kpi-score{font-size:1.6rem;}
-  
   .filter-bar{padding:10px 14px;gap:7px;}
   .filter-chip{padding:5px 11px;font-size:.72rem;}
   .chart-card{padding:16px 14px;}
@@ -397,7 +277,7 @@ tbody td:last-child { border-right: none; }
     <p>Ingresa la contraseña para acceder al modo editor del dashboard.</p>
     <input class="login-input" type="password" id="loginPwd" placeholder="Contraseña" autocomplete="current-password">
     <div class="login-err" id="loginErr">Contraseña incorrecta. Intenta de nuevo.</div>
-    <button class="login-btn" id="loginBtn" style="margin-top:14px;">Ingresar</button>
+    <button class="login-btn" id="loginBtn">Ingresar</button>
   </div>
 </div>
 
@@ -499,24 +379,21 @@ tbody td:last-child { border-right: none; }
   </div>
 
   <div class="chart-card" style="margin-bottom:0">
-    <div class="chart-hdr"><div class="chart-title">Análisis de Comentarios</div><div class="chart-sub">Clasificados automáticamente · Selecciona departamento y categoría</div></div>
+    <div class="chart-hdr"><div class="chart-title">Análisis de Comentarios</div><div class="chart-sub">Clasificados automáticamente · Selecciona un departamento o vista general</div></div>
     <div class="dept-tabs" id="deptTabs"></div>
     <div class="comment-categories" id="catChips"></div>
-    <div class="comment-list" id="commentList"><div class="no-comments">Selecciona un departamento para explorar sus comentarios</div></div>
+    
+    <div id="commentsChartContainer"><canvas id="commentsChart"></canvas></div>
+    <div class="comment-list" id="commentList"><div class="no-comments">Selecciona un área para ver sus comentarios</div></div>
   </div>
 </main>
 
 <script>
-// ════════════ CONSTANTS ════════════
 const PALETTE = ['#C8846A','#7A9E8E','#B8A87A','#8A7BAE','#6A8FAE','#AE7A8A','#7AAE96','#AE957A','#9E8E7A','#7AAEBE','#BE9E7A','#8EAE7A'];
-// Colores fuertes y distintos específicamente para los promedios de dirección
 const PROM_PALETTE = ['#8A3A2A', '#3A7A5E', '#4A6A8A', '#8A6A2A', '#7A4A6A', '#3A6A5E']; 
 const PWD = 'Infocus123';
 
-// ════════════ STATE ════════════
 let REPORT_DATE = new Date();
-
-// Estado limpio inicial sin mock data
 let DIRS = [];
 let DEPTS = [];
 let DEPT_TO_DIR = {};
@@ -527,26 +404,21 @@ let COMMENTS = {};
 
 let activeDirs = new Set(['Todas']);
 let activeDepts = new Set(['Todos']);
-let barChart, radarChart, lineChart;
+let barChart, radarChart, lineChart, commentsChart;
 
-// ════════════ INYECCIÓN DE PROMEDIOS POR DIRECCIÓN ════════════
 function injectDirectionAverages() {
   if (DEPTS.length === 0) return; 
-
   const dirs = Array.from(new Set(Object.values(DEPT_TO_DIR)));
   
   dirs.forEach(dir => {
     const promName = `PROM. ${dir}`;
-    
     if (!DEPTS.includes(promName)) {
       DEPTS.push(promName);
       DEPT_TO_DIR[promName] = dir;
       COMMENTS[promName] = []; 
     }
-
     const dirDepts = DEPTS.filter(d => DEPT_TO_DIR[d] === dir && !d.startsWith('PROM. '));
     const diProm = DEPTS.indexOf(promName);
-
     SCORES.forEach((qScores) => {
        const validScores = dirDepts.map(d => qScores[DEPTS.indexOf(d)]).filter(v => v !== null && v !== undefined);
        const avg = validScores.length ? validScores.reduce((a,b)=>a+b,0)/validScores.length : null;
@@ -565,7 +437,6 @@ function updateSubtitle(){
     document.getElementById('dashSubtitle').textContent = "Aún no hay datos. Haz clic en 'Importar archivo' para comenzar.";
     return;
   }
-  
   const opts = { month: 'long', year: 'numeric' };
   const dStr = REPORT_DATE.toLocaleDateString('es-ES', opts);
   const capDate = dStr.charAt(0).toUpperCase() + dStr.slice(1);
@@ -573,7 +444,6 @@ function updateSubtitle(){
   document.getElementById('dashSubtitle').textContent = `${realDeptsCount} departamentos · ${DIRS.length} direcciones · ${QUESTIONS.length} preguntas · ${capDate}`;
 }
 
-// ════════════ LOGIN ════════════
 function doLogin(){
   const v = document.getElementById('loginPwd').value.trim();
   if(v.toLowerCase() === PWD.toLowerCase()){
@@ -590,20 +460,15 @@ function doLogin(){
 const _lb=document.getElementById('loginBtn'); if(_lb) _lb.addEventListener('click', doLogin);
 const _lp=document.getElementById('loginPwd'); if(_lp) _lp.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 
-// ════════════ INIT ════════════
 function initDashboard(){
   updateSubtitle();
   buildFilters();
   updateAllViews();
-  const _bi=document.getElementById('btnImport'); if(_bi)_bi.addEventListener('click', openImportModal);
-  const _bs=document.getElementById('btnShare');  if(_bs)_bs.addEventListener('click', openShareModal);
   wireModalButtons();
   const _fi=document.getElementById('fileInput'); if(_fi)_fi.addEventListener('change', e=>{ if(e.target.files[0]) handleFile(e.target.files[0]); });
-  
   window.addEventListener('resize', () => { requestAnimationFrame(markTruncated); });
 }
 
-// ════════════ FILTERS (DIR & DEPT) ════════════
 function getAllowedDirs() {
   return activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
 }
@@ -631,30 +496,21 @@ function getDeptsGroupedByDir(deptList) {
 function buildFilters() {
   const fbDir = document.getElementById('filterBarDir');
   fbDir.innerHTML = `<span class="filter-label">Filtrar por Dirección:</span>`;
-  
   if (DIRS.length === 0) return; 
 
-  const allDirs = ['Todas', ...DIRS];
-  allDirs.forEach(dir => {
+  ['Todas', ...DIRS].forEach(dir => {
     const btn = document.createElement('button');
     btn.className = 'filter-chip filter-chip-dir truncated' + (activeDirs.has(dir) ? ' active' : '');
     btn.textContent = dir;
     btn.title = dir;
     btn.addEventListener('click', () => {
-      if(dir === 'Todas'){
-        activeDirs.clear();
-        activeDirs.add('Todas');
-      } else {
+      if(dir === 'Todas'){ activeDirs.clear(); activeDirs.add('Todas'); }
+      else {
         activeDirs.delete('Todas');
-        if(activeDirs.has(dir)){
-          activeDirs.delete(dir);
-          if(activeDirs.size === 0) activeDirs.add('Todas');
-        } else {
-          activeDirs.add(dir);
-        }
+        if(activeDirs.has(dir)) activeDirs.delete(dir); else activeDirs.add(dir);
+        if(activeDirs.size === 0) activeDirs.add('Todas');
       }
-      buildFilters(); 
-      updateAllViews();
+      buildFilters(); updateAllViews();
     });
     fbDir.appendChild(btn);
   });
@@ -666,10 +522,8 @@ function buildFilters() {
   </div>`;
   
   document.getElementById('btnDeptTodos').addEventListener('click', () => {
-    activeDepts.clear();
-    activeDepts.add('Todos');
-    buildFilters();
-    updateAllViews();
+    activeDepts.clear(); activeDepts.add('Todos');
+    buildFilters(); updateAllViews();
   });
 
   const allowedDirs = getAllowedDirs();
@@ -685,41 +539,29 @@ function buildFilters() {
     if (DEPTS.includes(promName)) {
       const btnProm = document.createElement('button');
       btnProm.className = 'filter-chip filter-chip-prom truncated' + (activeDepts.has(promName) ? ' active' : '');
-      const pColor = deptColor(promName);
-      btnProm.style.setProperty('--prom-col', pColor); 
+      btnProm.style.setProperty('--prom-col', deptColor(promName)); 
       btnProm.innerHTML = `⭐ Promedio`;
       btnProm.title = `Promedio general de ${dir}`;
       btnProm.addEventListener('click', () => {
         activeDepts.delete('Todos');
-        if(activeDepts.has(promName)){
-          activeDepts.delete(promName);
-          if(activeDepts.size === 0) activeDepts.add('Todos');
-        } else {
-          activeDepts.add(promName);
-        }
-        buildFilters();
-        updateAllViews();
+        if(activeDepts.has(promName)) activeDepts.delete(promName); else activeDepts.add(promName);
+        if(activeDepts.size === 0) activeDepts.add('Todos');
+        buildFilters(); updateAllViews();
       });
       groupDiv.appendChild(btnProm);
     }
 
     dList.forEach(d => {
       if (d.startsWith('PROM. ')) return; 
-      
       const btn = document.createElement('button');
       btn.className = 'filter-chip truncated' + (activeDepts.has(d) ? ' active' : '');
       btn.textContent = d;
       btn.title = d;
       btn.addEventListener('click', () => {
         activeDepts.delete('Todos');
-        if(activeDepts.has(d)){
-          activeDepts.delete(d);
-          if(activeDepts.size === 0) activeDepts.add('Todos');
-        } else {
-          activeDepts.add(d);
-        }
-        buildFilters();
-        updateAllViews();
+        if(activeDepts.has(d)) activeDepts.delete(d); else activeDepts.add(d);
+        if(activeDepts.size === 0) activeDepts.add('Todos');
+        buildFilters(); updateAllViews();
       });
       groupDiv.appendChild(btn);
     });
@@ -730,8 +572,7 @@ function buildFilters() {
 function deptColor(d) { 
   if (d.startsWith('PROM. ')) {
     const dirName = d.replace('PROM. ', '');
-    const idx = DIRS.indexOf(dirName);
-    return PROM_PALETTE[idx % PROM_PALETTE.length] || '#1A1714'; 
+    return PROM_PALETTE[DIRS.indexOf(dirName) % PROM_PALETTE.length] || '#1A1714'; 
   }
   return PALETTE[DEPTS.indexOf(d) % PALETTE.length] || PALETTE[0]; 
 }
@@ -747,22 +588,16 @@ function updateAllViews() {
   renderDeptTabs(orderedDepts);
 }
 
-// ════════════ KPI CARDS (Grouped & Ordered) ════════════
 function renderKPIs(orderedDepts){
   const container = document.getElementById('kpiContainer');
   container.innerHTML = '';
-  
   if(orderedDepts.length === 0) return;
 
   const groups = getDeptsGroupedByDir(orderedDepts);
   const sortedGlobal = [...DEPTS].filter(d=>!d.startsWith('PROM. ')).sort((a,b)=>AVERAGES[DEPTS.indexOf(b)]-AVERAGES[DEPTS.indexOf(a)]);
 
   for (const [dir, dList] of Object.entries(groups)) {
-    let sectionHTML = `<div class="kpi-dir-section">
-      <h3 class="kpi-dir-title truncated" title="${dir}">${dir}</h3>
-      <div class="kpi-grid">`;
-    
-    // Separamos promedio y lo demás, y ordenamos el resto de mayor a menor
+    let sectionHTML = `<div class="kpi-dir-section"><h3 class="kpi-dir-title truncated" title="${dir}">${dir}</h3><div class="kpi-grid">`;
     const promDepts = dList.filter(d => d.startsWith('PROM. '));
     const realDepts = dList.filter(d => !d.startsWith('PROM. ')).sort((a,b) => AVERAGES[DEPTS.indexOf(b)] - AVERAGES[DEPTS.indexOf(a)]);
 
@@ -782,14 +617,11 @@ function renderKPIs(orderedDepts){
         <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${avg*10}%"></div></div>
       </div>`;
     });
-    
-    sectionHTML += `</div></div>`;
-    container.innerHTML += sectionHTML;
+    container.innerHTML += sectionHTML + `</div></div>`;
   }
   requestAnimationFrame(markTruncated);
 }
 
-// ════════════ CHARTS ════════════
 function renderBarChart(orderedDepts){
   const ctx=document.getElementById('barChart').getContext('2d');
   if(barChart)barChart.destroy();
@@ -803,31 +635,14 @@ function renderBarChart(orderedDepts){
         data:orderedDepts.map(d=>AVERAGES[DEPTS.indexOf(d)]),
         backgroundColor:orderedDepts.map(d=>deptColor(d)+'CC'),
         borderColor:orderedDepts.map(d=>deptColor(d)),
-        borderWidth:2,
-        borderRadius:8,
-        borderSkipped:false
+        borderWidth:2, borderRadius:8, borderSkipped:false
       }]
     },
     options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false}
-      },
+      responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} },
       scales:{
         y:{min:0,max:10,grid:{color:'#E2DDD5'},ticks:{font:{size:11}}},
-        x:{
-          grid:{display:false},
-          ticks:{
-            font:{size:10},
-            maxRotation:45,
-            minRotation:45,
-            callback: function(val, index) {
-              let label = orderedDepts[index];
-              return label.length > 12 ? label.substring(0, 12) + '…' : label;
-            }
-          }
-        }
+        x:{ grid:{display:false}, ticks:{ font:{size:10}, maxRotation:45, minRotation:45, callback: function(val, index) { let label = orderedDepts[index]; return label.length > 12 ? label.substring(0, 12) + '…' : label; } } }
       }
     }
   });
@@ -837,44 +652,26 @@ function renderRadarChart(orderedDepts){
   const shortQ=QUESTIONS.map((_,i)=>`P${i+1}`);
   const ctx=document.getElementById('radarChart').getContext('2d');
   if(radarChart)radarChart.destroy();
-  
   const leg=document.getElementById('radarLegend');
-  if(orderedDepts.length === 0) {
-    if(leg) leg.innerHTML = '';
-    return;
-  }
+  if(orderedDepts.length === 0) { if(leg) leg.innerHTML = ''; return; }
 
   radarChart=new Chart(ctx,{
     type:'radar',
     data:{
       labels:shortQ,
       datasets:orderedDepts.map(d=>{
-        const di=DEPTS.indexOf(d),col=deptColor(d);
-        const isProm = d.startsWith('PROM. ');
+        const di=DEPTS.indexOf(d),col=deptColor(d), isProm = d.startsWith('PROM. ');
         return {
-          label: d, 
-          data:SCORES.map(q=>q[di]??null),
-          backgroundColor:col+(isProm?'1A':'28'),
-          borderColor:col,
-          borderWidth:isProm?3:2,
-          borderDash:isProm?[5,5]:[],
-          pointBackgroundColor:col,
-          pointRadius:isProm?4:3,
-          spanGaps:true
+          label: d, data:SCORES.map(q=>q[di]??null), backgroundColor:col+(isProm?'1A':'28'), borderColor:col,
+          borderWidth:isProm?3:2, borderDash:isProm?[5,5]:[], pointBackgroundColor:col, pointRadius:isProm?4:3, spanGaps:true
         };
       })
     },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{r:{min:5,max:10,ticks:{stepSize:1,font:{size:9},backdropColor:'transparent'},grid:{color:'#E2DDD5'}}}
-    }
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{r:{min:5,max:10,ticks:{stepSize:1,font:{size:9},backdropColor:'transparent'},grid:{color:'#E2DDD5'}}} }
   });
   
   if(leg) leg.innerHTML=orderedDepts.map(d=>{
-    const col=deptColor(d);
-    const isProm = d.startsWith('PROM. ');
+    const col=deptColor(d), isProm = d.startsWith('PROM. ');
     return `<span class="rl-chip truncated" title="${d.replace(/"/g,'&quot;')}" style="${isProm?'font-weight:700;':''}"><span class="rl-dot" style="background:${col};box-shadow:0 0 0 2px ${col}33"></span>${d}</span>`;
   }).join('');
 }
@@ -890,97 +687,61 @@ function renderLineChart(orderedDepts){
     data:{
       labels,
       datasets:orderedDepts.map(d=>{
-        const di=DEPTS.indexOf(d),col=deptColor(d);
-        const isProm = d.startsWith('PROM. ');
+        const di=DEPTS.indexOf(d),col=deptColor(d), isProm = d.startsWith('PROM. ');
         return {
-          label: d, 
-          data:SCORES.map(q=>q[di]??null),
-          borderColor:col,
-          backgroundColor:col+'18',
-          borderWidth:isProm?3:2,
-          borderDash:isProm?[5,5]:[],
-          pointRadius:isProm?5:4,
-          pointBackgroundColor:col,
-          tension:.35,
-          fill:orderedDepts.length===1,
-          spanGaps:true
+          label: d, data:SCORES.map(q=>q[di]??null), borderColor:col, backgroundColor:col+'18',
+          borderWidth:isProm?3:2, borderDash:isProm?[5,5]:[], pointRadius:isProm?5:4, pointBackgroundColor:col,
+          tension:.35, fill:orderedDepts.length===1, spanGaps:true
         };
       })
     },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{ legend:{ display:true, position:'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } } },
-      scales:{y:{min:5,max:10,grid:{color:'#E2DDD5'},ticks:{font:{size:11}}},x:{grid:{color:'#E2DDD5'},ticks:{font:{size:11}}}}
-    }
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:true, position:'bottom', labels: { boxWidth: 12, padding: 12, font: { size: 10 } } } }, scales:{y:{min:5,max:10,grid:{color:'#E2DDD5'},ticks:{font:{size:11}}},x:{grid:{color:'#E2DDD5'},ticks:{font:{size:11}}}} }
   });
 }
 
-// ════════════ RANKING LIST ════════════
 function renderRankingList(orderedDepts){
   const list=document.getElementById('rankList');
   if(!orderedDepts.length) { list.innerHTML=''; return; }
 
   list.innerHTML=QUESTIONS.map((q,qi)=>{
-    const vals=orderedDepts.map(d=>({d, v:SCORES[qi][DEPTS.indexOf(d)]}))
-      .filter(x=>x.v!==null&&x.v!==undefined)
-      .sort((a,b)=>b.v-a.v);
+    const vals=orderedDepts.map(d=>({d, v:SCORES[qi][DEPTS.indexOf(d)]})).filter(x=>x.v!==null&&x.v!==undefined).sort((a,b)=>b.v-a.v);
     if(!vals.length) return '';
     const best=vals[0], worst=vals[vals.length-1];
     
     return `<div class="rank-item">
       <div class="rank-q-wrap truncated" title="${q.replace(/"/g,'&quot;')}"><span class="rank-q-inner">P${qi+1} · ${q}</span></div>
       <div class="rank-badges">
-        <div class="rank-badge badge-best truncated" title="${best.d}">
-          <span style="flex-shrink:0">↑</span>
-          <div class="rb-name-wrap"><span class="rb-name-inner">${best.d}</span></div>
-          <span style="flex-shrink:0; margin-left:2px;">${best.v.toFixed(1)}</span>
-        </div>
-        <div class="rank-badge badge-worst truncated" title="${worst.d}">
-          <span style="flex-shrink:0">↓</span>
-          <div class="rb-name-wrap"><span class="rb-name-inner">${worst.d}</span></div>
-          <span style="flex-shrink:0; margin-left:2px;">${worst.v.toFixed(1)}</span>
-        </div>
+        <div class="rank-badge badge-best truncated" title="${best.d}"><span style="flex-shrink:0">↑</span><div class="rb-name-wrap"><span class="rb-name-inner">${best.d}</span></div><span style="flex-shrink:0; margin-left:2px;">${best.v.toFixed(1)}</span></div>
+        <div class="rank-badge badge-worst truncated" title="${worst.d}"><span style="flex-shrink:0">↓</span><div class="rb-name-wrap"><span class="rb-name-inner">${worst.d}</span></div><span style="flex-shrink:0; margin-left:2px;">${worst.v.toFixed(1)}</span></div>
       </div>
     </div>`;
   }).join('');
   requestAnimationFrame(markTruncated);
 }
 
-// ════════════ TOOLTIPS Y ANIMACIÓN SCROLL DINÁMICOS ════════════
 function markTruncated(){
-  const selectors = '.rank-q-wrap, .q-cell, thead th, .kpi-dept, .rank-badge, .chart-title, .filter-chip, .filter-dir-group-title, .rl-chip';
-  document.querySelectorAll(selectors).forEach(el=>{
+  document.querySelectorAll('.rank-q-wrap, .q-cell, thead th, .kpi-dept, .rank-badge, .chart-title, .filter-chip, .filter-dir-group-title, .rl-chip, .dept-tab').forEach(el=>{
     const inner = el.querySelector('.rank-q-inner, .q-cell-inner, .kpi-dept-inner, .rb-name-inner') || el;
     const wrapper = el.querySelector('.rb-name-wrap') || el; 
-    const isTruncated = inner.scrollWidth > wrapper.clientWidth;
-    el.classList.toggle('truncated', isTruncated);
+    el.classList.toggle('truncated', inner.scrollWidth > wrapper.clientWidth);
   });
 }
 
-// ════════════ DETAIL TABLE (Grouped by Dir) ════════════
 function renderDetailTable(orderedDepts){
   const tbl=document.getElementById('detailTable');
   if(!orderedDepts.length) { tbl.querySelector('thead').innerHTML=''; tbl.querySelector('tbody').innerHTML=''; return; }
 
   const groups = getDeptsGroupedByDir(orderedDepts);
-  
-  let tr1 = `<tr><th rowspan="2" class="q-col">Pregunta</th>`;
-  let tr2 = `<tr>`;
-  
-  const flatCols = []; 
+  let tr1 = `<tr><th rowspan="2" class="q-col">Pregunta</th>`, tr2 = `<tr>`, flatCols = []; 
 
   for(const [dir, dList] of Object.entries(groups)) {
     tr1 += `<th colspan="${dList.length}" class="truncated" title="${dir}" style="text-align:center; border-bottom:1px solid var(--border); background:var(--surface)">${dir}</th>`;
     dList.forEach(d => {
       flatCols.push(d);
-      const displayName = d.startsWith('PROM. ') ? '⭐ Promedio' : d;
-      tr2 += `<th class="truncated" title="${d}">${displayName}</th>`;
+      tr2 += `<th class="truncated" title="${d}">${d.startsWith('PROM. ') ? '⭐ Promedio' : d}</th>`;
     });
   }
-  tr1 += `<th rowspan="2" class="truncated" title="Promedio Visible">Promedio Visible</th></tr>`;
-  tr2 += `</tr>`;
-  
+  tr1 += `<th rowspan="2" class="truncated" title="Promedio Visible">Promedio Visible</th></tr>`; tr2 += `</tr>`;
   tbl.querySelector('thead').innerHTML = tr1 + tr2;
 
   let body='';
@@ -988,7 +749,6 @@ function renderDetailTable(orderedDepts){
     const vals = flatCols.map(d=>SCORES[qi][DEPTS.indexOf(d)]);
     const numVals = vals.filter(v=>v!==null);
     const avg = numVals.length?(numVals.reduce((s,v)=>s+v,0)/numVals.length).toFixed(2):'—';
-    
     body+=`<tr>
       <td class="q-cell truncated" title="${q.replace(/"/g,'&quot;')}"><span class="q-cell-inner">P${qi+1} · ${q}</span></td>
       ${vals.map(v=>{
@@ -1004,29 +764,25 @@ function renderDetailTable(orderedDepts){
     <td class="truncated" title="Promedio General" style="font-weight:600;color:var(--text);font-size:.78rem;text-align:left;">Promedio General</td>
     ${flatCols.map(d=>{
       const avg=AVERAGES[DEPTS.indexOf(d)];
-      const cls=avg>=9?'score-high':avg>=8?'score-mid':'score-low';
-      return`<td><span class="score-pill ${cls}">${avg.toFixed(2)}</span></td>`;
+      return`<td><span class="score-pill ${avg>=9?'score-high':avg>=8?'score-mid':'score-low'}">${avg.toFixed(2)}</span></td>`;
     }).join('')}
     <td><b>${(flatCols.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/flatCols.length).toFixed(2)}</b></td>
   </tr>`;
-  
   tbl.querySelector('tbody').innerHTML=body;
   requestAnimationFrame(markTruncated);
 }
 
-// ════════════ COMMENTS (Grouped, Mega Strict Classification) ════════════
+// ── CLASIFICACIÓN ESTRICTA (SIN "REQUERIMIENTOS OPERATIVOS") ──
 function classifyComment(text){
   if(!text) return 'Ignorar';
   const t = text.toLowerCase().trim();
   
-  // REGEX MEGA ESTRICTO DE COMENTARIOS INÚTILES
   const uselessRegex = /^(na|n\/?a|ninguno|ninguna|ningun|sin comentarios?|nada|\-|^\s*|\.|x|todo ok|ok|no tengo tema|felicidades|todo bien|sin observaciones|ninguna observaci.n|no tengo comentarios.*|todo excelente|excelente|muy bien|bien|sin detalle|ninguno por el momento|no aplica|desconozco.*|no conozco.*|no interact.o.*|no tengo contacto.*|ignoro.*|no hay comentarios)$/i;
   
   if(uselessRegex.test(t)) return 'Ignorar';
   if(t.length < 5 && !t.match(/mal|peor/)) return 'Ignorar'; 
   if(t.includes('no tengo') || t.includes('ningún comentario') || t.includes('desconozco') || t.includes('no interact')) return 'Ignorar';
   
-  // 20 Categorías corporativas hiper detalladas
   if(t.match(/sistema|software|portal|plataforma|red|conexi.n|aplicaci.n/)) return 'Sistemas y Tecnología';
   if(t.match(/tiempo|rapidez|rápida|rápido|urgente|tardó|tarda|agilizar|demora|retraso|lento/)) return 'Tiempos de Respuesta';
   if(t.match(/comunicaci|avisar|claro|transparencia|informaci.n|notificar|respuesta|contestar|seguimiento|retroalimentaci|aviso/)) return 'Comunicación y Seguimiento';
@@ -1047,12 +803,15 @@ function classifyComment(text){
   if(t.match(/liderazgo|jefe|gerente|direcci.n|coordinador|supervisor|mando/)) return 'Liderazgo y Gestión';
   if(t.match(/soluci.n|resolver|problema|conflicto/)) return 'Resolución de Problemas';
   
-  return 'Requerimientos Operativos'; 
+  if(t.match(/document|archivo|papel|expediente|formato/)) return 'Documentación y Archivo';
+  if(t.match(/espacio|lugar|oficina|silla|escritorio|baño/)) return 'Infraestructura Física';
+  
+  return 'Temas Operativos Específicos'; 
 }
 
 function renderDeptTabs(orderedDepts){
-  const c=document.getElementById('deptTabs');
-  c.innerHTML='';
+  const c = document.getElementById('deptTabs');
+  c.innerHTML = '';
   
   const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
   if(realDepts.length === 0) return;
@@ -1060,14 +819,26 @@ function renderDeptTabs(orderedDepts){
   const groups = getDeptsGroupedByDir(realDepts);
   let renderedDirs = 0;
   
+  const btnCorp = document.createElement('button');
+  btnCorp.className = 'dept-tab btn-consolidado truncated';
+  btnCorp.title = 'Consolidado Corporativo';
+  btnCorp.innerHTML = `<span class="dot"></span>🏢 CONSOLIDADO CORPORATIVO`;
+  btnCorp.addEventListener('click', () => {
+    document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
+    btnCorp.classList.add('active');
+    document.getElementById('catChips').innerHTML = '';
+    document.getElementById('commentList').style.display = 'none';
+    document.getElementById('commentsChartContainer').style.display = 'block';
+    renderCommentsChart('Toda la Empresa', realDepts);
+  });
+  c.appendChild(btnCorp);
+
   for (const [dir, dList] of Object.entries(groups)) {
-    // Verificar si ESTA dirección tiene algún departamento con comentarios válidos
     const deptsWithComments = dList.filter(d => {
       const raw = COMMENTS[d] || [];
       return raw.some(comment => classifyComment(comment) !== 'Ignorar');
     });
 
-    // Si la dirección no tiene ni un solo comentario válido, no la mostramos
     if(deptsWithComments.length === 0) continue;
 
     renderedDirs++;
@@ -1075,6 +846,20 @@ function renderDeptTabs(orderedDepts){
     groupDiv.className = 'filter-dir-group';
     groupDiv.innerHTML = `<span class="filter-dir-group-title truncated" title="${dir}">${dir}</span>`;
     
+    const btnGeneral = document.createElement('button');
+    btnGeneral.className = 'dept-tab dept-tab-general truncated';
+    btnGeneral.title = `General ${dir}`;
+    btnGeneral.innerHTML = `<span class="dot"></span>📊 General ${dir}`;
+    btnGeneral.addEventListener('click', () => {
+      document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
+      btnGeneral.classList.add('active');
+      document.getElementById('catChips').innerHTML = '';
+      document.getElementById('commentList').style.display = 'none';
+      document.getElementById('commentsChartContainer').style.display = 'block';
+      renderCommentsChart(dir, deptsWithComments);
+    });
+    groupDiv.appendChild(btnGeneral);
+
     deptsWithComments.forEach(d => {
       const col = deptColor(d);
       const btn = document.createElement('button');
@@ -1085,6 +870,8 @@ function renderDeptTabs(orderedDepts){
       btn.addEventListener('click', () => {
         document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        document.getElementById('commentsChartContainer').style.display = 'none';
+        document.getElementById('commentList').style.display = 'flex';
         renderCatChips(d);
         renderComments(d, null);
       });
@@ -1093,16 +880,64 @@ function renderDeptTabs(orderedDepts){
     c.appendChild(groupDiv);
   }
   
+  document.getElementById('commentsChartContainer').style.display = 'none';
+  document.getElementById('commentList').style.display = 'flex';
+
   if(renderedDirs === 0){
     c.innerHTML = '<div class="no-comments" style="padding:20px 0;">No hay comentarios en las áreas seleccionadas.</div>';
     document.getElementById('catChips').innerHTML='';
     document.getElementById('commentList').innerHTML='';
   } else {
-    document.getElementById('commentList').innerHTML='<div class="no-comments">Selecciona un departamento para ver sus comentarios</div>';
+    document.getElementById('commentList').innerHTML='<div class="no-comments">Selecciona un departamento o vista general para comenzar</div>';
     document.getElementById('catChips').innerHTML='';
   }
 
   requestAnimationFrame(markTruncated);
+}
+
+function renderCommentsChart(labelName, deptsList) {
+  let counts = {};
+  
+  deptsList.forEach(d => {
+    const raw = COMMENTS[d] || [];
+    raw.forEach(c => {
+      const cat = classifyComment(c);
+      if (cat !== 'Ignorar') {
+        counts[cat] = (counts[cat] || 0) + 1;
+      }
+    });
+  });
+
+  const sortedCats = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+  const dataVals = sortedCats.map(cat => counts[cat]);
+  const bgColors = sortedCats.map((_, i) => PALETTE[i % PALETTE.length] + 'CC');
+  const borderColors = sortedCats.map((_, i) => PALETTE[i % PALETTE.length]);
+
+  const ctx = document.getElementById('commentsChart').getContext('2d');
+  if (commentsChart) commentsChart.destroy();
+
+  commentsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: sortedCats,
+      datasets: [{ data: dataVals, backgroundColor: bgColors, borderColor: borderColors, borderWidth: 2, borderRadius: 4 }]
+    },
+    options: {
+      indexAxis: 'y', 
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: function(ctx) { return ` ${ctx.raw} menciones en ${labelName}`; } } }
+      },
+      scales: {
+        x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { color: '#E2DDD5' } },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 10, weight: 500, color: '#1A1714' }, callback: function(val, index) { let label = this.getLabelForValue(val); return label.length > 25 ? label.substring(0, 22) + '…' : label; } }
+        }
+      }
+    }
+  });
 }
 
 function renderCatChips(dept){
@@ -1160,11 +995,10 @@ function openImportModal(){document.getElementById('importModal').classList.add(
 function closeImportModal(){document.getElementById('importModal').classList.remove('open');document.getElementById('fileInput').value='';}
 
 function wireModalButtons(){
+  document.getElementById('btnImport').addEventListener('click', openImportModal);
+  document.getElementById('btnShare').addEventListener('click', openShareModal);
   document.getElementById('btnCloseImport').addEventListener('click', closeImportModal);
-  
-  // NATIVO: Guardar como PDF usando el menú de impresión del navegador
   document.getElementById('btnExportPDF').addEventListener('click', () => { window.print(); });
-  
   document.getElementById('btnCloseShare').addEventListener('click', ()=>{ closeShareModal(); const b=document.getElementById('btnOpenReader'); if(b){b.textContent='Generar link →';b.disabled=false;} });
   document.getElementById('btnOpenReader').addEventListener('click', generateReaderLink);
   document.getElementById('btnCopyLink').addEventListener('click', copyLink);
@@ -1188,7 +1022,6 @@ async function generateReaderLink(){
     };
 
     const docRef = await window.fb.addDoc(window.fb.collection(window.fb.db, "reportes"), payload);
-    
     const base = window.location.origin + window.location.pathname;
     const link = base + '?mode=reader&id=' + docRef.id;
 
@@ -1196,7 +1029,6 @@ async function generateReaderLink(){
     if(inp) inp.value = link;
 
     if(btn){ btn.textContent='Abrir →'; btn.disabled=false; btn.onclick=()=>window.open(link,'_blank'); }
-
     navigator.clipboard.writeText(link).catch(()=>{});
     showToast('✅ Link guardado en la nube y copiado','ok');
 
@@ -1240,33 +1072,20 @@ async function tryLoadFromURL(){
 
     if(docSnap.exists()){
       const raw = docSnap.data();
-      
-      if(raw.dirs && raw.deptMap) {
-        DIRS = raw.dirs;
-        DEPT_TO_DIR = raw.deptMap;
-      } else {
-        DIRS = ['General'];
-        DEPT_TO_DIR = {};
-        raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General');
-      }
+      if(raw.dirs && raw.deptMap) { DIRS = raw.dirs; DEPT_TO_DIR = raw.deptMap; } 
+      else { DIRS = ['General']; DEPT_TO_DIR = {}; raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General'); }
 
-      DEPTS     = raw.depts;
-      QUESTIONS = raw.qs;
-      SCORES    = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
-      COMMENTS  = raw.comments;
+      DEPTS = raw.depts; QUESTIONS = raw.qs;
+      SCORES = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
+      COMMENTS = raw.comments;
       if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
       
       injectDirectionAverages();
-
       const t = document.getElementById('dashTitle');
       if(t && raw.title) t.textContent = raw.title;
 
-      loader.remove();
-      initDashboard();
-      return true;
-    } else {
-      throw new Error("El reporte no existe");
-    }
+      loader.remove(); initDashboard(); return true;
+    } else { throw new Error("El reporte no existe"); }
 
   } catch(err){
     console.error('Error cargando URL:', err);
@@ -1285,79 +1104,54 @@ function handleFile(file){
       const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
       const ws1=wb.Sheets[wb.SheetNames[0]];
       const s1=XLSX.utils.sheet_to_json(ws1,{header:1,defval:null,raw:true});
-      
-      const hdrDir = s1[0] || [];   // Fila 1
-      const hdrDept = s1[1] || [];  // Fila 2
-      
-      const newDirsSet = new Set();
-      const newDepts = [];
-      const newDeptToDir = {};
-      const validCols = []; 
-      
+      const hdrDir = s1[0] || [], hdrDept = s1[1] || [];
+      const newDirsSet = new Set(), newDepts = [], newDeptToDir = {}, validCols = []; 
       let currentDir = "General";
       
       for(let c=1; c<hdrDept.length; c++){
-        if(hdrDir[c] !== null && hdrDir[c] !== undefined && String(hdrDir[c]).trim() !== '') {
-          currentDir = String(hdrDir[c]).trim();
-        }
-        
+        if(hdrDir[c] !== null && hdrDir[c] !== undefined && String(hdrDir[c]).trim() !== '') currentDir = String(hdrDir[c]).trim();
         const dNameCell = hdrDept[c];
         if(dNameCell && String(dNameCell).trim()){
           const dName = String(dNameCell).trim();
-          newDepts.push(dName);
-          newDeptToDir[dName] = currentDir;
-          newDirsSet.add(currentDir);
-          validCols.push({ colIndex: c, dName: dName });
+          newDepts.push(dName); newDeptToDir[dName] = currentDir; newDirsSet.add(currentDir); validCols.push({ colIndex: c, dName: dName });
         }
       }
 
       const newQ=[], newSc=[];
       for(let r=2; r<s1.length; r++){ 
-        const row=s1[r]||[];
-        const cell=row[0];
+        const row=s1[r]||[]; const cell=row[0];
         if(cell===null||cell===undefined)continue;
-        const txt=String(cell).trim();
-        if(!txt||!isNaN(Number(txt)))continue;
+        const txt=String(cell).trim(); if(!txt||!isNaN(Number(txt)))continue;
         
         const vals=[];
         validCols.forEach(vc => {
           const v = row[vc.colIndex];
           if(v===null||v===undefined||typeof v==='object'){ vals.push(null); return; }
-          const str=String(v).trim().toUpperCase();
-          if(!str||str==='NA'){ vals.push(null); return; }
-          const n=parseFloat(str.replace(',','.'));
-          vals.push(isNaN(n)?null:n<=1?+(n*10).toFixed(2):+n.toFixed(2));
+          const str=String(v).trim().toUpperCase(); if(!str||str==='NA'){ vals.push(null); return; }
+          const n=parseFloat(str.replace(',','.')); vals.push(isNaN(n)?null:n<=1?+(n*10).toFixed(2):+n.toFixed(2));
         });
-        
         if(vals.every(v=>v===null))continue;
-        newQ.push(txt);
-        newSc.push(vals);
+        newQ.push(txt); newSc.push(vals);
       }
       
       const newComm={}; newDepts.forEach(d=>{newComm[d]=[];});
       if(wb.SheetNames.length>1){
         const ws2=wb.Sheets[wb.SheetNames[1]];
         const s2=XLSX.utils.sheet_to_json(ws2,{header:1,defval:null});
-        const hdrDept2=s2[1]||[];
-        const cDepts=[];
+        const hdrDept2=s2[1]||[]; const cDepts=[];
         
-        for(let c=1;c<hdrDept2.length;c++){
-          if(hdrDept2[c]) cDepts.push({name:String(hdrDept2[c]).trim(),col:c});
-        }
+        for(let c=1;c<hdrDept2.length;c++){ if(hdrDept2[c]) cDepts.push({name:String(hdrDept2[c]).trim(),col:c}); }
         
         for(let r=2;r<s2.length;r++){ 
           const row=s2[r]||[];
           cDepts.forEach(({name,col})=>{
-            const cell=row[col];
-            if(!cell)return;
-            const txt=String(cell).trim();
-            if(!txt)return;
+            const cell=row[col]; if(!cell)return;
+            const txt=String(cell).trim(); if(!txt)return;
             const target=newDepts.find(d=>d===name)||newDepts.find(d=>d.toLowerCase()===name.toLowerCase());
             if(target)newComm[target].push(txt);
           });
         }
       }
-      
       closeImportModal();
       rebuildDashboard(Array.from(newDirsSet), newDepts, newDeptToDir, newQ, newSc, newComm, file.name);
       showToast(`✅ Datos cargados con éxito`,'ok');
@@ -1367,21 +1161,11 @@ function handleFile(file){
 }
 
 function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, fname){
-  DIRS = nDirs;
-  DEPTS = nDepts;
-  DEPT_TO_DIR = nMap;
-  QUESTIONS = nQ;
-  SCORES = nSc;
-  COMMENTS = nComm;
+  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm;
   REPORT_DATE = new Date();
-  
   injectDirectionAverages(); 
-  
   document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
-  
-  activeDirs.clear(); activeDirs.add('Todas');
-  activeDepts.clear(); activeDepts.add('Todos');
-  
+  activeDirs.clear(); activeDirs.add('Todas'); activeDepts.clear(); activeDepts.add('Todos');
   initDashboard(); 
 }
 
@@ -1393,19 +1177,13 @@ function showToast(msg,type=''){
 
 // ════════════ INICIALIZACIÓN ════════════
 (async ()=>{
-  while(!window.fb) {
-    await new Promise(r => setTimeout(r, 50));
-  }
-
+  while(!window.fb) { await new Promise(r => setTimeout(r, 50)); }
   const loaded = await tryLoadFromURL();
   if(!loaded){
     if(document.body.classList.contains('reader-mode')){
-      const ls=document.getElementById('loginScreen');
-      if(ls) ls.remove();
-      initDashboard();
+      const ls=document.getElementById('loginScreen'); if(ls) ls.remove(); initDashboard();
     } else {
-      const lp=document.getElementById('loginPwd');
-      if(lp) lp.focus();
+      const lp=document.getElementById('loginPwd'); if(lp) lp.focus();
     }
   }
 })();
