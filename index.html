@@ -18,7 +18,6 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  // Importamos setDoc y doc para poder sobrescribir bases de datos específicas
   import { getFirestore, collection, doc, setDoc, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -100,7 +99,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .toggle-arrow.open { transform: rotate(90deg); }
 .dept-row { display: none; }
 .dept-row.open { display: table-row; }
-.part-text { display: inline-block; white-space: normal; } /* NO MARQUEE */
+.part-text { display: inline-block; white-space: normal; }
 
 /* ── FILTERS ── */
 .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 20px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow);}
@@ -177,7 +176,6 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);margin-bottom:20px;overflow-x:auto;}
 table{width:100%;border-collapse:collapse;font-size:.78rem;}
 
-/* TITULOS TABLA DETALLES BOLD */
 thead th{background:var(--surface2);padding:9px 12px;font-family:var(--font-bold);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text);border-right:1px solid var(--border);white-space:nowrap;text-align:center;}
 tbody tr{border-bottom:1px solid var(--surface2);transition:background .15s;}
 tbody tr:hover{background:var(--surface2);}
@@ -208,7 +206,7 @@ tbody td:first-child { text-align: left; }
 .cat-chip .cnt{background:var(--border);color:var(--muted);font-size:.64rem;padding:1px 6px;border-radius:50px;}
 .cat-chip.active{background:var(--text);color:#fff;border-color:var(--text);}
 .cat-chip.active .cnt{background:rgba(255,255,255,.2);color:#fff;}
-.chip-text { display: inline-block; white-space: normal; } /* NO MARQUEE */
+.chip-text { display: inline-block; white-space: normal; }
 
 .comment-list{display:flex;flex-direction:column;gap:9px;max-height:clamp(220px,40vw,400px);overflow-y:auto;padding-right:3px;flex-grow:1;}
 .comment-list::-webkit-scrollbar{width:4px;}
@@ -227,7 +225,6 @@ tbody td:first-child { text-align: left; }
   box-shadow: var(--shadow-md); pointer-events: none; line-height: 1.45;
 }
 @keyframes marquee-slide { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-/* SOLO SE APLICA RECORRIDO A TABLAS DETALLADAS Y RANKING */
 .truncated:hover .rank-q-inner, .truncated:hover .q-cell-inner, .truncated:hover .kpi-dept-inner, .truncated:hover .rb-name-inner { animation: marquee-slide 10s linear 1 forwards; }
 
 /* ── MODALS ── */
@@ -431,7 +428,6 @@ tbody td:first-child { text-align: left; }
 </main>
 
 <script>
-// Conectar Chart.js a la fuente Avenir Next
 Chart.defaults.font.family = "'AvenirNextLTPro-Regular', 'Avenir Next', Avenir, Helvetica, sans-serif";
 
 const PALETTE = ['#C8846A','#7A9E8E','#B8A87A','#8A7BAE','#6A8FAE','#AE7A8A','#7AAE96','#AE957A','#9E8E7A','#7AAEBE','#BE9E7A','#8EAE7A'];
@@ -674,22 +670,16 @@ function renderKPIs(orderedDepts){
   requestAnimationFrame(markTruncated);
 }
 
-// ── CLASIFICADOR NIVEL DIOS (SIN BASURA NI GENERALIZACIONES) ──
 function classifyComment(text){
   if(!text) return 'Ignorar';
-  
-  // Limpiamos signos de puntuación y pasamos a minúsculas
   const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
-  
-  // Destruimos si es muy corto y no tiene palabras clave
   if(t.length < 5 && !t.match(/mal|peor|pago|falla|lento/)) return 'Ignorar';
 
-  // Matamos variaciones inservibles
   const uselessStarts = ['na', 'n/a', 'ningun', 'nada', 'todo ok', 'ok', 'todo bien', 'sin observaci', 'no tengo comentario', 'no hay comentario', 'sin comentario', 'todo excelente', 'excelente', 'muy bien', 'bien', 'sin detalle', 'desconozco', 'no conozco', 'ignoro', 'no aplica', 'todo en orden', 'sin queja', 'ninguna sugerencia', 'no ', 'si '];
   for(let start of uselessStarts){
     if(t.startsWith(start) || t === start) return 'Ignorar';
   }
-  if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien)$/.test(t)) return 'Ignorar';
+  if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien|sin comentarios)$/.test(t)) return 'Ignorar';
 
   const raw = text.toLowerCase();
 
@@ -824,7 +814,6 @@ function renderCatChips(dept){
     const btn = document.createElement('button');
     btn.className = 'cat-chip truncated';
     btn.title = label;
-    // SIN CLASE q-cell-inner PARA QUITAR EL RECORRIDO EN HOVER
     btn.innerHTML = `<span class="chip-text">${label}</span><span class="cnt">${count}</span>`;
     btn.onclick = () => { document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); onClick(); };
     return btn;
@@ -1097,9 +1086,10 @@ function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
 
 async function generateReaderLink(){
   const rawId = document.getElementById('customIdInput').value.trim();
-  if(!rawId) { showToast('⚠️ Escribe un nombre para el enlace', 'err'); return; }
-  const customId = rawId.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-  if(!customId) { showToast('⚠️ Usa letras o números', 'err'); return; }
+  if(!rawId) { showToast('⚠️ Escribe un ID o nombre', 'err'); return; }
+  
+  const customId = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
+  if(!customId) { showToast('⚠️ Usa letras o números válidos', 'err'); return; }
 
   const btn = document.getElementById('btnOpenReader');
   btn.textContent='Subiendo a la nube…'; btn.disabled=true;
@@ -1111,10 +1101,8 @@ async function generateReaderLink(){
       comments: COMMENTS, participation: PARTICIPATION, title: document.getElementById('dashTitle').textContent, timestamp: REPORT_DATE.toISOString()
     };
     
-    // GUARDAR O ACTUALIZAR
     await window.fb.setDoc(window.fb.doc(window.fb.db, "reportes", customId), payload);
     
-    // LINK SEGURO
     const baseURL = window.location.href.split('?')[0];
     const link = baseURL + '?mode=reader&id=' + customId;
     
