@@ -1393,76 +1393,86 @@ window.openInsights = async function() {
     return;
   }
 
-  // Construir resumen profundo (presupuesto ~$0.10 por análisis)
+  // ── DATOS COMPLETOS PARA ANÁLISIS PROFUNDO ──
   var globalAvgAll = 0, countAll = 0;
   realDepts.forEach(function(d){ var a = AVERAGES[DEPTS.indexOf(d)]; if(a>0){globalAvgAll+=a;countAll++;} });
   var globalAvg = countAll > 0 ? (globalAvgAll/countAll).toFixed(2) : 'N/A';
 
-  // Todos los departamentos con promedio y dirección
+  // Ranking completo de departamentos
   var deptAvgs = realDepts.map(function(d){ return {d:d, avg:AVERAGES[DEPTS.indexOf(d)]||0, dir:DEPT_TO_DIR[d]||'General'}; }).sort(function(a,b){return b.avg-a.avg;});
-  var deptLines = deptAvgs.map(function(x){ return x.dir+"/"+x.d+": "+x.avg.toFixed(2); }).join(" | ");
+  var deptRanking = deptAvgs.map(function(x,i){ return "#"+(i+1)+" "+x.d+" ["+x.dir+"]: "+x.avg.toFixed(2)+"/10"; }).join("\n");
 
-  // Puntaje por pregunta de cada departamento
+  // Puntajes por pregunta con promedio y quién destacó arriba/abajo
   var qLines = QUESTIONS.map(function(q,qi){
     var vals = realDepts.map(function(d){
       var v = SCORES[qi][DEPTS.indexOf(d)];
-      return (v!=null&&!isNaN(v)) ? d.substring(0,12)+":"+v.toFixed(1) : null;
+      return (v!=null&&!isNaN(v)) ? {d:d,v:v} : null;
     }).filter(Boolean);
     if(!vals.length) return null;
-    var avg = vals.reduce(function(s,x){return s+parseFloat(x.split(':')[1]);},0)/vals.length;
-    return "P\""+q+"\" (prom:"+avg.toFixed(1)+"): "+vals.join(", ");
+    vals.sort(function(a,b){return b.v-a.v;});
+    var avg = vals.reduce(function(s,x){return s+x.v;},0)/vals.length;
+    var sd = Math.sqrt(vals.reduce(function(s,x){return s+Math.pow(x.v-avg,2);},0)/vals.length);
+    var best = vals[0], worst = vals[vals.length-1];
+    var flag = sd>=1.5 ? " ⚠️POLARIZADA" : (avg<8 ? " 🚨CRÍTICA" : (avg>=9 ? " ✅FUERTE" : ""));
+    return "• \""+q+"\": prom="+avg.toFixed(1)+flag+"\n  Mejor: "+best.d+"("+best.v.toFixed(1)+") | Peor: "+worst.d+"("+worst.v.toFixed(1)+")";
   }).filter(Boolean).join("\n");
 
-  // Detección de polarización (desviación estándar alta)
-  var polarAlerts = [];
-  QUESTIONS.forEach(function(q,qi){
-    var vals = realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
-    if(vals.length>2){
-      var m=vals.reduce(function(a,b){return a+b;},0)/vals.length;
-      var sd=Math.sqrt(vals.reduce(function(a,b){return a+Math.pow(b-m,2);},0)/vals.length);
-      if(sd>=1.5) polarAlerts.push('"'+q+'" (SD:'+sd.toFixed(1)+')');
-    }
-  });
-
-  // Fallas sistémicas (40%+ de depts bajo 8)
-  var fallas = [];
-  QUESTIONS.forEach(function(q,qi){
-    var vals = realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
-    if(vals.length && vals.filter(function(v){return v<8;}).length >= vals.length*0.4) fallas.push('"'+q+'"');
-  });
-
-  // Participación por departamento
-  var partLines = realDepts.map(function(d){
-    var p=PARTICIPATION[d];
-    if(!p||!p.sent) return null;
-    return d.substring(0,15)+": "+(p.ans/p.sent*100).toFixed(0)+"% ("+p.ans+"/"+p.sent+")";
-  }).filter(Boolean).join(" | ");
+  // Participación
   var tS=0,tA=0;
   realDepts.forEach(function(d){var p=PARTICIPATION[d];if(p&&p.sent>0){tS+=p.sent;tA+=p.ans;}});
-  var partGlobal = tS>0 ? (tA+"/"+tS+" ("+(tA/tS*100).toFixed(0)+"%)") : "Sin datos";
+  var partGlobal = tS>0 ? (tA+"/"+tS+", "+( tA/tS*100).toFixed(1)+"% de respuesta") : "Sin datos";
+  var partLines = realDepts.map(function(d){
+    var p=PARTICIPATION[d]; if(!p||!p.sent) return null;
+    var pct=(p.ans/p.sent*100).toFixed(0);
+    return d+"("+pct+"%)";
+  }).filter(Boolean).join(", ");
 
-  // Comentarios: hasta 15 variados
-  var allComments = [];
-  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>8&&c.length<150) allComments.push(c); }); });
-  allComments = allComments.slice(0,15);
+  // Fallas sistémicas
+  var fallas=[], polarizadas=[];
+  QUESTIONS.forEach(function(q,qi){
+    var vals=realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
+    if(!vals.length) return;
+    var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length;
+    var sd=Math.sqrt(vals.reduce(function(a,b){return a+Math.pow(b-avg,2);},0)/vals.length);
+    if(vals.filter(function(v){return v<8;}).length>=vals.length*0.4) fallas.push('"'+q+'"(prom:'+avg.toFixed(1)+')');
+    if(sd>=1.5) polarizadas.push('"'+q+'"(SD:'+sd.toFixed(1)+')');
+  });
 
-  var prompt = "Eres consultor senior en Clima Organizacional. Genera un ANÁLISIS EJECUTIVO PROFUNDO en HTML (español) basado en estos datos reales de encuesta interna.\n\n" +
-    "PARTICIPACIÓN GLOBAL: " + partGlobal + "\n" +
-    (partLines ? "POR ÁREA: " + partLines + "\n" : "") +
-    "PROMEDIO GLOBAL: " + globalAvg + "/10\n" +
-    "RANKING DEPARTAMENTOS: " + deptLines + "\n\n" +
-    "PUNTAJES POR PREGUNTA:\n" + qLines + "\n\n" +
-    (polarAlerts.length ? "⚠️ POLARIZACIÓN DETECTADA (opiniones muy divididas): " + polarAlerts.join(", ") + "\n" : "") +
-    (fallas.length ? "🚨 FALLAS SISTÉMICAS (40%+ áreas bajo 8): " + fallas.join(", ") + "\n" : "") +
-    (allComments.length ? "\nCOMENTARIOS REALES:\n" + allComments.map(function(c,i){return (i+1)+". "+c;}).join("\n") + "\n" : "") +
-    "\nINSTRUCCIONES HTML:\n" +
-    "- Usa SOLO: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <em>, <b>, <br>\n" +
-    "- 5 secciones: 1)Panorama y Participación 2)Fortalezas 3)Brechas y Riesgos Críticos 4)Análisis de Comentarios 5)Plan de Acción Prioritario\n" +
-    "- Sección 5 usa clase highlight\n" +
-    "- Menciona nombres reales, cifras exactas, correlaciones entre áreas\n" +
-    "- Identifica causas raíz, no solo síntomas\n" +
-    "- Tono ejecutivo, directo, accionable\n" +
-    "- SOLO HTML, sin markdown ni texto fuera de las etiquetas";
+  // Comentarios reales variados
+  var allComments=[];
+  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) allComments.push({d:d,c:c}); }); });
+  allComments=allComments.slice(0,18);
+
+  var prompt =
+"Eres el mejor analista de Recursos Humanos y Clima Organizacional del mundo. Tu trabajo es leer datos de una encuesta interna de una empresa y escribir un análisis tan claro y útil que cualquier directivo —aunque no sepa de estadísticas— entienda exactamente qué está pasando y qué debe hacer.\n\n" +
+
+"REGLAS DE ESCRITURA (muy importantes):\n" +
+"- Escribe como si le hablaras a una persona, no como un reporte frío\n" +
+"- Usa palabras simples, nada de tecnicismos innecesarios\n" +
+"- Cuando algo es grave, dilo sin rodeos\n" +
+"- Cuando algo es bueno, celébralo con energía\n" +
+"- Conecta los datos entre sí para encontrar causas reales, no solo describas números\n" +
+"- Sé específico: menciona nombres de departamentos y cifras exactas\n\n" +
+
+"═══ DATOS DE LA ENCUESTA ═══\n\n" +
+"PARTICIPACIÓN GLOBAL: " + partGlobal + "\n" +
+(partLines ? "Por área: " + partLines + "\n" : "") +
+"\nRANKING GENERAL (de mejor a peor):\n" + deptRanking + "\n" +
+"\nPROMEDIO GLOBAL: " + globalAvg + "/10\n\n" +
+"ANÁLISIS POR PREGUNTA:\n" + qLines + "\n" +
+(fallas.length ? "\n🚨 ÁREAS DONDE CASI TODOS SALIERON MAL (fallas del sistema, no de una persona):\n" + fallas.join("\n") + "\n" : "") +
+(polarizadas.length ? "\n⚠️ PREGUNTAS CON OPINIONES MUY DIVIDIDAS (unos dan 10, otros dan 5):\n" + polarizadas.join("\n") + "\n" : "") +
+(allComments.length ? "\nLO QUE LA GENTE ESCRIBIÓ CON SUS PROPIAS PALABRAS:\n" + allComments.map(function(x,i){return (i+1)+'. ['+x.d+']: "'+x.c+'"';}).join("\n") + "\n" : "") +
+
+"\n═══ CÓMO QUIERO EL ANÁLISIS ═══\n" +
+"Formato: solo HTML con estas etiquetas: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <em>, <b>, <br>\n\n" +
+"ESTRUCTURA (5 secciones):\n" +
+"1. 📊 ¿Cómo está la empresa en general? — Contexto rápido, participación, qué tan confiables son los datos\n" +
+"2. 🏆 Lo que está funcionando bien — Las fortalezas reales, quién lidera y por qué importa\n" +
+"3. 🚨 Lo que necesita atención urgente — Los problemas reales, sus causas probables, qué riesgos representan si no se atienden\n" +
+"4. 💬 Lo que la gente está diciendo — Interpreta los comentarios, encuentra el hilo común, qué emociones o frustraciones hay detrás\n" +
+"5. ✅ Qué hacer esta semana (usa clase highlight) — 3 acciones concretas y específicas, en orden de prioridad, con nombre de área responsable\n\n" +
+"IMPORTANTE: Solo devuelve el HTML. Sin texto antes ni después. Sin markdown.";
 
   try {
     var response = await fetch("/api/analyze", {
@@ -1470,7 +1480,7 @@ window.openInsights = async function() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
+        max_tokens: 1800,
         messages: [{ role: "user", content: prompt }]
       })
     });
