@@ -1480,7 +1480,7 @@ window.openInsights = async function() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 1800,
+        max_tokens: 6000,
         messages: [{ role: "user", content: prompt }]
       })
     });
