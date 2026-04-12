@@ -1393,39 +1393,76 @@ window.openInsights = async function() {
     return;
   }
 
-  // Construir resumen optimizado (mínimo de tokens, máximo de valor)
+  // Construir resumen profundo (presupuesto ~$0.10 por análisis)
   var globalAvgAll = 0, countAll = 0;
   realDepts.forEach(function(d){ var a = AVERAGES[DEPTS.indexOf(d)]; if(a>0){globalAvgAll+=a;countAll++;} });
   var globalAvg = countAll > 0 ? (globalAvgAll/countAll).toFixed(2) : 'N/A';
 
-  // Top 3 mejores y peores departamentos
+  // Todos los departamentos con promedio y dirección
   var deptAvgs = realDepts.map(function(d){ return {d:d, avg:AVERAGES[DEPTS.indexOf(d)]||0, dir:DEPT_TO_DIR[d]||'General'}; }).sort(function(a,b){return b.avg-a.avg;});
-  var top3 = deptAvgs.slice(0,3).map(function(x){ return x.d+"("+x.avg.toFixed(1)+")"; }).join(", ");
-  var bot3 = deptAvgs.slice(-3).map(function(x){ return x.d+"("+x.avg.toFixed(1)+")"; }).join(", ");
+  var deptLines = deptAvgs.map(function(x){ return x.dir+"/"+x.d+": "+x.avg.toFixed(2); }).join(" | ");
 
-  // Mejor y peor pregunta
-  var bestQ='', worstQ='', bestQv=-1, worstQv=11;
+  // Puntaje por pregunta de cada departamento
+  var qLines = QUESTIONS.map(function(q,qi){
+    var vals = realDepts.map(function(d){
+      var v = SCORES[qi][DEPTS.indexOf(d)];
+      return (v!=null&&!isNaN(v)) ? d.substring(0,12)+":"+v.toFixed(1) : null;
+    }).filter(Boolean);
+    if(!vals.length) return null;
+    var avg = vals.reduce(function(s,x){return s+parseFloat(x.split(':')[1]);},0)/vals.length;
+    return "P\""+q+"\" (prom:"+avg.toFixed(1)+"): "+vals.join(", ");
+  }).filter(Boolean).join("\n");
+
+  // Detección de polarización (desviación estándar alta)
+  var polarAlerts = [];
   QUESTIONS.forEach(function(q,qi){
     var vals = realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
-    if(vals.length){var m=vals.reduce(function(a,b){return a+b;},0)/vals.length; if(m>bestQv){bestQv=m;bestQ=q;} if(m<worstQv){worstQv=m;worstQ=q;}}
+    if(vals.length>2){
+      var m=vals.reduce(function(a,b){return a+b;},0)/vals.length;
+      var sd=Math.sqrt(vals.reduce(function(a,b){return a+Math.pow(b-m,2);},0)/vals.length);
+      if(sd>=1.5) polarAlerts.push('"'+q+'" (SD:'+sd.toFixed(1)+')');
+    }
   });
 
-  // Participación global
-  var tS=0, tA=0;
+  // Fallas sistémicas (40%+ de depts bajo 8)
+  var fallas = [];
+  QUESTIONS.forEach(function(q,qi){
+    var vals = realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
+    if(vals.length && vals.filter(function(v){return v<8;}).length >= vals.length*0.4) fallas.push('"'+q+'"');
+  });
+
+  // Participación por departamento
+  var partLines = realDepts.map(function(d){
+    var p=PARTICIPATION[d];
+    if(!p||!p.sent) return null;
+    return d.substring(0,15)+": "+(p.ans/p.sent*100).toFixed(0)+"% ("+p.ans+"/"+p.sent+")";
+  }).filter(Boolean).join(" | ");
+  var tS=0,tA=0;
   realDepts.forEach(function(d){var p=PARTICIPATION[d];if(p&&p.sent>0){tS+=p.sent;tA+=p.ans;}});
-  var partStr = tS>0 ? (tA+"/"+tS+" ("+(tA/tS*100).toFixed(0)+"%)") : "Sin datos";
+  var partGlobal = tS>0 ? (tA+"/"+tS+" ("+(tA/tS*100).toFixed(0)+"%)") : "Sin datos";
 
-  // Comentarios: máximo 5 en total, los más cortos
+  // Comentarios: hasta 15 variados
   var allComments = [];
-  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c && c.length>5 && c.length<120) allComments.push(c); }); });
-  allComments = allComments.slice(0,5);
+  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>8&&c.length<150) allComments.push(c); }); });
+  allComments = allComments.slice(0,15);
 
-  var prompt = "Analiza esta encuesta interna y genera análisis ejecutivo en HTML (español).\n" +
-    "DATOS: Promedio global: " + globalAvg + "/10 | Participación: " + partStr + "\n" +
-    "Mejores: " + top3 + " | Peores: " + bot3 + "\n" +
-    "Mejor pregunta: \"" + bestQ + "\" (" + bestQv.toFixed(1) + ") | Peor: \"" + worstQ + "\" (" + worstQv.toFixed(1) + ")\n" +
-    (allComments.length ? "Comentarios: " + allComments.join(" / ") + "\n" : "") +
-    "HTML REQUERIDO: 4 secciones con <div class='insight-section-title'> y <div class='insight-p'>. Última sección usa <div class='insight-p highlight'>. Sin markdown, solo HTML. Menciona nombres y cifras reales. Tono ejecutivo directo.";
+  var prompt = "Eres consultor senior en Clima Organizacional. Genera un ANÁLISIS EJECUTIVO PROFUNDO en HTML (español) basado en estos datos reales de encuesta interna.\n\n" +
+    "PARTICIPACIÓN GLOBAL: " + partGlobal + "\n" +
+    (partLines ? "POR ÁREA: " + partLines + "\n" : "") +
+    "PROMEDIO GLOBAL: " + globalAvg + "/10\n" +
+    "RANKING DEPARTAMENTOS: " + deptLines + "\n\n" +
+    "PUNTAJES POR PREGUNTA:\n" + qLines + "\n\n" +
+    (polarAlerts.length ? "⚠️ POLARIZACIÓN DETECTADA (opiniones muy divididas): " + polarAlerts.join(", ") + "\n" : "") +
+    (fallas.length ? "🚨 FALLAS SISTÉMICAS (40%+ áreas bajo 8): " + fallas.join(", ") + "\n" : "") +
+    (allComments.length ? "\nCOMENTARIOS REALES:\n" + allComments.map(function(c,i){return (i+1)+". "+c;}).join("\n") + "\n" : "") +
+    "\nINSTRUCCIONES HTML:\n" +
+    "- Usa SOLO: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <em>, <b>, <br>\n" +
+    "- 5 secciones: 1)Panorama y Participación 2)Fortalezas 3)Brechas y Riesgos Críticos 4)Análisis de Comentarios 5)Plan de Acción Prioritario\n" +
+    "- Sección 5 usa clase highlight\n" +
+    "- Menciona nombres reales, cifras exactas, correlaciones entre áreas\n" +
+    "- Identifica causas raíz, no solo síntomas\n" +
+    "- Tono ejecutivo, directo, accionable\n" +
+    "- SOLO HTML, sin markdown ni texto fuera de las etiquetas";
 
   try {
     var response = await fetch("/api/analyze", {
