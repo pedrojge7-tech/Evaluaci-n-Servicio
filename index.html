@@ -1444,34 +1444,43 @@ window.openInsights = async function() {
   allComments=allComments.slice(0,18);
 
   var prompt =
-"Eres el mejor analista de Recursos Humanos y Clima Organizacional del mundo. Tu trabajo es leer datos de una encuesta interna de una empresa y escribir un análisis tan claro y útil que cualquier directivo —aunque no sepa de estadísticas— entienda exactamente qué está pasando y qué debe hacer.\n\n" +
+"Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.\n\n" +
 
-"REGLAS DE ESCRITURA (muy importantes):\n" +
-"- Escribe como si le hablaras a una persona, no como un reporte frío\n" +
-"- Usa palabras simples, nada de tecnicismos innecesarios\n" +
-"- Cuando algo es grave, dilo sin rodeos\n" +
-"- Cuando algo es bueno, celébralo con energía\n" +
-"- Conecta los datos entre sí para encontrar causas reales, no solo describas números\n" +
-"- Sé específico: menciona nombres de departamentos y cifras exactas\n\n" +
+"CONTEXTO CLAVE (muy importante para interpretar bien):\n" +
+"- Esto NO es una autoevaluación. Cada departamento fue calificado por las otras áreas con las que tiene contacto.\n" +
+"- Un puntaje bajo significa que los departamentos que dependen de ese servicio están frustrados o insatisfechos.\n" +
+"- Un puntaje alto significa que sus clientes internos los reconocen como un área que facilita el trabajo.\n" +
+"- Los comentarios son quejas, reconocimientos o sugerencias reales de otros departamentos hacia el evaluado.\n" +
+"- Una falla sistémica (casi todos mal en la misma pregunta) indica un proceso roto que afecta a toda la organización.\n" +
+"- Una polarización (opiniones muy divididas) sugiere que el servicio es inconsistente: algunos reciben buen trato y otros no.\n\n" +
 
-"═══ DATOS DE LA ENCUESTA ═══\n\n" +
+"REGLAS DE ESCRITURA:\n" +
+"- Escribe como si le hablaras directamente al Director General, con claridad y sin rodeos\n" +
+"- Usa palabras simples que cualquier persona entienda, sin tecnicismos\n" +
+"- Cuando algo es urgente, dilo con firmeza\n" +
+"- Cuando algo merece reconocimiento, exprésalo con entusiasmo\n" +
+"- Conecta los datos para encontrar causas reales, no solo describas números\n" +
+"- Siempre menciona nombres reales de departamentos y cifras exactas\n" +
+"- Recuerda siempre que quien califica es el cliente interno, no el propio departamento\n\n" +
+
+"═══ DATOS DE LA EVALUACIÓN ═══\n\n" +
 "PARTICIPACIÓN GLOBAL: " + partGlobal + "\n" +
-(partLines ? "Por área: " + partLines + "\n" : "") +
-"\nRANKING GENERAL (de mejor a peor):\n" + deptRanking + "\n" +
-"\nPROMEDIO GLOBAL: " + globalAvg + "/10\n\n" +
-"ANÁLISIS POR PREGUNTA:\n" + qLines + "\n" +
-(fallas.length ? "\n🚨 ÁREAS DONDE CASI TODOS SALIERON MAL (fallas del sistema, no de una persona):\n" + fallas.join("\n") + "\n" : "") +
-(polarizadas.length ? "\n⚠️ PREGUNTAS CON OPINIONES MUY DIVIDIDAS (unos dan 10, otros dan 5):\n" + polarizadas.join("\n") + "\n" : "") +
-(allComments.length ? "\nLO QUE LA GENTE ESCRIBIÓ CON SUS PROPIAS PALABRAS:\n" + allComments.map(function(x,i){return (i+1)+'. ['+x.d+']: "'+x.c+'"';}).join("\n") + "\n" : "") +
+(partLines ? "Participación por área evaluada: " + partLines + "\n" : "") +
+"\nRANKING DE SERVICIO (de mejor calificado a peor, según sus clientes internos):\n" + deptRanking + "\n" +
+"\nPROMEDIO GLOBAL DE SERVICIO: " + globalAvg + "/10\n\n" +
+"CALIFICACIÓN POR ASPECTO DE SERVICIO:\n" + qLines + "\n" +
+(fallas.length ? "\n🚨 ASPECTOS DONDE CASI TODOS LOS DEPARTAMENTOS FALLARON (el proceso está roto, no es culpa de una persona):\n" + fallas.join("\n") + "\n" : "") +
+(polarizadas.length ? "\n⚠️ ASPECTOS CON SERVICIO INCONSISTENTE (algunos clientes internos reciben buen servicio, otros no):\n" + polarizadas.join("\n") + "\n" : "") +
+(allComments.length ? "\nLO QUE LOS DEPARTAMENTOS ESCRIBIERON SOBRE EL SERVICIO QUE RECIBEN:\n" + allComments.map(function(x,i){return (i+1)+'. [Comentario sobre '+x.d+']: "'+x.c+'"';}).join("\n") + "\n" : "") +
 
-"\n═══ CÓMO QUIERO EL ANÁLISIS ═══\n" +
+"\n═══ ESTRUCTURA DEL ANÁLISIS ═══\n" +
 "Formato: solo HTML con estas etiquetas: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <em>, <b>, <br>\n\n" +
-"ESTRUCTURA (5 secciones):\n" +
-"1. 📊 ¿Cómo está la empresa en general? — Contexto rápido, participación, qué tan confiables son los datos\n" +
-"2. 🏆 Lo que está funcionando bien — Las fortalezas reales, quién lidera y por qué importa\n" +
-"3. 🚨 Lo que necesita atención urgente — Los problemas reales, sus causas probables, qué riesgos representan si no se atienden\n" +
-"4. 💬 Lo que la gente está diciendo — Interpreta los comentarios, encuentra el hilo común, qué emociones o frustraciones hay detrás\n" +
-"5. ✅ Qué hacer esta semana (usa clase highlight) — 3 acciones concretas y específicas, en orden de prioridad, con nombre de área responsable\n\n" +
+"5 SECCIONES OBLIGATORIAS:\n\n" +
+"1. 📊 Panorama General — ¿Qué tan confiables son estos datos? ¿Cuántos clientes internos participaron? ¿Qué tan representativa es la muestra? Da el veredicto general del nivel de servicio interno de la empresa.\n\n" +
+"2. 🏆 Departamentos que están haciendo un gran trabajo — ¿Quiénes tienen las mejores calificaciones de sus clientes internos? ¿En qué aspectos destacan? ¿Qué pueden enseñarle al resto?\n\n" +
+"3. 🚨 Departamentos y aspectos que necesitan atención urgente — ¿Quiénes están fallando a sus clientes internos? ¿En qué aspectos específicos? ¿Qué impacto tiene esto en la operación diaria de la empresa? ¿Hay fallas de proceso o de servicio inconsistente? Sé directo sobre la gravedad.\n\n" +
+"4. 💬 Lo que la gente está pidiendo a gritos — Interpreta los comentarios que dejaron los departamentos. ¿Qué frustraciones se repiten? ¿Qué reconocimientos hay? ¿Qué está pidiendo la gente que cambie? Conecta los comentarios con los puntajes para encontrar el patrón.\n\n" +
+"5. ✅ Plan de acción para esta semana (usa clase highlight) — Define exactamente 3 acciones concretas, en orden de impacto, con el nombre del área responsable y qué resultado se espera. Que sean acciones reales que se puedan ejecutar de inmediato, no recomendaciones genéricas.\n\n" +
 "IMPORTANTE: Solo devuelve el HTML. Sin texto antes ni después. Sin markdown.";
 
   try {
