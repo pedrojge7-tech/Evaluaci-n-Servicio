@@ -111,48 +111,31 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .btn-share{background:var(--if-navy);color:#fff;}
 .btn-share:hover{background:var(--if-navy-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21, 33, 48, 0.15);}
 
-/* ── BOTÓN SÚPER LLAMATIVO DE ANÁLISIS IA (GRADIENTE ANIMADO Y PULSO) ── */
+/* ── BOTÓN SÚPER LLAMATIVO DE ANÁLISIS IA ── */
 .insight-container { display: flex; justify-content: center; margin-bottom: 32px; margin-top: 10px; padding: 0 40px; }
 .btn-insight-master { 
   background: linear-gradient(45deg, #FF512F 0%, #F09819 51%, #FF512F 100%);
   background-size: 200% auto;
-  color: #fff; 
-  border: none; 
-  padding: 16px 38px; 
-  border-radius: 50px; 
-  font-size: 1.15rem; 
-  font-weight: 800; 
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  font-family: var(--font); 
+  color: #fff; border: none; padding: 16px 38px; border-radius: 50px; 
+  font-size: 1.15rem; font-weight: 800; cursor: pointer; display: flex; 
+  align-items: center; gap: 10px; font-family: var(--font); 
   box-shadow: 0 4px 15px rgba(240, 152, 25, 0.4);
   transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   letter-spacing: 0.02em;
   animation: gradient-shift 3s linear infinite, pulse-neon 2s infinite;
 }
-.btn-insight-master:hover { 
-  transform: scale(1.03) translateY(-2px); 
-  box-shadow: 0 8px 25px rgba(240, 152, 25, 0.6); 
-  filter: brightness(1.05);
-}
-.btn-insight-master:active { 
-  transform: scale(0.98); 
-}
+.btn-insight-master:hover { transform: scale(1.03) translateY(-2px); box-shadow: 0 8px 25px rgba(240, 152, 25, 0.6); filter: brightness(1.05); }
+.btn-insight-master:active { transform: scale(0.98); }
 
 @keyframes gradient-shift { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
-@keyframes pulse-neon { 
-  0% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0.5); } 
-  70% { box-shadow: 0 0 0 15px rgba(240, 152, 25, 0); } 
-  100% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0); } 
-}
+@keyframes pulse-neon { 0% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(240, 152, 25, 0); } 100% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0); } }
 body.reader-mode .insight-container { display: none !important; }
 
 /* ── READER EYE BADGE ── */
 #readerBadge{display:none;position:fixed;bottom:24px;right:24px;background:var(--surface);color:var(--text);border: 1px solid var(--border);border-radius:50px;padding:10px 18px;font-weight:600;font-size:.75rem;z-index:500;box-shadow:var(--shadow-md);align-items:center;gap:8px;pointer-events:none;}
 body.reader-mode #readerBadge{display:flex!important;}
-body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge{display:none!important;}
+/* Esconde todos menos el botón de PDF en modo lector */
+body.reader-mode .btn-share, body.reader-mode #btnImport, body.reader-mode .badge {display:none!important;}
 
 /* ── MAIN ── */
 .main{max-width:1440px;margin:0 auto;padding:10px 40px 80px;}
@@ -241,7 +224,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .rl-chip{display:flex;align-items:center;gap:6px;font-weight:600;font-size:.72rem;color:var(--text);white-space:nowrap;}
 .rl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
 
-/* ── RANKING POR PREGUNTA (100% VISIBLE CON MICRO SCROLL EN PREGUNTAS) ── */
+/* ── RANKING POR PREGUNTA (TEXTO SIEMPRE COMPLETO) ── */
 .rank-list{display:flex;flex-direction:column;gap:10px;flex-grow:1;overflow-y:auto; overflow-x:auto; padding-right:8px; padding-bottom: 8px;}
 .rank-list::-webkit-scrollbar{width:6px; height: 6px;}
 .rank-list::-webkit-scrollbar-track{background:transparent;}
@@ -251,31 +234,13 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .rank-item{border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:24px;min-height:52px; transition: border-color 0.2s; min-width: max-content;}
 .rank-item:hover { border-color: var(--if-gray-300); }
 
-/* Pregunta: Con Scroll Horizontal Propio */
-.rank-q-wrap {
-  flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  padding-bottom: 4px;
-  margin-right: 12px;
-}
-/* Micro Scrollbar para Preguntas */
-.rank-q-wrap::-webkit-scrollbar { height: 4px; }
-.rank-q-wrap::-webkit-scrollbar-track { background: transparent; }
-.rank-q-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 4px; }
-.rank-q-wrap::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
-
-.rank-q-inner { display: inline-block; white-space: nowrap; font-weight:600; font-size:.8rem; color:var(--if-navy); margin-bottom:0;}
+/* Obligamos al texto a hacer salto de línea siempre */
+.rank-q-wrap { flex: 1; min-width: 0; white-space: normal; padding-bottom: 4px; margin-right: 12px; overflow: visible;}
+.rank-q-inner { display: inline-block; white-space: normal; font-weight:600; font-size:.8rem; color:var(--if-navy); margin-bottom:0; line-height:1.4;}
 
 .rank-badges{flex-shrink:0; display:flex; gap:12px; align-items:center;}
-
-/* Badges (Departamentos): Visibles por completo sin scroll ni cortes */
 .rank-badge{ display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-weight:700; font-size: .75rem; }
-.rb-name-wrap { 
-  flex: 1 1 auto; 
-}
+.rb-name-wrap { flex: 1 1 auto; }
 .rb-name-inner { display: inline-block; white-space: normal; font-weight: 600; text-align: left;}
 
 .badge-best{background:var(--success-bg);color:var(--success);}
@@ -285,10 +250,7 @@ body.reader-mode .btn-share,body.reader-mode .btn-import,body.reader-mode .badge
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--shadow);margin-bottom:24px;overflow-x:auto;}
 table{width:100%;border-collapse:separate;border-spacing:0;font-size:.85rem;}
 
-/* DELIMITADORES VERTICALES GRUESOS */
 .border-right-bold { border-right: 3px solid #CBD5E1 !important; }
-
-/* ENCABEZADOS TABLA FIJOS (DEPARTAMENTOS EN VARIAS LÍNEAS) */
 thead th{background:var(--surface2);padding:12px 16px;font-weight:700;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);border-bottom:1px solid var(--border);text-align:center; white-space: normal; word-wrap: break-word; min-width: 120px; vertical-align: bottom;}
 thead th:first-child { border-top-left-radius: var(--rs); }
 thead th:last-child { border-top-right-radius: var(--rs); }
@@ -297,7 +259,6 @@ tbody tr:hover{background:var(--surface2);}
 tbody td{padding:14px 16px;font-weight:500;color:var(--text);vertical-align:middle;text-align:center;border-bottom:1px solid var(--surface2);}
 tbody td:first-child { text-align: left; }
 
-/* CELDAS DE PREGUNTAS (TABLA DETALLADA): Completamente legibles en varias lineas */
 .q-cell { white-space: normal; font-size:.8rem; color:var(--if-navy); font-weight: 600; min-width: 250px; max-width: 350px; line-height: 1.5; text-align: left; }
 .q-cell-inner { display: inline; white-space: normal; }
 
@@ -385,21 +346,51 @@ tbody td:first-child { text-align: left; }
 .insight-p.highlight { background: var(--primary-light); border-color: var(--primary); border-left-width: 6px; }
 .insight-p.highlight strong { color: var(--primary); }
 
-/* ── PRINT ── */
+/* ── PRINT NATIVO Y PDF EXPORT (Estilo ultra limpio como el PDF proporcionado) ── */
 @media print {
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; animation: none !important; }
-  body { background: #fff; color: #000; overflow: visible !important; }
-  .header-right, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept, .insight-container { display: none !important; }
-  .main { padding: 0 !important; }
-  .kpi-grid, .rank-list, .comment-list, .table-card, #radarLegend, #lineLegend { max-height: none !important; overflow: visible !important; height: auto !important; }
-  .rank-item { min-width: 0 !important; overflow: visible !important; white-space: normal !important; }
-  .rank-q-wrap, .rank-badge { white-space: normal !important; overflow: visible !important; }
-  .rb-name-wrap { white-space: normal !important; overflow: visible !important; }
-  .chart-card, .kpi-card, tr, .comment-item, .filter-dir-group { break-inside: avoid !important; page-break-inside: avoid !important; box-shadow: none !important; border-color: #eee !important;}
-  .charts-row { display: block !important; }
-  .chart-card { margin-bottom: 24px !important; }
+  body { background: #fff !important; color: #000; overflow: visible !important; }
+  .header, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept, .insight-container, .dept-tabs, .comment-categories { display: none !important; }
+  .main { padding: 0 !important; max-width: 1000px !important; margin: 0 auto !important; }
+  
+  /* Convertimos las columnas en una sola línea para que usen todo el ancho */
+  .cols-2 { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 20px !important;}
+  
+  /* Quita cajas, bordes, fondos y alinea contenido para aprovechar 100% del espacio */
+  .chart-card, .table-card, .participation-card { 
+    width: 100% !important; 
+    border: none !important; 
+    box-shadow: none !important; 
+    background: transparent !important;
+    padding: 10px 0 30px 0 !important;
+    margin-bottom: 20px !important;
+    break-inside: avoid !important; 
+    page-break-inside: avoid !important; 
+  }
+  
+  /* Centrado y crecimiento máximo de las gráficas */
+  .chart-container { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; height: 450px !important; min-height: 450px !important;}
+  canvas { margin: 0 auto !important; max-width: 100% !important; max-height: 100% !important; }
+  
+  /* Deshabilita scrolls para imprimir el 100% del contenido */
+  .kpi-grid, .rank-list, .comment-list, .table-card { max-height: none !important; overflow: visible !important; height: auto !important; }
+  #commentsChartContainer { display: block !important; }
+  #commentList { display: flex !important; flex-direction: column !important; }
+  #radarLegend, #lineLegend { display: flex !important; max-height: none !important; overflow: visible !important; }
+  
+  .rank-item { min-width: 0 !important; overflow: visible !important; height: auto !important;}
+  .rank-q-wrap, .rank-q-inner { white-space: normal !important; overflow: visible !important;}
+  .rank-badge, .rb-name-wrap { white-space: normal !important; overflow: visible !important; }
+  tr, .comment-item, .filter-dir-group { break-inside: avoid !important; page-break-inside: avoid !important; }
   .dept-row { display: table-row !important; } 
   .toggle-arrow { display: none !important; }
+  
+  /* Limpiar comentarios para diseño PDF */
+  .comment-item {
+    border: none !important; box-shadow: none !important; background: transparent !important;
+    padding: 6px 0 6px 14px !important; border-left: 3px solid var(--al, var(--primary)) !important;
+    margin-bottom: 12px !important; font-size: .85rem !important;
+  }
 }
 
 /* ── RESPONSIVE ── */
@@ -655,7 +646,6 @@ let activeDepts = new Set(['Todos']);
 let barChart, radarChart, lineChart, commentsChart;
 window.selectedLineIdx = null;
 
-// MEMORIA CACHÉ PARA EL ANÁLISIS
 window.cachedAnalysisHTML = "";
 window.cachedFilterKey = "";
 
@@ -694,7 +684,6 @@ function injectDirectionAverages() {
     const dirDepts = DEPTS.filter(d => DEPT_TO_DIR[d] === dir && !d.startsWith('PROM. '));
     const diProm = DEPTS.indexOf(promName);
     SCORES.forEach((qScores) => {
-       // EXCLUSION DE N/A: Solo filtramos notas validas
        const validScores = dirDepts.map(d => qScores[DEPTS.indexOf(d)]).filter(v => v !== null && v !== undefined && !isNaN(v));
        const avg = validScores.length ? validScores.reduce((a,b)=>a+b,0)/validScores.length : null;
        qScores[diProm] = avg !== null ? +(avg.toFixed(2)) : null;
@@ -745,7 +734,7 @@ function wireButtons(){
   document.getElementById('btnCloseShare').onclick = () => document.getElementById('shareModal').classList.remove('open');
   document.getElementById('btnOpenReader').onclick = generateReaderLink;
   document.getElementById('btnCopyLink').onclick = copyLink;
-  
+
   const dropzone = document.getElementById('dropzone');
   dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('over'); };
   dropzone.ondragleave = () => dropzone.classList.remove('over');
@@ -846,6 +835,18 @@ function updateAllViews() {
   renderRankingList(orderedDepts, activeQIndices);
   renderDetailTable(orderedDepts, activeQIndices);
   renderDeptTabs(orderedDepts);
+
+  if(activeDepts.size === 1 && !activeDepts.has('Todos')) {
+      const single = Array.from(activeDepts)[0];
+      if(!single.startsWith('PROM.')) {
+          setTimeout(() => {
+              const tabs = document.querySelectorAll('.dept-tab');
+              for(let t of tabs) {
+                  if(t.textContent.includes(single)) { t.click(); break; }
+              }
+          }, 100);
+      }
+  }
 }
 
 function renderKPIs(orderedDepts){
@@ -889,7 +890,6 @@ function classifyComment(text){
   if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien|sin comentarios|sin observaciones|todo muy bien)$/.test(t)) return 'Ignorar';
 
   const raw = text.toLowerCase();
-
   if(raw.match(/sistema|software|portal|plataforma|red|conexi.n|aplicaci.n|computadora|laptop|mouse|teclado|monitor|pantalla|impresora|internet|falla|error de sistema|tecnolog/)) return 'Sistemas, Equipo y Tecnología';
   if(raw.match(/tiempo|rapidez|rápida|rápido|urgente|tard|agilizar|demora|retraso|lento|espera|agilidad/)) return 'Tiempos de Respuesta';
   if(raw.match(/comunicaci|avisar|claro|transparencia|informaci|notificar|respuesta|contestar|seguimiento|aviso|correo|llamada|mensaje|junta|feedback/)) return 'Comunicación y Seguimiento';
@@ -970,8 +970,9 @@ function renderDeptTabs(orderedDepts){
       btn.onclick = () => {
         document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('commentsChartContainer').style.display = 'none';
+        document.getElementById('commentsChartContainer').style.display = 'block';
         document.getElementById('commentList').style.display = 'flex';
+        renderCommentsChart(d, [d]); 
         renderCatChips(d);
         renderComments(d, null);
       };
@@ -1030,12 +1031,42 @@ function renderCatChips(dept){
   Object.keys(cats).sort((a,b)=>cats[b].length - cats[a].length).forEach(cat => container.appendChild(makeChip(cat, cats[cat].length, () => renderComments(dept, cat))));
 }
 
+// ── RENDER COMMENTS CON AGRUPACIÓN Y CONTEO ──
 function renderComments(dept, cat){
   const list = document.getElementById('commentList');
   const valid = (COMMENTS[dept]||[]).filter(c => classifyComment(c) !== 'Ignorar');
-  const filtered = cat ? valid.filter(c => classifyComment(c) === cat) : valid;
-  if(!filtered.length){ list.innerHTML = '<div class="no-comments">Sin comentarios relevantes o están ocultos por el filtro automático de limpieza.</div>'; return; }
-  list.innerHTML = filtered.map(c => "<div class='comment-item' style='--al:" + deptColor(dept) + "'>" + c + "</div>").join('');
+  
+  if(!valid.length){ 
+    list.innerHTML = '<div class="no-comments">Sin comentarios relevantes o están ocultos por el filtro automático de limpieza.</div>'; 
+    return; 
+  }
+  
+  let html = '';
+  
+  if (cat) {
+    const filtered = valid.filter(c => classifyComment(c) === cat);
+    if(!filtered.length){ 
+      list.innerHTML = '<div class="no-comments">Sin comentarios en esta categoría.</div>'; 
+      return; 
+    }
+    html = filtered.map(c => "<div class='comment-item' style='--al:" + deptColor(dept) + "'>" + c + "</div>").join('');
+  } else {
+    const grouped = {};
+    valid.forEach(c => {
+      const cName = classifyComment(c);
+      if(!grouped[cName]) grouped[cName] = [];
+      grouped[cName].push(c);
+    });
+    
+    const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
+    
+    sortedCats.forEach(cName => {
+      html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+      html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(dept) + "'>" + c + "</div>").join('');
+    });
+  }
+  
+  list.innerHTML = html;
 }
 
 function renderBarChart(orderedDepts){
@@ -1353,7 +1384,6 @@ window.openInsights = async function() {
   content.style.display = 'none';
   loadingContainer.style.display = 'block';
 
-  // Textos de carga animados mientras espera la IA
   var loadingTexts = [
     "Enviando datos a la IA...",
     "Analizando puntajes por departamento...",
@@ -1377,7 +1407,6 @@ window.openInsights = async function() {
     if(progressEl) progressEl.style.width = fakePct + "%";
   }, 2500);
 
-  // Recopilar datos filtrados
   var allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
   var filteredDepts = DEPTS.filter(function(d){ return allowedDirs.includes(DEPT_TO_DIR[d]); });
   var realDepts = activeDepts.has('Todos')
@@ -1393,16 +1422,13 @@ window.openInsights = async function() {
     return;
   }
 
-  // ── DATOS COMPLETOS PARA ANÁLISIS PROFUNDO ──
   var globalAvgAll = 0, countAll = 0;
   realDepts.forEach(function(d){ var a = AVERAGES[DEPTS.indexOf(d)]; if(a>0){globalAvgAll+=a;countAll++;} });
   var globalAvg = countAll > 0 ? (globalAvgAll/countAll).toFixed(2) : 'N/A';
 
-  // Ranking completo de departamentos
   var deptAvgs = realDepts.map(function(d){ return {d:d, avg:AVERAGES[DEPTS.indexOf(d)]||0, dir:DEPT_TO_DIR[d]||'General'}; }).sort(function(a,b){return b.avg-a.avg;});
   var deptRanking = deptAvgs.map(function(x,i){ return "#"+(i+1)+" "+x.d+" ["+x.dir+"]: "+x.avg.toFixed(2)+"/10"; }).join("\n");
 
-  // Puntajes por pregunta con promedio y quién destacó arriba/abajo
   var qLines = QUESTIONS.map(function(q,qi){
     var vals = realDepts.map(function(d){
       var v = SCORES[qi][DEPTS.indexOf(d)];
@@ -1417,7 +1443,6 @@ window.openInsights = async function() {
     return "• \""+q+"\": prom="+avg.toFixed(1)+flag+"\n  Mejor: "+best.d+"("+best.v.toFixed(1)+") | Peor: "+worst.d+"("+worst.v.toFixed(1)+")";
   }).filter(Boolean).join("\n");
 
-  // Participación
   var tS=0,tA=0;
   realDepts.forEach(function(d){var p=PARTICIPATION[d];if(p&&p.sent>0){tS+=p.sent;tA+=p.ans;}});
   var partGlobal = tS>0 ? (tA+"/"+tS+", "+( tA/tS*100).toFixed(1)+"% de respuesta") : "Sin datos";
@@ -1427,7 +1452,6 @@ window.openInsights = async function() {
     return d+"("+pct+"%)";
   }).filter(Boolean).join(", ");
 
-  // Fallas sistémicas
   var fallas=[], polarizadas=[];
   QUESTIONS.forEach(function(q,qi){
     var vals=realDepts.map(function(d){return SCORES[qi][DEPTS.indexOf(d)];}).filter(function(v){return v!=null&&!isNaN(v);});
@@ -1438,7 +1462,6 @@ window.openInsights = async function() {
     if(sd>=1.5) polarizadas.push('"'+q+'"(SD:'+sd.toFixed(1)+')');
   });
 
-  // Comentarios reales variados
   var allComments=[];
   realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) allComments.push({d:d,c:c}); }); });
   allComments=allComments.slice(0,18);
@@ -1503,7 +1526,6 @@ window.openInsights = async function() {
     var data = await response.json();
     var resultHTML = data.content && data.content[0] && data.content[0].text ? data.content[0].text : "";
 
-    // Limpiar posibles bloques markdown
     resultHTML = resultHTML.replace(/```html?/gi, '').replace(/```/g, '').trim();
 
     if (!resultHTML) throw new Error("La IA no devolvió contenido.");
@@ -1532,7 +1554,6 @@ window.openInsights = async function() {
 
 function handleFile(file){
   showToast('⏳ Procesando...');
-  // AL IMPORTAR DATA NUEVA, SE BORRA LA CACHÉ
   window.cachedAnalysisHTML = "";
   window.cachedFilterKey = "";
   
