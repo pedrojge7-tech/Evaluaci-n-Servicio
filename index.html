@@ -361,17 +361,25 @@ tbody td:first-child { text-align: left; }
 .toast.ok{background:var(--success);}
 .toast.err{background:var(--danger);}
 
-/* ESTILOS DEL MODAL DE INSIGHTS PROFUNDOS */
-#insightModal .modal-box { width: 850px; max-width: 95vw; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; padding: 48px; }
+/* ESTILOS DEL MODAL DE INSIGHTS PROFUNDOS Y TABLAS IA */
+#insightModal .modal-box { width: 900px; max-width: 95vw; max-height: 85vh; overflow-y: auto; display: flex; flex-direction: column; padding: 48px; }
 #insightModal .modal-box::-webkit-scrollbar { width: 6px; }
 #insightModal .modal-box::-webkit-scrollbar-track { background: transparent; }
 #insightModal .modal-box::-webkit-scrollbar-thumb { background: var(--if-gray-300); border-radius: 10px; }
 
-.insight-section-title { font-weight: 800; font-size: 1.15rem; color: var(--if-navy); margin-top: 32px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-.insight-p { background: var(--surface); border-radius: var(--rs); padding: 18px 24px; margin-bottom: 16px; font-size: .92rem; line-height: 1.7; border: 1px solid var(--border); border-left: 4px solid var(--if-navy); color: var(--text); box-shadow: var(--shadow); }
-.insight-p strong { color: var(--if-navy); font-weight: 800; font-size: .98rem; display: block; margin-bottom: 6px;}
+.insight-section-title { font-weight: 900; font-size: 1.3rem; color: var(--if-navy); margin-top: 40px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--border); padding-bottom: 8px; text-transform: uppercase; letter-spacing: -0.02em;}
+.insight-p { background: var(--surface); border-radius: var(--rs); padding: 20px 28px; margin-bottom: 20px; font-size: .95rem; line-height: 1.7; border: 1px solid var(--border); border-left: 4px solid var(--if-navy); color: var(--text); box-shadow: var(--shadow); }
+.insight-p strong { color: var(--if-navy); font-weight: 800; font-size: 1rem; }
 .insight-p.highlight { background: var(--primary-light); border-color: var(--primary); border-left-width: 6px; }
 .insight-p.highlight strong { color: var(--primary); }
+
+/* Tablas generadas por IA */
+.insight-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 0.9rem; background: var(--surface); border-radius: var(--rs); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.insight-table th { background: var(--surface2); padding: 14px; text-align: left; font-weight: 800; border-bottom: 2px solid var(--border); color: var(--if-navy); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.8rem; }
+.insight-table td { padding: 14px; border-bottom: 1px solid var(--surface2); color: var(--text); vertical-align: top; }
+.insight-table tr:hover td { background: var(--surface2); }
+.insight-table ul { margin-left: 20px; margin-top: 10px; }
+.insight-table li { margin-bottom: 6px; }
 
 
 /* ── SOLUCIÓN PDF: IMPRESIÓN NATIVA EN TABLOIDE HORIZONTAL (11x17") ── */
@@ -569,7 +577,7 @@ tbody td:first-child { text-align: left; }
 </div>
 
 <div class="modal-overlay" id="insightModal">
-  <div class="modal-box" style="width: 800px;">
+  <div class="modal-box" style="width: 900px;">
     <h2 id="insightTitle" style="display:flex; align-items:center; gap:10px;">
       ✨ Diagnóstico Estratégico Integral
     </h2>
@@ -1757,9 +1765,10 @@ window.openInsights = async function() {
     "Enviando datos a la IA...",
     "Analizando puntajes por departamento...",
     "Procesando comentarios cualitativos...",
-    "Identificando brechas y fortalezas...",
-    "Generando diagnóstico estratégico...",
-    "Redactando plan de acción ejecutivo..."
+    "Cruzando calificaciones de Servicio con NPS...",
+    "Identificando brechas y fortalezas ocultas...",
+    "Generando diagnóstico estratégico nivel consultor...",
+    "Redactando plan de acción y métricas clave..."
   ];
   var ltIdx = 0;
   var textEl = document.getElementById('loadingText');
@@ -1772,9 +1781,9 @@ window.openInsights = async function() {
   var ltInterval = setInterval(function() {
     ltIdx = (ltIdx + 1) % loadingTexts.length;
     if(textEl) textEl.textContent = loadingTexts[ltIdx];
-    var fakePct = Math.min(90, 5 + (ltIdx / loadingTexts.length) * 85);
+    var fakePct = Math.min(95, 5 + (ltIdx / loadingTexts.length) * 90);
     if(progressEl) progressEl.style.width = fakePct + "%";
-  }, 2500);
+  }, 2000);
 
   var allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
   var filteredDepts = DEPTS.filter(function(d){ return allowedDirs.includes(DEPT_TO_DIR[d]); });
@@ -1833,55 +1842,56 @@ window.openInsights = async function() {
 
   var allComments=[];
   realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) allComments.push({d:d,c:c}); }); });
-  allComments=allComments.slice(0,18);
+  allComments=allComments.slice(0,30); // Incrementado para dar más contexto a la IA
 
-  var prompt =
-"Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.\n\n" +
+  // EXTRAER NPS PARA EL PROMPT
+  var npsLines = realDepts.map(function(d){
+    if(NPS_DATA[d] && typeof NPS_DATA[d] === 'object') {
+      var data = NPS_DATA[d];
+      var total = data.det + data.pas + data.pro;
+      if (total > 0) {
+        var val = Math.round(((data.pro - data.det) / total) * 100);
+        return "• " + d + ": NPS " + val + " (Promotores: " + data.pro + ", Pasivos: " + data.pas + ", Detractores: " + data.det + ")";
+      }
+    }
+    return null;
+  }).filter(Boolean).join("\n");
 
-"CONTEXTO CLAVE (muy importante para interpretar bien):\n" +
-"- Esto NO es una autoevaluación. Cada departamento fue calificado por las otras áreas con las que tiene contacto.\n" +
-"- Un puntaje bajo significa que los departamentos que dependen de ese servicio están frustrados o insatisfechos.\n" +
-"- Un puntaje alto significa que sus clientes internos los reconocen como un área que facilita el trabajo.\n" +
-"- Los comentarios son quejas, reconocimientos o sugerencias reales de otros departamentos hacia el evaluado.\n" +
-"- Una falla sistémica (casi todos mal en la misma pregunta) indica un proceso roto que afecta a toda la organización.\n" +
-"- Una polarización (opiniones muy divididas) sugiere que el servicio es inconsistente: algunos reciben buen trato y otros no.\n\n" +
-
-"REGLAS DE ESCRITURA:\n" +
-"- Escribe como si le hablaras directamente al Director General, con claridad y sin rodeos\n" +
-"- Usa palabras simples que cualquier persona entienda, sin tecnicismos\n" +
-"- Cuando algo es urgente, dilo con firmeza\n" +
-"- Cuando algo merece reconocimiento, exprésalo con entusiasmo\n" +
-"- Conecta los datos para encontrar causas reales, no solo describas números\n" +
-"- Siempre menciona nombres reales de departamentos y cifras exactas\n" +
-"- Recuerda siempre que quien califica es el cliente interno, no el propio departamento\n\n" +
-
-"═══ DATOS DE LA EVALUACIÓN ═══\n\n" +
-"PARTICIPACIÓN GLOBAL: " + partGlobal + "\n" +
-(partLines ? "Participación por área evaluada: " + partLines + "\n" : "") +
-"\nRANKING DE SERVICIO (de mejor calificado a peor, según sus clientes internos):\n" + deptRanking + "\n" +
-"\nPROMEDIO GLOBAL DE SERVICIO: " + globalAvg + "/10\n\n" +
-"CALIFICACIÓN POR ASPECTO DE SERVICIO:\n" + qLines + "\n" +
-(fallas.length ? "\n🚨 ASPECTOS DONDE CASI TODOS LOS DEPARTAMENTOS FALLARON (el proceso está roto, no es culpa de una persona):\n" + fallas.join("\n") + "\n" : "") +
-(polarizadas.length ? "\n⚠️ ASPECTOS CON SERVICIO INCONSISTENTE (algunos clientes internos reciben buen servicio, otros no):\n" + polarizadas.join("\n") + "\n" : "") +
-(allComments.length ? "\nLO QUE LOS DEPARTAMENTOS ESCRIBIERON SOBRE EL SERVICIO QUE RECIBEN:\n" + allComments.map(function(x,i){return (i+1)+'. [Comentario sobre '+x.d+']: "'+x.c+'"';}).join("\n") + "\n" : "") +
-
-"\n═══ ESTRUCTURA DEL ANÁLISIS ═══\n" +
-"Formato: solo HTML con estas etiquetas: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <em>, <b>, <br>\n\n" +
-"5 SECCIONES OBLIGATORIAS:\n\n" +
-"1. 📊 Panorama General — ¿Qué tan confiables son estos datos? ¿Cuántos clientes internos participaron? ¿Qué tan representativa es la muestra? Da el veredicto general del nivel de servicio interno de la empresa.\n\n" +
-"2. 🏆 Departamentos que están haciendo un gran trabajo — ¿Quiénes tienen las mejores calificaciones de sus clientes internos? ¿En qué aspectos destacan? ¿Qué pueden enseñarle al resto?\n\n" +
-"3. 🚨 Departamentos y aspectos que necesitan atención urgente — ¿Quiénes están fallando a sus clientes internos? ¿En qué aspectos específicos? ¿Qué impacto tiene esto en la operación diaria de la empresa? ¿Hay fallas de proceso o de servicio inconsistente? Sé directo sobre la gravedad.\n\n" +
-"4. 💬 Lo que la gente está pidiendo a gritos — Interpreta los comentarios que dejaron los departamentos. ¿Qué frustraciones se repiten? ¿Qué reconocimientos hay? ¿Qué está pidiendo la gente que cambie? Conecta los comentarios con los puntajes para encontrar el patrón.\n\n" +
-"5. ✅ Plan de acción para esta semana (usa clase highlight) — Define exactamente 3 acciones concretas, en orden de impacto, con el nombre del área responsable y qué resultado se espera. Que sean acciones reales que se puedan ejecutar de inmediato, no recomendaciones genéricas.\n\n" +
-"IMPORTANTE: Solo devuelve el HTML. Sin texto antes ni después. Sin markdown.";
+  var prompt = 
+"Eres un Consultor Senior Experto en Desarrollo Organizacional, Clima Laboral y Calidad de Servicio Interno. Tu tarea es analizar los resultados de una evaluación de servicio interno de una empresa y generar un reporte de nivel directivo EXTREMADAMENTE DETALLADO, PROFUNDO Y EXHAUSTIVO. " +
+"Quiero que entregues todo el valor posible. Tu respuesta debe ser de una longitud entre 3000 y 8000 tokens, desglosando cada aspecto, correlacionando métricas y justificando cada hallazgo.\n\n" +
+"CONTEXTO METODOLÓGICO:\n" +
+"- Departamentos califican el servicio que RECIBEN de otras áreas (escala 1 a 10).\n" +
+"- NPS Interno (Net Promoter Score): Va de -100 a 100. Mide lealtad y satisfacción general. Promotores (9-10), Pasivos (7-8), Detractores (0-6).\n" +
+"- Busca correlaciones: ¿Un área tiene buena calificación de servicio pero NPS negativo? Eso indica que cumplen el proceso pero el trato es malo, o viceversa.\n\n" +
+"DATOS DE LA EVALUACIÓN:\n\n" +
+"1. PARTICIPACIÓN:\n" + partGlobal + "\n" + (partLines ? partLines + "\n" : "") + "\n" +
+"2. NPS (NET PROMOTER SCORE) POR DEPARTAMENTO:\n" + (npsLines ? npsLines : "Sin datos de NPS capturados en esta vista.") + "\n\n" +
+"3. RANKING DE SERVICIO (Promedio General: " + globalAvg + "/10):\n" + deptRanking + "\n\n" +
+"4. CALIFICACIÓN POR PREGUNTA/ASPECTO:\n" + qLines + "\n\n" +
+(fallas.length ? "5. FALLAS SISTÉMICAS (Múltiples áreas fallan en esto):\n" + fallas.join("\n") + "\n\n" : "") +
+(polarizadas.length ? "6. SERVICIO INCONSISTENTE (Polarización):\n" + polarizadas.join("\n") + "\n\n" : "") +
+(allComments.length ? "7. COMENTARIOS CUALITATIVOS (Voz del cliente interno):\n" + allComments.map(function(x,i){return (i+1)+'. ['+x.d+']: "'+x.c+'"';}).join("\n") + "\n\n" : "") +
+"ESTRUCTURA EXIGIDA DEL REPORTE (Usa estrictamente etiquetas HTML: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <table class='insight-table'>, <ul>, <li>, <strong>, <b>):\n\n" +
+"1. 📊 RESUMEN EJECUTIVO: Análisis de participación, el estado general de la organización y el diagnóstico principal.\n" +
+"2. 🎯 ANÁLISIS DE NPS Y CORRELACIÓN: Evalúa el NPS. ¿Quiénes generan lealtad? ¿Quiénes generan fricción? Cruza el NPS con el puntaje de servicio. Crea una tabla HTML comparando áreas.\n" +
+"3. 🏆 FORTALEZAS Y CASOS DE ÉXITO: Qué departamentos son el pilar de la empresa actualmente y qué mejores prácticas demuestran según los datos y comentarios.\n" +
+"4. 🚨 FOCOS ROJOS Y RIESGOS OPERATIVOS: Inmersión profunda en las áreas con peor NPS o puntaje. Conecta los comentarios con los números para explicar EXACTAMENTE qué está fallando y cómo afecta a la empresa.\n" +
+"5. ⚙️ DIAGNÓSTICO DE PROCESOS (FALLAS SISTÉMICAS): Análisis de las preguntas peor puntuadas a nivel global. ¿Qué procesos transversales están rotos?\n" +
+"6. 💬 ANÁLISIS DE LA VOZ DEL CLIENTE: Patrones encontrados en los comentarios cualitativos. Cita textualmente ejemplos clave de los datos provistos.\n" +
+"7. 🚀 PLAN DE ACCIÓN ESTRATÉGICO (Usa <div class='insight-p highlight'>): MÍNIMO 5 iniciativas robustas y muy específicas. Detalla: Área responsable, Acción inmediata, KPI de medición y Resultados esperados.\n\n" +
+"REGLAS FINALES:\n" +
+"- Escribe de forma profesional, directa y consultiva.\n" +
+"- Extiéndete en tus explicaciones. Desglosa los 'porqués'. Oblígate a alcanzar una gran longitud y profundidad en tu análisis.\n" +
+"- Devuelve SOLO HTML puro. Sin Markdown (` ```html `). Sin texto inicial o final.";
 
   try {
     var response = await fetch("/api/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 6000,
+        model: "claude-sonnet-4-20250514", // Mantenemos el modelo original configurado en tu servidor
+        max_tokens: 8000, // Aumentado drásticamente a 8000 para mayor profundidad
         messages: [{ role: "user", content: prompt }]
       })
     });
