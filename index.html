@@ -134,8 +134,9 @@ body.reader-mode .insight-container { display: none !important; }
 /* ── READER EYE BADGE ── */
 #readerBadge{display:none;position:fixed;bottom:24px;right:24px;background:var(--surface);color:var(--text);border: 1px solid var(--border);border-radius:50px;padding:10px 18px;font-weight:600;font-size:.75rem;z-index:500;box-shadow:var(--shadow-md);align-items:center;gap:8px;pointer-events:none;}
 body.reader-mode #readerBadge{display:flex!important;}
-/* Esconde todos menos el botón de PDF en modo lector */
-body.reader-mode .btn-share, body.reader-mode #btnImport, body.reader-mode .badge {display:none!important;}
+
+/* Esconde botones de admin en modo lector, INCLUYENDO EL DE NPS */
+body.reader-mode .btn-share, body.reader-mode #btnImport, body.reader-mode #btnNPS, body.reader-mode .badge {display:none!important;}
 
 /* ── MAIN ── */
 .main{max-width:1440px;margin:0 auto;padding:10px 40px 80px;}
@@ -331,6 +332,17 @@ tbody td:first-child { text-align: left; }
 .btn-reader{background:var(--primary);color:#fff;border:none;padding:10px 28px;border-radius:50px;font-family:var(--font);font-weight:600;font-size:.85rem;cursor:pointer;transition:all .2s;}
 .btn-reader:hover{background:var(--primary-hover);transform:translateY(-1px);box-shadow: 0 4px 12px rgba(224, 112, 16, 0.2);}
 
+/* ESTILOS PARA MODAL NPS Y GRÁFICAS */
+.nps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.nps-gauge-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
+.nps-gauge-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.nps-gauge-title { font-weight: 800; font-size: .9rem; color: var(--if-navy); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 100%; white-space: normal; }
+.nps-gauge-wrapper { position: relative; width: 100%; max-width: 220px; display:flex; justify-content:center; }
+.nps-value-container { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom: 4px;}
+.nps-val { font-size: 2.8rem; font-weight: 900; color: var(--if-navy); line-height: 1; letter-spacing: -0.03em; }
+.nps-lbl { font-size: 0.75rem; font-weight: 800; color: var(--muted); margin-top: 2px; letter-spacing: 0.1em; text-transform: uppercase; }
+.nps-sub { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-top: 16px; text-align: center; width:100%;}
+
 .import-hint{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:16px;font-weight:500;font-size:.78rem;color:var(--muted);margin-bottom:20px;line-height:1.6;}
 .import-hint strong{display:block;margin-bottom:4px;font-weight:700;color:var(--if-navy);}
 .dropzone{border:2px dashed var(--border);border-radius:var(--rs);padding:40px 20px;text-align:center;background:var(--surface2);margin-bottom:24px;cursor:pointer;transition:all .2s;position:relative;}
@@ -371,7 +383,7 @@ tbody td:first-child { text-align: left; }
   .cols-2 { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 20px !important;}
   
   /* Quita cajas, bordes, fondos y alinea contenido para aprovechar 100% del espacio */
-  .chart-card, .table-card, .participation-card { 
+  .chart-card, .table-card, .participation-card, .nps-gauge-card { 
     width: 100% !important; 
     border: none !important; 
     box-shadow: none !important; 
@@ -381,6 +393,9 @@ tbody td:first-child { text-align: left; }
     break-inside: avoid !important; 
     page-break-inside: avoid !important; 
   }
+  
+  .nps-grid { display: flex !important; flex-wrap: wrap !important; gap: 10px !important; justify-content: center !important;}
+  .nps-gauge-card { width: 30% !important; border: 1px solid var(--border) !important; padding: 10px !important; margin: 5px !important;}
   
   /* Centrado y crecimiento máximo de las gráficas */
   .chart-container { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; height: 450px !important; min-height: 450px !important;}
@@ -467,6 +482,10 @@ tbody td:first-child { text-align: left; }
   <div class="header-right">
     <span class="badge">Admin</span>
     
+    <button class="btn btn-import" id="btnNPS">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+      Capturar NPS
+    </button>
     <button class="btn btn-import" id="btnImport">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
       Importar Datos
@@ -482,6 +501,19 @@ tbody td:first-child { text-align: left; }
     </button>
   </div>
 </header>
+
+<div class="modal-overlay" id="npsModal">
+  <div class="modal-box" style="width: 700px; max-height: 85vh; display: flex; flex-direction: column;">
+    <h2>Captura de Net Promoter Score (NPS)</h2>
+    <p>Ingresa la cantidad de personas que votaron en cada rubro. El NPS se calculará automáticamente. Déjalo en blanco si el área no fue evaluada.</p>
+    <div id="npsInputList" style="flex: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 10px;">
+        </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btnCloseNPS">Cancelar</button>
+      <button class="btn-reader" id="btnSaveNPS">Guardar y Calcular NPS</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="importModal">
   <div class="modal-box">
@@ -560,6 +592,16 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
     <table id="participationTable"><thead></thead><tbody></tbody></table>
+  </div>
+
+  <div class="chart-card" id="npsCard" style="display:none; margin-bottom:24px;">
+    <div class="chart-hdr" style="margin-bottom: 24px;">
+      <div>
+        <div class="chart-title">Net Promoter Score (NPS)</div>
+        <div class="chart-sub">¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)</div>
+      </div>
+    </div>
+    <div id="npsGrid" class="nps-grid"></div>
   </div>
 
   <div class="filter-bar" id="filterBarDir" style="margin-bottom:12px;"></div>
@@ -654,6 +696,7 @@ let SCORES = [];
 let AVERAGES = [];
 let COMMENTS = {};
 let PARTICIPATION = {}; 
+let NPS_DATA = {}; 
 
 let activeDirs = new Set(['Todas']);
 let activeDepts = new Set(['Todos']);
@@ -752,11 +795,82 @@ function wireButtons(){
   document.getElementById('btnOpenReader').onclick = generateReaderLink;
   document.getElementById('btnCopyLink').onclick = copyLink;
 
+  // Lógica Modal NPS
+  document.getElementById('btnNPS').onclick = openNPSModal;
+  document.getElementById('btnCloseNPS').onclick = () => document.getElementById('npsModal').classList.remove('open');
+  document.getElementById('btnSaveNPS').onclick = saveNPSModal;
+
   const dropzone = document.getElementById('dropzone');
   dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('over'); };
   dropzone.ondragleave = () => dropzone.classList.remove('over');
   dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
   document.getElementById('fileInput').onchange = (e) => { if(e.target.files[0]) handleFile(e.target.files[0]); };
+}
+
+// ── LÓGICA NPS MODAL ──
+function openNPSModal() {
+  const list = document.getElementById('npsInputList');
+  list.innerHTML = '';
+  const realDepts = DEPTS.filter(d => !d.startsWith('PROM. '));
+  
+  if (realDepts.length === 0) {
+     list.innerHTML = '<p style="color:var(--muted); text-align:center; padding: 20px;">Primero importa un archivo Excel con departamentos.</p>';
+  } else {
+     realDepts.forEach(d => {
+       // Limpieza en caso de datos viejos (cuando era un simple número en vez de objeto)
+       let data = NPS_DATA[d] || {det: '', pas: '', pro: ''};
+       if (typeof data === 'number') data = {det: '', pas: '', pro: ''};
+
+       list.innerHTML += `
+         <div class="nps-row" style="flex-direction: column; align-items: flex-start; border-bottom: 1px solid var(--border); padding: 16px 0;">
+           <label style="font-weight: 800; color: var(--if-navy); font-size: .95rem;">${d}</label>
+           <div style="display:flex; gap:16px; width:100%; margin-top:10px;">
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:var(--danger); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Detractores (0-6)</div>
+               <input type="number" min="0" data-type="det" data-dept="${d}" value="${data.det}" style="width:100%; border-color:var(--danger); background:var(--danger-bg); color:var(--danger);">
+             </div>
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:#D97706; font-weight:700; margin-bottom:6px; text-transform:uppercase;">Pasivos (7-8)</div>
+               <input type="number" min="0" data-type="pas" data-dept="${d}" value="${data.pas}" style="width:100%; border-color:#F59E0B; background:var(--warning-bg); color:#D97706;">
+             </div>
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:var(--success); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Promotores (9-10)</div>
+               <input type="number" min="0" data-type="pro" data-dept="${d}" value="${data.pro}" style="width:100%; border-color:var(--success); background:var(--success-bg); color:var(--success);">
+             </div>
+           </div>
+         </div>
+       `;
+     });
+  }
+  document.getElementById('npsModal').classList.add('open');
+}
+
+function saveNPSModal() {
+  const rows = document.querySelectorAll('#npsInputList .nps-row');
+  rows.forEach(row => {
+    const detInp = row.querySelector('input[data-type="det"]');
+    const pasInp = row.querySelector('input[data-type="pas"]');
+    const proInp = row.querySelector('input[data-type="pro"]');
+    const d = detInp.getAttribute('data-dept');
+    
+    const det = detInp.value.trim();
+    const pas = pasInp.value.trim();
+    const pro = proInp.value.trim();
+
+    if (det === '' && pas === '' && pro === '') {
+       delete NPS_DATA[d];
+    } else {
+       NPS_DATA[d] = {
+         det: parseInt(det || 0, 10),
+         pas: parseInt(pas || 0, 10),
+         pro: parseInt(pro || 0, 10)
+       };
+    }
+  });
+
+  document.getElementById('npsModal').classList.remove('open');
+  updateAllViews();
+  showToast('✅ NPS calculado y actualizado', 'ok');
 }
 
 function buildFilters() {
@@ -845,6 +959,7 @@ function updateAllViews() {
   });
 
   renderParticipation(orderedDepts);
+  renderNPS(orderedDepts);
   renderKPIs(orderedDepts);
   renderBarChart(orderedDepts);
   renderRadarChart(orderedDepts, activeQIndices);
@@ -863,6 +978,118 @@ function updateAllViews() {
               }
           }, 100);
       }
+  }
+}
+
+// ── GENERADOR DE MEDIDORES NPS (SVG PURO) ──
+function renderNPS(orderedDepts) {
+  const card = document.getElementById('npsCard');
+  const grid = document.getElementById('npsGrid');
+  grid.innerHTML = '';
+  
+  let hasData = false;
+  
+  orderedDepts.forEach(d => {
+    let val = null;
+    let breakdown = null;
+
+    // Calcular Valor y Desglose
+    if(d.startsWith('PROM. ')) {
+       const dir = d.replace('PROM. ', '');
+       const subDepts = DEPTS.filter(x => DEPT_TO_DIR[x] === dir && !x.startsWith('PROM. '));
+       const validSubDepts = subDepts.filter(x => NPS_DATA[x] !== undefined && typeof NPS_DATA[x] === 'object');
+       
+       if(validSubDepts.length > 0) {
+         let tDet = 0, tPas = 0, tPro = 0;
+         validSubDepts.forEach(sub => {
+           tDet += NPS_DATA[sub].det;
+           tPas += NPS_DATA[sub].pas;
+           tPro += NPS_DATA[sub].pro;
+         });
+         const total = tDet + tPas + tPro;
+         if (total > 0) {
+            val = Math.round(((tPro - tDet) / total) * 100);
+            breakdown = { det: tDet, pas: tPas, pro: tPro, total };
+         }
+       }
+    } else {
+       if(NPS_DATA[d] !== undefined && typeof NPS_DATA[d] === 'object') {
+         const data = NPS_DATA[d];
+         const total = data.det + data.pas + data.pro;
+         if (total > 0) {
+           val = Math.round(((data.pro - data.det) / total) * 100);
+           breakdown = { det: data.det, pas: data.pas, pro: data.pro, total };
+         }
+       }
+    }
+    
+    if(val !== null && breakdown !== null) {
+       hasData = true;
+
+       // Lógica Matemática del Medidor SVG
+       const clampedVal = Math.max(-100, Math.min(100, val));
+       const p = (clampedVal + 100) / 200; // Porcentaje de 0 a 1
+       
+       // Longitud del medio círculo (radio = 80) = Pi * 80 ≈ 251.327
+       const arcLength = Math.PI * 80; 
+       const fillLength = p * arcLength;
+       const rotation = (p * 180) - 90;
+
+       // Color semántico
+       let color = '#EF4444'; // Rojo (Detractor)
+       if (val >= 0) color = '#F59E0B'; // Amarillo (Pasivo)
+       if (val >= 50) color = '#10B981'; // Verde (Promotor)
+
+       const html = `
+       <div class="nps-gauge-card">
+           <div class="nps-gauge-title">${d}</div>
+           
+           <div class="nps-gauge-wrapper">
+               <svg viewBox="0 0 200 120" style="width:100%; height:auto; overflow:visible;">
+                   <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#EDF1F5" stroke-width="16" stroke-linecap="round"/>
+                   
+                   <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="${color}" stroke-width="16" stroke-linecap="round" 
+                         stroke-dasharray="${fillLength} ${arcLength}" stroke-dashoffset="0" style="transition: stroke-dasharray 1s ease-out;"/>
+                         
+                   <g transform="rotate(${rotation} 100 100)" style="transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);">
+                      <polygon points="95,108 105,108 100,14" fill="#152130" />
+                      <circle cx="100" cy="100" r="8" fill="#152130"/>
+                      <circle cx="100" cy="100" r="3" fill="#FFFFFF"/>
+                   </g>
+               </svg>
+               
+               <div class="nps-value-container">
+                   <div class="nps-val">${val}</div>
+                   <div class="nps-lbl">NPS</div>
+               </div>
+           </div>
+
+           <div style="display:flex; gap:10px; width:100%; margin-top:20px; background:var(--surface2); border-radius:10px; padding:12px; justify-content:space-around;">
+              <div style="text-align:center;">
+                  <div style="font-size:1.2rem; font-weight:900; color:var(--danger); line-height:1;">${breakdown.det}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Detract</div>
+              </div>
+              <div style="text-align:center; border-left:1.5px solid var(--border); border-right:1.5px solid var(--border); padding:0 14px;">
+                  <div style="font-size:1.2rem; font-weight:900; color:#D97706; line-height:1;">${breakdown.pas}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Pasivos</div>
+              </div>
+              <div style="text-align:center;">
+                  <div style="font-size:1.2rem; font-weight:900; color:var(--success); line-height:1;">${breakdown.pro}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Promot</div>
+              </div>
+           </div>
+           
+           <div class="nps-sub" style="margin-top:10px;">${breakdown.total} respuestas en total</div>
+       </div>
+       `;
+       grid.innerHTML += html;
+    }
+  });
+  
+  if(!hasData) {
+    card.style.display = 'none';
+  } else {
+    card.style.display = 'block';
   }
 }
 
@@ -1744,7 +1971,7 @@ function handleFile(file){
 }
 
 function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
-  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart;
+  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
   REPORT_DATE = new Date();
   injectDirectionAverages(); 
   document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
@@ -1766,7 +1993,7 @@ async function generateReaderLink(){
     const payload = {
       dirs: DIRS, depts: DEPTS.filter(d => !d.startsWith('PROM. ')), deptMap: DEPT_TO_DIR, qs: QUESTIONS,
       scores: JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
-      comments: COMMENTS, participation: PARTICIPATION, title: document.getElementById('dashTitle').textContent, timestamp: REPORT_DATE.toISOString()
+      comments: COMMENTS, participation: PARTICIPATION, nps: NPS_DATA, title: document.getElementById('dashTitle').textContent, timestamp: REPORT_DATE.toISOString()
     };
     
     await window.db.collection("reportes").doc(customId).set(payload);
@@ -1812,7 +2039,7 @@ async function tryLoadFromURL(){
       if(raw.dirs && raw.deptMap) { DIRS = raw.dirs; DEPT_TO_DIR = raw.deptMap; } 
       else { DIRS = ['General']; DEPT_TO_DIR = {}; raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General'); }
       DEPTS = raw.depts; QUESTIONS = raw.qs; SCORES = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
-      COMMENTS = raw.comments; PARTICIPATION = raw.participation || {}; if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
+      COMMENTS = raw.comments; PARTICIPATION = raw.participation || {}; NPS_DATA = raw.nps || {}; if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
       injectDirectionAverages();
       const t = document.getElementById('dashTitle'); if(t && raw.title) t.textContent = raw.title;
       loader.remove(); initDashboard(); return true;
