@@ -256,7 +256,6 @@ thead th{background:var(--surface2);padding:12px 16px;font-weight:700;font-size:
 thead th:first-child { border-top-left-radius: var(--rs); }
 thead th:last-child { border-top-right-radius: var(--rs); }
 tbody tr{transition:background .15s;}
-tbody tr:hover{background:var(--surface2);}
 tbody td{padding:14px 16px;font-weight:500;color:var(--text);vertical-align:middle;text-align:center;border-bottom:1px solid var(--surface2);}
 tbody td:first-child { text-align: left; }
 
@@ -268,15 +267,17 @@ tbody td:first-child { text-align: left; }
 .score-mid{background:var(--warning-bg);color:#D97706;}
 .score-low{background:var(--danger-bg);color:var(--danger);}
 
-/* Congelar primera columna de la tabla detallada */
-#detailTable { position: relative; border-collapse: separate; }
-#detailTable td:first-child, 
+/* SOLUCIÓN: Congelar primera columna de la tabla detallada sin sobreposiciones */
+#detailTable { position: relative; border-collapse: separate; border-spacing: 0; }
 #detailTable th:first-child {
-  position: sticky;
-  left: 0;
-  background: white;
+  position: sticky; left: 0;
+  background: var(--surface2);
+  z-index: 20; /* Mayor que el td para que quede arriba */
+}
+#detailTable td:first-child {
+  position: sticky; left: 0;
+  background: var(--surface); /* Fondo sólido vital */
   z-index: 10;
-  border-right: 2px solid var(--border);
 }
 #detailTable tr:hover td:first-child {
   background: var(--surface2);
@@ -339,8 +340,8 @@ tbody td:first-child { text-align: left; }
 .nps-gauge-title { font-weight: 800; font-size: .9rem; color: var(--if-navy); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 100%; white-space: normal; }
 .nps-gauge-wrapper { position: relative; width: 100%; max-width: 220px; display:flex; justify-content:center; }
 .nps-value-container { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom: 4px;}
-.nps-val { font-size: 2.8rem; font-weight: 900; color: var(--if-navy); line-height: 1; letter-spacing: -0.03em; }
-.nps-lbl { font-size: 0.75rem; font-weight: 800; color: var(--muted); margin-top: 2px; letter-spacing: 0.1em; text-transform: uppercase; }
+.nps-val { font-size: 2.8rem; font-weight: 900; color: var(--if-navy); line-height: 1; letter-spacing: -0.03em; z-index: 10;}
+.nps-lbl { font-size: 0.75rem; font-weight: 800; color: var(--muted); margin-top: 2px; letter-spacing: 0.1em; text-transform: uppercase; z-index: 10;}
 .nps-sub { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-top: 16px; text-align: center; width:100%;}
 
 .import-hint{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:16px;font-weight:500;font-size:.78rem;color:var(--muted);margin-bottom:20px;line-height:1.6;}
@@ -372,36 +373,47 @@ tbody td:first-child { text-align: left; }
 .insight-p.highlight { background: var(--primary-light); border-color: var(--primary); border-left-width: 6px; }
 .insight-p.highlight strong { color: var(--primary); }
 
-/* ── PRINT NATIVO Y PDF EXPORT (Estilo ultra limpio como el PDF proporcionado) ── */
+
+/* ── SOLUCIÓN PDF: IMPRESIÓN NATIVA EN TABLOIDE HORIZONTAL (11x17") ── */
+@page {
+  size: tabloid landscape; /* Fuerza el papel tabloide apaisado para aprovechar el ancho */
+  margin: 15mm;
+}
+
 @media print {
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; animation: none !important; }
-  body { background: #fff !important; color: #000; overflow: visible !important; }
+  
+  /* Resetear el body para usar el 100% del tamaño físico de la hoja Tabloide */
+  body { background: #fff !important; color: #000; overflow: visible !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
   .header, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept, .insight-container, .dept-tabs, .comment-categories { display: none !important; }
-  .main { padding: 0 !important; max-width: 1000px !important; margin: 0 auto !important; }
   
-  /* Convertimos las columnas en una sola línea para que usen todo el ancho */
-  .cols-2 { display: flex !important; flex-direction: column !important; width: 100% !important; gap: 20px !important;}
+  /* El wrapper principal ya no estará limitado a 1000px */
+  .main { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
   
-  /* Quita cajas, bordes, fondos y alinea contenido para aprovechar 100% del espacio */
-  .chart-card, .table-card, .participation-card, .nps-gauge-card { 
+  /* Forzar las 2 columnas nativas ocupando todo el ancho */
+  .cols-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; width: 100% !important; gap: 24px !important;}
+  
+  /* Quitar sombras pero retener bordes estructurales */
+  .chart-card, .table-card, .participation-card { 
     width: 100% !important; 
-    border: none !important; 
+    border: 1px solid var(--border) !important; 
     box-shadow: none !important; 
     background: transparent !important;
-    padding: 10px 0 30px 0 !important;
-    margin-bottom: 20px !important;
+    padding: 24px !important;
+    margin-bottom: 24px !important;
     break-inside: avoid !important; 
     page-break-inside: avoid !important; 
   }
   
-  .nps-grid { display: flex !important; flex-wrap: wrap !important; gap: 10px !important; justify-content: center !important;}
-  .nps-gauge-card { width: 30% !important; border: 1px solid var(--border) !important; padding: 10px !important; margin: 5px !important;}
+  /* Ajuste de medidores NPS para impresión a lo ancho */
+  .nps-grid { display: flex !important; flex-wrap: wrap !important; gap: 16px !important; justify-content: center !important;}
+  .nps-gauge-card { width: calc(33.333% - 16px) !important; border: 1px solid var(--border) !important; padding: 16px !important; margin: 0 !important; flex: none !important; break-inside: avoid !important; box-shadow: none !important; }
   
-  /* Centrado y crecimiento máximo de las gráficas */
-  .chart-container { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; height: 450px !important; min-height: 450px !important;}
-  canvas { margin: 0 auto !important; max-width: 100% !important; max-height: 100% !important; }
+  /* Centrado y crecimiento de las gráficas Chart.js */
+  .chart-container { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; height: auto !important; min-height: 350px !important;}
+  canvas { margin: 0 auto !important; max-width: 100% !important; height: auto !important; }
   
-  /* Deshabilita scrolls para imprimir el 100% del contenido */
+  /* Quitar scrolls de contenedores y asegurar visibilidad */
   .kpi-grid, .rank-list, .comment-list, .table-card { max-height: none !important; overflow: visible !important; height: auto !important; }
   #commentsChartContainer { display: block !important; }
   #commentList { display: flex !important; flex-direction: column !important; }
@@ -413,6 +425,11 @@ tbody td:first-child { text-align: left; }
   tr, .comment-item, .filter-dir-group { break-inside: avoid !important; page-break-inside: avoid !important; }
   .dept-row { display: table-row !important; } 
   .toggle-arrow { display: none !important; }
+  
+  /* SOLUCIÓN: Desactivar "sticky" en print para evitar glitches visuales en el PDF */
+  #detailTable td:first-child, #detailTable th:first-child { position: static !important; background: transparent !important; }
+  #detailTable { width: 100% !important; border-collapse: collapse !important; }
+  #detailTable td, #detailTable th { border: 1px solid var(--border) !important; }
   
   /* Limpiar comentarios para diseño PDF */
   .comment-item {
@@ -789,7 +806,9 @@ function initDashboard(){
 function wireButtons(){
   document.getElementById('btnImport').onclick = () => document.getElementById('importModal').classList.add('open');
   document.getElementById('btnCloseImport').onclick = () => document.getElementById('importModal').classList.remove('open');
-  document.getElementById('btnExportPDF').onclick = () => window.print();
+  document.getElementById('btnExportPDF').onclick = () => {
+     window.print();
+  };
   document.getElementById('btnShare').onclick = () => document.getElementById('shareModal').classList.add('open');
   document.getElementById('btnCloseShare').onclick = () => document.getElementById('shareModal').classList.remove('open');
   document.getElementById('btnOpenReader').onclick = generateReaderLink;
@@ -817,7 +836,7 @@ function openNPSModal() {
      list.innerHTML = '<p style="color:var(--muted); text-align:center; padding: 20px;">Primero importa un archivo Excel con departamentos.</p>';
   } else {
      realDepts.forEach(d => {
-       // Limpieza en caso de datos viejos (cuando era un simple número en vez de objeto)
+       // Limpieza en caso de datos viejos
        let data = NPS_DATA[d] || {det: '', pas: '', pro: ''};
        if (typeof data === 'number') data = {det: '', pas: '', pro: ''};
 
@@ -1052,9 +1071,8 @@ function renderNPS(orderedDepts) {
                          stroke-dasharray="${fillLength} ${arcLength}" stroke-dashoffset="0" style="transition: stroke-dasharray 1s ease-out;"/>
                          
                    <g transform="rotate(${rotation} 100 100)" style="transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);">
-                      <polygon points="95,108 105,108 100,14" fill="#152130" />
-                      <circle cx="100" cy="100" r="8" fill="#152130"/>
-                      <circle cx="100" cy="100" r="3" fill="#FFFFFF"/>
+                      <path d="M 96 45 L 104 45 L 100 12 Z" fill="#152130" />
+                      <circle cx="100" cy="45" r="4" fill="#152130"/>
                    </g>
                </svg>
                
