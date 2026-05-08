@@ -102,16 +102,12 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
 .header-left{display: flex; align-items: center; gap: 16px;}
 
-/* Estilos UNIFICADOS de los Logos Subibles (50px de altura fija para todos) */
-.header-logo-upload { height: 50px; min-width: 50px; max-width: 250px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: transform 0.2s;}
+/* Estilos de los Logos Subibles */
+.header-logo-upload { height: 80px; min-width: 80px; max-width: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; overflow: hidden; flex-shrink: 0; transition: transform 0.2s;}
 .header-logo-upload:hover { transform: scale(1.03); }
 #logoLeftBox { background: transparent; }
 #logoRightBox { background: transparent; border: 1.5px dashed var(--if-gray-300); }
-
-/* Esta clase fuerza a que la imagen respete los 50px exactos y mantenga su proporción */
-.custom-logo-img { height: 50px !important; width: auto !important; max-width: 250px !important; object-fit: contain !important; display: block; }
-
-#defaultLogoLeft { width: 50px; height: 50px; background: var(--if-orange); color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; border-radius: 8px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3);}
+#defaultLogoLeft { width: 80px; height: 80px; background: var(--if-orange); color: #fff; font-weight: 900; font-size: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3);}
 #defaultLogoRight { font-size: 0.85rem; color: var(--muted); font-weight: 600; padding: 0 16px; white-space: nowrap;}
 
 .header-left h1{font-weight:800;font-size:1.4rem;letter-spacing:-0.03em;max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -210,7 +206,7 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md); border-color: var(--ca, var(--primary));}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--ca,var(--primary));}
 
-/* Ajuste a Rankings responsivos para evitar que se corten */
+/* Ajuste a Rankings responsivos */
 .kpi-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; margin-bottom: 12px; width: 100%; flex-wrap: wrap; }
 .kpi-dept { font-weight: 700; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); white-space: normal; overflow: visible; line-height: 1.4; flex: 1 1 0%; min-width: 100px; margin-bottom: 0; padding-right: 0; word-break: break-word; }
 .kpi-rank { font-weight: 700; font-size: .65rem; color: var(--if-navy); background: var(--surface2); padding: 4px 8px; border-radius: 6px; flex-shrink: 0; border: 1px solid var(--border);}
@@ -324,7 +320,7 @@ tbody td:first-child { text-align: left; }
 .dept-tab-general.active { background: var(--if-navy); color: #fff; }
 
 .comment-categories{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
-.cat-chip{padding:8px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-weight:600;font-size:.75rem;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.cat-chip{padding:8px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-weight:600;font-size:.78rem;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
 .cat-chip:hover{border-color:var(--muted); color:var(--if-navy);}
 .cat-chip .cnt{background:var(--surface2);color:var(--muted);font-weight:700;font-size:.65rem;padding:2px 8px;border-radius:50px; border: 1px solid var(--border);}
 .cat-chip.active{background:var(--if-navy);color:#fff;border-color:var(--if-navy); box-shadow: 0 4px 10px rgba(21,33,48,0.15);}
@@ -422,7 +418,7 @@ tbody td:first-child { text-align: left; }
   .dept-row { display: table-row !important; } 
   .toggle-arrow { display: none !important; }
   
-  /* Desactiva sticky en impresión */
+  /* Se asegura que en impresion las columnas no sean "sticky" para evitar deformaciones */
   #detailTable .fixed-col { position: static !important; box-shadow: none !important; }
   
   .comment-item {
@@ -1188,46 +1184,31 @@ function renderComments(depts, cat){
   
   let html = '';
   
-  if (deptArr.length > 1) {
-      deptArr.forEach(d => {
-          const deptComments = filtered.filter(c => c.dept === d);
-          if (deptComments.length === 0) return;
-          
+  // Agrupar por Departamento primero, luego por Categoría (Para la vista "Todos")
+  deptArr.forEach(d => {
+      const deptComments = filtered.filter(c => c.dept === d);
+      if (deptComments.length === 0) return;
+      
+      if (deptArr.length > 1) {
           html += "<div style='font-weight: 900; font-size: 1.1rem; color: var(--if-orange); margin-top: 24px; margin-bottom: 8px; border-bottom: 2px solid var(--if-orange); padding-bottom: 4px; text-transform: uppercase;'>" + d + "</div>";
-          
-          const grouped = {};
-          deptComments.forEach(c => {
-              const cName = classifyComment(c.text);
-              if(!grouped[cName]) grouped[cName] = [];
-              grouped[cName].push(c);
-          });
-          
-          const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
-          
-          sortedCats.forEach(cName => {
-              if (!cat) {
-                  html += "<div style='font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
-              }
-              html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + c.text + "</div>").join('');
-          });
-      });
-  } else {
+      }
+      
       const grouped = {};
-      filtered.forEach(c => {
-        const cName = classifyComment(c.text);
-        if(!grouped[cName]) grouped[cName] = [];
-        grouped[cName].push(c);
+      deptComments.forEach(c => {
+          const cName = classifyComment(c.text);
+          if(!grouped[cName]) grouped[cName] = [];
+          grouped[cName].push(c);
       });
       
       const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
       
       sortedCats.forEach(cName => {
-        if (!cat) {
-            html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
-        }
-        html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(deptArr[0]) + "'>" + c.text + "</div>").join('');
+          if (!cat) { // Si estamos en la vista de "Todos", mostramos los subtítulos de categoría
+              html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+          }
+          html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + c.text + "</div>").join('');
       });
-  }
+  });
   
   list.innerHTML = html;
 }
@@ -1508,11 +1489,11 @@ function renderParticipation(orderedDepts) {
   if (!hasAnyData) { card.style.display = 'none'; return; }
 
   const globalPct = globalSent > 0 ? ((globalAns / globalSent) * 100).toFixed(1) : 0;
-  body += "<tr style='background:var(--if-navy); font-family:var(--font-bold);'>" +
+  body += "<tr style='background:#152130; font-family:var(--font-bold);'>" +
       "<td class='truncated' style='text-align:left; border:none; color:#fff; border-bottom-left-radius:var(--rs);'><span class='part-text'>🏢 Total General</span></td>" +
       "<td style='text-align:center; border:none; color:#fff;'>" + globalSent + "</td>" +
       "<td style='text-align:center; border:none; color:#fff;'>" + globalAns + "</td>" +
-      "<td style='border:none; color:#fff; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:var(--if-orange)'></div></div></div></td>" +
+      "<td style='border:none; color:#fff; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td>" +
     "</tr></tbody>";
   tbl.innerHTML = head + body;
 }
