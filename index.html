@@ -102,12 +102,16 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
 .header-left{display: flex; align-items: center; gap: 16px;}
 
-/* Estilos de los Logos Subibles (Más grandes, hasta 80px) */
-.header-logo-upload { height: 80px; min-width: 80px; max-width: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; overflow: hidden; flex-shrink: 0; transition: transform 0.2s;}
+/* Estilos UNIFICADOS de los Logos Subibles (50px de altura fija para todos) */
+.header-logo-upload { height: 50px; min-width: 50px; max-width: 250px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: transform 0.2s;}
 .header-logo-upload:hover { transform: scale(1.03); }
 #logoLeftBox { background: transparent; }
 #logoRightBox { background: transparent; border: 1.5px dashed var(--if-gray-300); }
-#defaultLogoLeft { width: 80px; height: 80px; background: var(--if-orange); color: #fff; font-weight: 900; font-size: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3);}
+
+/* Esta clase fuerza a que la imagen respete los 50px exactos y mantenga su proporción */
+.custom-logo-img { height: 50px !important; width: auto !important; max-width: 250px !important; object-fit: contain !important; display: block; }
+
+#defaultLogoLeft { width: 50px; height: 50px; background: var(--if-orange); color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; border-radius: 8px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3);}
 #defaultLogoRight { font-size: 0.85rem; color: var(--muted); font-weight: 600; padding: 0 16px; white-space: nowrap;}
 
 .header-left h1{font-weight:800;font-size:1.4rem;letter-spacing:-0.03em;max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -418,7 +422,7 @@ tbody td:first-child { text-align: left; }
   .dept-row { display: table-row !important; } 
   .toggle-arrow { display: none !important; }
   
-  /* Se asegura que en impresion las columnas no sean "sticky" para evitar deformaciones */
+  /* Desactiva sticky en impresión */
   #detailTable .fixed-col { position: static !important; box-shadow: none !important; }
   
   .comment-item {
@@ -484,7 +488,7 @@ tbody td:first-child { text-align: left; }
 <header class="header">
   <div class="header-left">
     <div class="header-logo-upload" id="logoLeftBox" title="Clic para subir tu propio Logo">
-      <img id="logoLeftImg" style="display:none; height: 80px; width: auto; max-width: 300px; object-fit: contain; background: transparent;" alt="Logo Izquierdo"> 
+      <img id="logoLeftImg" class="custom-logo-img" style="display:none;" alt="Logo Izquierdo"> 
       <div id="defaultLogoLeft">IF</div>
     </div>
     
@@ -511,7 +515,7 @@ tbody td:first-child { text-align: left; }
     </button>
     
     <div class="header-logo-upload" id="logoRightBox" title="Clic para subir tu propio Logo" style="margin-left: 8px;">
-      <img id="logoRightImg" style="display:none; height: 80px; width: auto; max-width: 300px; object-fit: contain; background: transparent;" alt="Logo Derecho"> 
+      <img id="logoRightImg" class="custom-logo-img" style="display:none;" alt="Logo Derecho"> 
       <span id="defaultLogoRight">+ Logo</span>
     </div>
   </div>
@@ -760,7 +764,7 @@ function updateSubtitle(){
   document.getElementById('dashSubtitle').textContent = realDeptsCount + " departamentos · " + DIRS.length + " direcciones · " + QUESTIONS.length + " preguntas · " + capDate;
 }
 
-// NUEVO SISTEMA DE LOGIN CON FIREBASE AUTH
+// LOGIN CON FIREBASE AUTH
 async function doLogin(){
   const email = document.getElementById('loginEmail').value.trim();
   const pwd = document.getElementById('loginPwd').value.trim();
@@ -824,7 +828,6 @@ function wireButtons(){
   document.getElementById('btnOpenReader').onclick = generateReaderLink;
   document.getElementById('btnCopyLink').onclick = copyLink;
 
-  /* Carga de Logos (Modo Admin) */
   document.getElementById('logoLeftBox').onclick = () => {
       if(!document.body.classList.contains('reader-mode')) document.getElementById('logoLeftInput').click();
   };
@@ -858,7 +861,6 @@ function wireButtons(){
   dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
   document.getElementById('fileInput').onchange = (e) => { if(e.target.files[0]) handleFile(e.target.files[0]); };
   
-  // Boton Login
   const lp = document.getElementById('loginPwd'); 
   if(lp) { lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
   const btn = document.getElementById('loginBtn'); 
@@ -1001,7 +1003,6 @@ function renderKPIs(orderedDepts){
   }
 }
 
-// ── LIMPIEZA TOTAL DE OBSERVACIONES GENERALES ──
 function classifyComment(text){
   if(!text) return 'Ignorar';
   const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
@@ -1039,7 +1040,6 @@ function classifyComment(text){
   if(raw.match(/ambiente|clima|compañer|chisme|rumor|respeto|valores|cultura|equipo|integraci/)) return 'Clima Laboral y Compañerismo';
   if(raw.match(/falta|necesita|requiere|ocupamos|deber.an|sugerencia|recomiendo|mejorar|oportunidad/)) return 'Sugerencias de Mejora';
 
-  // Fallback a Ignorar para evitar categorías basura
   return 'Ignorar'; 
 }
 
@@ -1168,7 +1168,6 @@ function renderCatChips(depts){
   });
 }
 
-// ── AGRUPACIÓN RESTAURADA EN MODO "TODOS" ──
 function renderComments(depts, cat){
   const list = document.getElementById('commentList');
   const deptArr = Array.isArray(depts) ? depts : [depts];
@@ -1183,37 +1182,52 @@ function renderComments(depts, cat){
   const filtered = cat ? allValid.filter(c => classifyComment(c.text) === cat) : allValid;
   
   if(!filtered.length){ 
-    list.innerHTML = '<div class="no-comments">Sin comentarios relevantes.</div>'; 
+    list.innerHTML = '<div class="no-comments">Sin comentarios relevantes para la mejora continua.</div>'; 
     return; 
   }
   
   let html = '';
   
-  // Agrupar por Departamento primero, luego por Categoría
-  deptArr.forEach(d => {
-      const deptComments = filtered.filter(c => c.dept === d);
-      if (deptComments.length === 0) return;
-      
-      if (deptArr.length > 1) {
+  if (deptArr.length > 1) {
+      deptArr.forEach(d => {
+          const deptComments = filtered.filter(c => c.dept === d);
+          if (deptComments.length === 0) return;
+          
           html += "<div style='font-weight: 900; font-size: 1.1rem; color: var(--if-orange); margin-top: 24px; margin-bottom: 8px; border-bottom: 2px solid var(--if-orange); padding-bottom: 4px; text-transform: uppercase;'>" + d + "</div>";
-      }
-      
+          
+          const grouped = {};
+          deptComments.forEach(c => {
+              const cName = classifyComment(c.text);
+              if(!grouped[cName]) grouped[cName] = [];
+              grouped[cName].push(c);
+          });
+          
+          const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
+          
+          sortedCats.forEach(cName => {
+              if (!cat) {
+                  html += "<div style='font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+              }
+              html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + c.text + "</div>").join('');
+          });
+      });
+  } else {
       const grouped = {};
-      deptComments.forEach(c => {
-          const cName = classifyComment(c.text);
-          if(!grouped[cName]) grouped[cName] = [];
-          grouped[cName].push(c);
+      filtered.forEach(c => {
+        const cName = classifyComment(c.text);
+        if(!grouped[cName]) grouped[cName] = [];
+        grouped[cName].push(c);
       });
       
       const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
       
       sortedCats.forEach(cName => {
-          if (!cat) { // Solo mostrar el título de la categoría si estamos en la vista "Todos"
-              html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
-          }
-          html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + c.text + "</div>").join('');
+        if (!cat) {
+            html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+        }
+        html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(deptArr[0]) + "'>" + c.text + "</div>").join('');
       });
-  });
+  }
   
   list.innerHTML = html;
 }
