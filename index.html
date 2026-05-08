@@ -320,7 +320,7 @@ tbody td:first-child { text-align: left; }
 .dept-tab-general.active { background: var(--if-navy); color: #fff; }
 
 .comment-categories{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
-.cat-chip{padding:8px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-weight:600;font-size:.78rem;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.cat-chip{padding:8px 16px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-weight:600;font-size:.75rem;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
 .cat-chip:hover{border-color:var(--muted); color:var(--if-navy);}
 .cat-chip .cnt{background:var(--surface2);color:var(--muted);font-weight:700;font-size:.65rem;padding:2px 8px;border-radius:50px; border: 1px solid var(--border);}
 .cat-chip.active{background:var(--if-navy);color:#fff;border-color:var(--if-navy); box-shadow: 0 4px 10px rgba(21,33,48,0.15);}
@@ -999,6 +999,7 @@ function renderKPIs(orderedDepts){
   }
 }
 
+// ── LIMPIEZA DE OBSERVACIONES GENERALES ──
 function classifyComment(text){
   if(!text) return 'Ignorar';
   const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
@@ -1184,7 +1185,6 @@ function renderComments(depts, cat){
   
   let html = '';
   
-  // Agrupar por Departamento primero, luego por Categoría (Para la vista "Todos")
   deptArr.forEach(d => {
       const deptComments = filtered.filter(c => c.dept === d);
       if (deptComments.length === 0) return;
@@ -1203,7 +1203,9 @@ function renderComments(depts, cat){
       const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
       
       sortedCats.forEach(cName => {
-          if (!cat) { // Si estamos en la vista de "Todos", mostramos los subtítulos de categoría
+          if (!cat) { 
+              html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+          } else {
               html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
           }
           html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + c.text + "</div>").join('');
@@ -1490,10 +1492,10 @@ function renderParticipation(orderedDepts) {
 
   const globalPct = globalSent > 0 ? ((globalAns / globalSent) * 100).toFixed(1) : 0;
   body += "<tr style='background:#152130; font-family:var(--font-bold);'>" +
-      "<td class='truncated' style='text-align:left; border:none; color:#fff; border-bottom-left-radius:var(--rs);'><span class='part-text'>🏢 Total General</span></td>" +
-      "<td style='text-align:center; border:none; color:#fff;'>" + globalSent + "</td>" +
-      "<td style='text-align:center; border:none; color:#fff;'>" + globalAns + "</td>" +
-      "<td style='border:none; color:#fff; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td>" +
+      "<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'>🏢 Total General</span></td>" +
+      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important;'>" + globalSent + "</td>" +
+      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important;'>" + globalAns + "</td>" +
+      "<td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td>" +
     "</tr></tbody>";
   tbl.innerHTML = head + body;
 }
