@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Infocus Consultores</title>
-<link rel="icon" type="image/png" href="IF.png">
+  <link rel="icon" type="image/png" href="IF.png">
 
 <script>
   if (window.location.search.includes('mode=reader')) {
@@ -117,8 +117,11 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .header-logo-upload { height: 50px; min-width: 50px; max-width: 250px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: transform 0.2s;}
 .header-logo-upload:hover { transform: scale(1.03); }
 #logoLeftBox { background: transparent; }
-#logoRightBox { background: transparent; border: 1.5px dashed var(--if-gray-300); margin-left: 8px; }
+#logoRightBox { background: transparent; border: 1.5px dashed var(--if-gray-300); }
+
+/* Esta clase fuerza a que la imagen respete los 50px exactos y mantenga su proporción */
 .custom-logo-img { height: 50px !important; width: auto !important; max-width: 250px !important; object-fit: contain !important; display: block; }
+
 #defaultLogoLeft { width: 50px; height: 50px; background: var(--if-orange); color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; border-radius: 8px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3);}
 #defaultLogoRight { font-size: 0.85rem; color: var(--muted); font-weight: 600; padding: 0 16px; white-space: nowrap;}
 
@@ -139,11 +142,9 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .btn-insight-master:active { transform: scale(0.98); }
 body.reader-mode .insight-container { display: none !important; }
 
-/* ── READER EYE BADGE ── */
+/* ── READER EYE BADGE & MODO LECTOR ── */
 #readerBadge{display:none;position:fixed;bottom:24px;right:24px;background:var(--surface);color:var(--text);border: 1px solid var(--border);border-radius:50px;padding:10px 18px;font-weight:600;font-size:.75rem;z-index:500;box-shadow:var(--shadow-md);align-items:center;gap:8px;pointer-events:none;}
 body.reader-mode #readerBadge{display:flex!important;}
-
-/* Esconde botones de admin en modo lector, INCLUYENDO EL DE NPS */
 body.reader-mode .btn-share, body.reader-mode #btnImport, body.reader-mode #btnNPS, body.reader-mode .badge {display:none!important;}
 
 body.reader-mode #logoLeftBox, body.reader-mode #logoRightBox { cursor: default; }
@@ -279,19 +280,9 @@ tbody td:first-child { text-align: left; }
 .score-low{background:var(--danger-bg);color:var(--danger);}
 
 #detailTable { position: relative; border-collapse: separate; border-spacing: 0; }
-#detailTable th:first-child {
-  position: sticky; left: 0;
-  background: var(--surface2);
-  z-index: 20; 
-}
-#detailTable td:first-child {
-  position: sticky; left: 0;
-  background: var(--surface); 
-  z-index: 10;
-}
-#detailTable tr:hover td:first-child {
-  background: var(--surface2);
-}
+#detailTable th:first-child { position: sticky; left: 0; background: var(--surface2); z-index: 20; }
+#detailTable td:first-child { position: sticky; left: 0; background: var(--surface); z-index: 10; }
+#detailTable tr:hover td:first-child { background: var(--surface2); }
 
 /* FRANJA AZUL NAVY TOTAL GENERAL (PDF Fix) */
 .row-total-general td { 
@@ -505,6 +496,7 @@ tbody td:first-child { text-align: left; }
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
       Capturar NPS
     </button>
+    
     <button class="btn btn-import" id="btnImport">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
       Importar Datos
@@ -717,7 +709,7 @@ let SCORES = [];
 let AVERAGES = [];
 let COMMENTS = {};
 let PARTICIPATION = {}; 
-let NPS_DATA = {}; 
+let NPS_DATA = {};
 
 let CUSTOM_LOGO_LEFT = null;
 let CUSTOM_LOGO_RIGHT = null;
@@ -864,7 +856,7 @@ function openNPSModal() {
 
        list.innerHTML += `
          <div class="nps-row" style="flex-direction: column; align-items: flex-start; border-bottom: 1px solid var(--border); padding: 16px 0;">
-           <label style="font-weight: 800; color: var(--if-navy); font-size: .95rem;">${d} (${DEPT_TO_DIR[d]})</label>
+           <label style="font-weight: 800; color: var(--if-navy); font-size: .95rem;">${d}</label>
            <div style="display:flex; gap:16px; width:100%; margin-top:10px;">
              <div style="flex:1; text-align:center;">
                <div style="font-size:0.7rem; color:var(--danger); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Detractores (0-6)</div>
@@ -1095,14 +1087,16 @@ function renderKPIs(orderedDepts){
 
   for (const [dir, dList] of Object.entries(groups)) {
     let sectionHTML = "<div class='kpi-dir-section'><h3 class='kpi-dir-title truncated'>" + dir + "</h3><div class='kpi-grid'>";
+    const promDepts = dList.filter(d => d.startsWith('PROM. '));
     const realDepts = dList.filter(d => !d.startsWith('PROM. ')).sort((a,b) => AVERAGES[DEPTS.indexOf(b)] - AVERAGES[DEPTS.indexOf(a)]);
 
-    realDepts.forEach(d => {
+    promDepts.concat(realDepts).forEach(d => {
       const di = DEPTS.indexOf(d), avg = AVERAGES[di], col = deptColor(d);
+      const isProm = d.startsWith('PROM. ');
       sectionHTML += "<div class='kpi-card' style='--ca:" + col + "'>" +
         "<div class='kpi-header-row'>" +
           "<div class='kpi-dept'><span class='kpi-dept-inner'>" + d + "</span></div>" +
-          "<div class='kpi-rank'>#" + (sortedGlobal.indexOf(d)+1) + " de " + sortedGlobal.length + "</div>" +
+          (!isProm ? "<div class='kpi-rank'>#" + (sortedGlobal.indexOf(d)+1) + " de " + sortedGlobal.length + "</div>" : "") +
         "</div>" +
         "<div class='kpi-score'>" + avg.toFixed(1) + "<sup>/10</sup></div>" +
         "<div class='kpi-bar'><div class='kpi-bar-fill' style='width:" + (avg*10) + "%'></div></div>" +
@@ -1331,12 +1325,6 @@ function handleFile(file){
   reader.readAsArrayBuffer(file);
 }
 
-function getDeptsGroupedByDir(list) {
-  const g = {};
-  list.forEach(d => { const dir = DEPT_TO_DIR[d]; if(!g[dir]) g[dir] = []; g[dir].push(d); });
-  return g;
-}
-
 function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
   DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
   REPORT_DATE = new Date();
@@ -1393,7 +1381,7 @@ async function generateReaderLink(){
     await window.db.collection("reportes").doc(customId).set({
       dirs: DIRS, depts: DEPTS.filter(d => !d.startsWith('PROM. ')), deptMap: DEPT_TO_DIR, qs: QUESTIONS,
       scores: JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
-      comments: COMMENTS, participation: PARTICIPATION, nps: NPS_DATA, title: document.getElementById('dashTitle').textContent, timestamp: REPORT_DATE.toISOString(),
+      comments: COMMENTS, participation: PARTICIPATION, nps: NPS_DATA, title: document.getElementById('dashTitle').textContent, timestamp: new Date().toISOString(),
       logoLeft: CUSTOM_LOGO_LEFT, logoRight: CUSTOM_LOGO_RIGHT 
     });
     const link = window.location.href.split('?')[0] + '?mode=reader&id=' + customId;
