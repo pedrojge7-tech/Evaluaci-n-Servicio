@@ -145,10 +145,21 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 @keyframes pulse-neon { 0% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(240, 152, 25, 0); } 100% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0); } }
 body.reader-mode .insight-container { display: none !important; }
 
+/* ESTILOS PARA MODAL NPS Y GRÁFICAS */
+.nps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+.nps-gauge-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
+.nps-gauge-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.nps-gauge-title { font-weight: 800; font-size: .9rem; color: var(--if-navy); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 100%; white-space: normal; }
+.nps-gauge-wrapper { position: relative; width: 100%; max-width: 220px; display:flex; justify-content:center; }
+.nps-value-container { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom: 4px;}
+.nps-val { font-size: 2.8rem; font-weight: 900; color: var(--if-navy); line-height: 1; letter-spacing: -0.03em; z-index: 10;}
+.nps-lbl { font-size: 0.75rem; font-weight: 800; color: var(--muted); margin-top: 2px; letter-spacing: 0.1em; text-transform: uppercase; z-index: 10;}
+.nps-sub { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-top: 16px; text-align: center; width:100%;}
+
 /* ── READER EYE BADGE & MODO LECTOR ── */
 #readerBadge{display:none;position:fixed;bottom:24px;right:24px;background:var(--surface);color:var(--text);border: 1px solid var(--border);border-radius:50px;padding:10px 18px;font-weight:600;font-size:.75rem;z-index:500;box-shadow:var(--shadow-md);align-items:center;gap:8px;pointer-events:none;}
 body.reader-mode #readerBadge{display:flex!important;}
-body.reader-mode .btn-share, body.reader-mode #btnImport, body.reader-mode .badge, body.reader-mode .insight-container {display:none!important;}
+body.reader-mode .btn-share, body.reader-mode #btnImport, body.reader-mode #btnNPS, body.reader-mode .badge, body.reader-mode .insight-container {display:none!important;}
 
 body.reader-mode #logoLeftBox, body.reader-mode #logoRightBox { cursor: default; }
 body.reader-mode #logoLeftBox:hover, body.reader-mode #logoRightBox:hover { transform: none; }
@@ -211,7 +222,6 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .kpi-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md); border-color: var(--ca, var(--primary));}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--ca,var(--primary));}
 
-/* Ajuste a Rankings responsivos */
 .kpi-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; margin-bottom: 12px; width: 100%; flex-wrap: wrap; }
 .kpi-dept { font-weight: 700; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); white-space: normal; overflow: visible; line-height: 1.4; flex: 1 1 0%; min-width: 100px; margin-bottom: 0; padding-right: 0; word-break: break-word; }
 .kpi-rank { font-weight: 700; font-size: .65rem; color: var(--if-navy); background: var(--surface2); padding: 4px 8px; border-radius: 6px; flex-shrink: 0; border: 1px solid var(--border);}
@@ -407,6 +417,9 @@ tbody td:first-child { text-align: left; }
     break-inside: avoid !important; 
     page-break-inside: avoid !important; 
   }
+
+  .nps-grid { display: flex !important; flex-wrap: wrap !important; gap: 16px !important; justify-content: center !important;}
+  .nps-gauge-card { width: calc(33.333% - 16px) !important; border: 1px solid var(--border) !important; padding: 16px !important; margin: 0 !important; flex: none !important; break-inside: avoid !important; box-shadow: none !important; }
   
   .chart-container { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; height: 450px !important; min-height: 450px !important;}
   canvas { margin: 0 auto !important; max-width: 100% !important; max-height: 100% !important; }
@@ -501,6 +514,11 @@ tbody td:first-child { text-align: left; }
   <div class="header-right">
     <span class="badge">Admin</span>
     
+    <button class="btn btn-import" id="btnNPS">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+      Capturar NPS
+    </button>
+
     <button class="btn btn-import" id="btnImport">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
       Importar Datos
@@ -515,12 +533,24 @@ tbody td:first-child { text-align: left; }
       Generar modo lector
     </button>
     
-    <div class="header-logo-upload" id="logoRightBox" title="Clic para subir tu propio Logo" style="margin-left: 8px;">
+    <div class="header-logo-upload" id="logoRightBox" title="Clic para subir tu propio Logo" style="border: 1px dashed var(--if-gray-300); margin-left: 8px;">
       <img id="logoRightImg" class="custom-logo-img" style="display:none;" alt="Logo Derecho"> 
       <span id="defaultLogoRight">+ Logo</span>
     </div>
   </div>
 </header>
+
+<div class="modal-overlay" id="npsModal">
+  <div class="modal-box" style="width: 700px; max-height: 85vh; display: flex; flex-direction: column;">
+    <h2>Captura de Net Promoter Score (NPS)</h2>
+    <p>Ingresa la cantidad de personas que votaron en cada rubro. El NPS se calculará automáticamente. Déjalo en blanco si el área no fue evaluada.</p>
+    <div id="npsInputList" style="flex: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 10px;"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btnCloseNPS">Cancelar</button>
+      <button class="btn-reader" id="btnSaveNPS">Guardar y Calcular NPS</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="importModal">
   <div class="modal-box">
@@ -559,7 +589,7 @@ tbody td:first-child { text-align: left; }
 </div>
 
 <div class="modal-overlay" id="insightModal">
-  <div class="modal-box" style="width: 800px;">
+  <div class="modal-box" style="width: 850px;">
     <h2 id="insightTitle" style="display:flex; align-items:center; gap:10px;">
       ✨ Diagnóstico Estratégico Integral
     </h2>
@@ -599,6 +629,16 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
     <table id="participationTable"><thead></thead><tbody></tbody></table>
+  </div>
+
+  <div class="chart-card" id="npsCard" style="display:none; margin-bottom:24px;">
+    <div class="chart-hdr" style="margin-bottom: 24px;">
+      <div>
+        <div class="chart-title">Net Promoter Score (NPS)</div>
+        <div class="chart-sub">¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)</div>
+      </div>
+    </div>
+    <div id="npsGrid" class="nps-grid"></div>
   </div>
 
   <div class="filter-bar" id="filterBarDir" style="margin-bottom:12px;"></div>
@@ -694,6 +734,7 @@ let SCORES = [];
 let AVERAGES = [];
 let COMMENTS = {};
 let PARTICIPATION = {}; 
+let NPS_DATA = {}; 
 
 let CUSTOM_LOGO_LEFT = null;
 let CUSTOM_LOGO_RIGHT = null;
@@ -729,6 +770,9 @@ function showToast(msg, type='') {
 
 function injectDirectionAverages() {
   if (DEPTS.length === 0) return; 
+  
+  DEPTS = DEPTS.filter(d => !d.startsWith('PROM. '));
+
   const dirs = Array.from(new Set(Object.values(DEPT_TO_DIR)));
   
   dirs.forEach(dir => {
@@ -762,7 +806,7 @@ function updateSubtitle(){
   const dStr = REPORT_DATE.toLocaleDateString('es-ES', opts);
   const capDate = dStr.charAt(0).toUpperCase() + dStr.slice(1);
   const realDeptsCount = DEPTS.filter(d => !d.startsWith('PROM. ')).length;
-  document.getElementById('dashSubtitle').textContent = realDeptsCount + " departamentos · " + DIRS.length + " direcciones · " + QUESTIONS.length + " preguntas · " + capDate;
+  document.getElementById('dashSubtitle').textContent = realDeptsCount + " departamentos · " + DIRS.length + " direcciones · " + capDate;
 }
 
 // LOGIN CON FIREBASE AUTH
@@ -829,6 +873,11 @@ function wireButtons(){
   document.getElementById('btnOpenReader').onclick = generateReaderLink;
   document.getElementById('btnCopyLink').onclick = copyLink;
 
+  // Lógica Modal NPS
+  document.getElementById('btnNPS').onclick = openNPSModal;
+  document.getElementById('btnCloseNPS').onclick = () => document.getElementById('npsModal').classList.remove('open');
+  document.getElementById('btnSaveNPS').onclick = saveNPSModal;
+
   document.getElementById('logoLeftBox').onclick = () => {
       if(!document.body.classList.contains('reader-mode')) document.getElementById('logoLeftInput').click();
   };
@@ -866,6 +915,76 @@ function wireButtons(){
   if(lp) { lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
   const btn = document.getElementById('loginBtn'); 
   if(btn) btn.onclick = doLogin;
+}
+
+function copyLink(){
+  const inp = document.getElementById('linkInput');
+  if(!inp.value || inp.value.startsWith('Haz clic')) return;
+  navigator.clipboard.writeText(inp.value).then(()=>{
+    const btn = document.getElementById('btnCopyLink');
+    btn.textContent='¡Copiado!'; setTimeout(()=>btn.textContent='Copiar', 2000);
+  });
+}
+
+// ── LÓGICA NPS MODAL ──
+function openNPSModal() {
+  const list = document.getElementById('npsInputList');
+  list.innerHTML = '';
+  const realDepts = DEPTS.filter(d => !d.startsWith('PROM. '));
+  
+  if (realDepts.length === 0) {
+     list.innerHTML = '<p style="color:var(--muted); text-align:center; padding: 20px;">Primero importa un archivo Excel con departamentos.</p>';
+  } else {
+     realDepts.forEach(d => {
+       let data = NPS_DATA[d] || {det: '', pas: '', pro: ''};
+       if (typeof data === 'number') data = {det: '', pas: '', pro: ''};
+
+       list.innerHTML += `
+         <div class="nps-row" style="flex-direction: column; align-items: flex-start; border-bottom: 1px solid var(--border); padding: 16px 0;">
+           <label style="font-weight: 800; color: var(--if-navy); font-size: .95rem;">${d}</label>
+           <div style="display:flex; gap:16px; width:100%; margin-top:10px;">
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:var(--danger); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Detractores (0-6)</div>
+               <input type="number" min="0" data-type="det" data-dept="${d}" value="${data.det}" style="width:100%; border-color:var(--danger); background:var(--danger-bg); color:var(--danger); padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;">
+             </div>
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:#D97706; font-weight:700; margin-bottom:6px; text-transform:uppercase;">Pasivos (7-8)</div>
+               <input type="number" min="0" data-type="pas" data-dept="${d}" value="${data.pas}" style="width:100%; border-color:#F59E0B; background:var(--warning-bg); color:#D97706; padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;">
+             </div>
+             <div style="flex:1; text-align:center;">
+               <div style="font-size:0.7rem; color:var(--success); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Promotores (9-10)</div>
+               <input type="number" min="0" data-type="pro" data-dept="${d}" value="${data.pro}" style="width:100%; border-color:var(--success); background:var(--success-bg); color:var(--success); padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;">
+             </div>
+           </div>
+         </div>
+       `;
+     });
+  }
+  document.getElementById('npsModal').classList.add('open');
+}
+
+function saveNPSModal() {
+  const rows = document.querySelectorAll('#npsInputList .nps-row');
+  rows.forEach(row => {
+    const detInp = row.querySelector('input[data-type="det"]');
+    const pasInp = row.querySelector('input[data-type="pas"]');
+    const proInp = row.querySelector('input[data-type="pro"]');
+    const d = detInp.getAttribute('data-dept');
+    
+    const det = detInp.value.trim();
+    const pas = pasInp.value.trim();
+    const pro = proInp.value.trim();
+
+    if (det === '' && pas === '' && pro === '') {
+       delete NPS_DATA[d];
+    } else {
+       NPS_DATA[d] = { det: parseInt(det || 0, 10), pas: parseInt(pas || 0, 10), pro: parseInt(pro || 0, 10) };
+    }
+  });
+
+  document.getElementById('npsModal').classList.remove('open');
+  updateAllViews();
+  showToast('✅ NPS calculado y actualizado', 'ok');
 }
 
 function buildFilters() {
@@ -954,6 +1073,7 @@ function updateAllViews() {
   });
 
   renderParticipation(orderedDepts);
+  renderNPS(orderedDepts);
   renderKPIs(orderedDepts);
   renderBarChart(orderedDepts);
   renderRadarChart(orderedDepts, activeQIndices);
@@ -973,6 +1093,101 @@ function updateAllViews() {
           }, 100);
       }
   }
+}
+
+// ── GENERADOR DE MEDIDORES NPS (SVG PURO) ──
+function renderNPS(orderedDepts) {
+  const card = document.getElementById('npsCard');
+  const grid = document.getElementById('npsGrid');
+  grid.innerHTML = '';
+  
+  let hasData = false;
+  
+  orderedDepts.forEach(d => {
+    let val = null;
+    let breakdown = null;
+
+    if(d.startsWith('PROM. ')) {
+       const dir = d.replace('PROM. ', '');
+       const subDepts = DEPTS.filter(x => DEPT_TO_DIR[x] === dir && !x.startsWith('PROM. '));
+       const validSubDepts = subDepts.filter(x => NPS_DATA[x] !== undefined && typeof NPS_DATA[x] === 'object');
+       
+       if(validSubDepts.length > 0) {
+         let tDet = 0, tPas = 0, tPro = 0;
+         validSubDepts.forEach(sub => {
+           tDet += NPS_DATA[sub].det;
+           tPas += NPS_DATA[sub].pas;
+           tPro += NPS_DATA[sub].pro;
+         });
+         const total = tDet + tPas + tPro;
+         if (total > 0) {
+            val = Math.round(((tPro - tDet) / total) * 100);
+            breakdown = { det: tDet, pas: tPas, pro: tPro, total };
+         }
+       }
+    } else {
+       if(NPS_DATA[d] !== undefined && typeof NPS_DATA[d] === 'object') {
+         const data = NPS_DATA[d];
+         const total = data.det + data.pas + data.pro;
+         if (total > 0) {
+           val = Math.round(((data.pro - data.det) / total) * 100);
+           breakdown = { det: data.det, pas: data.pas, pro: data.pro, total };
+         }
+       }
+    }
+    
+    if(val !== null && breakdown !== null) {
+       hasData = true;
+       const clampedVal = Math.max(-100, Math.min(100, val));
+       const p = (clampedVal + 100) / 200; 
+       const arcLength = Math.PI * 80; 
+       const fillLength = p * arcLength;
+       const rotation = (p * 180) - 90;
+
+       let color = '#EF4444'; 
+       if (val >= 0) color = '#F59E0B'; 
+       if (val >= 50) color = '#10B981'; 
+
+       const html = `
+       <div class="nps-gauge-card">
+           <div class="nps-gauge-title">${d}</div>
+           <div class="nps-gauge-wrapper">
+               <svg viewBox="0 0 200 120" style="width:100%; height:auto; overflow:visible;">
+                   <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#EDF1F5" stroke-width="16" stroke-linecap="round"/>
+                   <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="${color}" stroke-width="16" stroke-linecap="round" 
+                         stroke-dasharray="${fillLength} ${arcLength}" stroke-dashoffset="0" style="transition: stroke-dasharray 1s ease-out;"/>
+                   <g transform="rotate(${rotation} 100 100)" style="transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);">
+                      <path d="M 96 45 L 104 45 L 100 12 Z" fill="#152130" />
+                      <circle cx="100" cy="45" r="4" fill="#152130"/>
+                   </g>
+               </svg>
+               <div class="nps-value-container">
+                   <div class="nps-val">${val}</div>
+                   <div class="nps-lbl">NPS</div>
+               </div>
+           </div>
+           <div style="display:flex; gap:10px; width:100%; margin-top:20px; background:var(--surface2); border-radius:10px; padding:12px; justify-content:space-around;">
+              <div style="text-align:center;">
+                  <div style="font-size:1.2rem; font-weight:900; color:var(--danger); line-height:1;">${breakdown.det}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Detract</div>
+              </div>
+              <div style="text-align:center; border-left:1.5px solid var(--border); border-right:1.5px solid var(--border); padding:0 14px;">
+                  <div style="font-size:1.2rem; font-weight:900; color:#D97706; line-height:1;">${breakdown.pas}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Pasivos</div>
+              </div>
+              <div style="text-align:center;">
+                  <div style="font-size:1.2rem; font-weight:900; color:var(--success); line-height:1;">${breakdown.pro}</div>
+                  <div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Promot</div>
+              </div>
+           </div>
+           <div class="nps-sub" style="margin-top:10px;">${breakdown.total} respuestas en total</div>
+       </div>
+       `;
+       grid.innerHTML += html;
+    }
+  });
+  
+  if(!hasData) { card.style.display = 'none'; } else { card.style.display = 'block'; }
 }
 
 function renderKPIs(orderedDepts){
@@ -1189,33 +1404,46 @@ function renderComments(depts, cat){
   
   let html = '';
   
-  // Agrupar por Departamento primero, luego por Categoría (Para la vista "Todos")
-  deptArr.forEach(d => {
-      const deptComments = filtered.filter(c => c.dept === d);
-      if (deptComments.length === 0) return;
-      
-      if (deptArr.length > 1) {
+  if (deptArr.length > 1) {
+      deptArr.forEach(d => {
+          const deptComments = filtered.filter(c => c.dept === d);
+          if (deptComments.length === 0) return;
+          
           html += "<div style='font-weight: 900; font-size: 1.1rem; color: var(--if-orange); margin-top: 24px; margin-bottom: 8px; border-bottom: 2px solid var(--if-orange); padding-bottom: 4px; text-transform: uppercase;'>" + d + "</div>";
-      }
-      
+          
+          const grouped = {};
+          deptComments.forEach(c => {
+              const cName = classifyComment(c.text);
+              if(!grouped[cName]) grouped[cName] = [];
+              grouped[cName].push(c);
+          });
+          
+          const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
+          
+          sortedCats.forEach(cName => {
+              if (!cat) {
+                  html += "<div style='font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+              }
+              html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + c.text + "</div>").join('');
+          });
+      });
+  } else {
       const grouped = {};
-      deptComments.forEach(c => {
-          const cName = classifyComment(c.text);
-          if(!grouped[cName]) grouped[cName] = [];
-          grouped[cName].push(c);
+      filtered.forEach(c => {
+        const cName = classifyComment(c.text);
+        if(!grouped[cName]) grouped[cName] = [];
+        grouped[cName].push(c);
       });
       
       const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
       
       sortedCats.forEach(cName => {
-          if (!cat) { // Si estamos en la vista de "Todos", mostramos los subtítulos de categoría
-              html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
-          } else {
-              html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
-          }
-          html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + c.text + "</div>").join('');
+        if (!cat) {
+            html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+        }
+        html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(deptArr[0]) + "'>" + c.text + "</div>").join('');
       });
-  });
+  }
   
   list.innerHTML = html;
 }
@@ -1617,6 +1845,18 @@ window.openInsights = async function() {
   realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) allComments.push({d:d,c:c}); }); });
   allComments=allComments.slice(0,18);
 
+  var npsLines = realDepts.map(function(d){
+    if(NPS_DATA[d] && typeof NPS_DATA[d] === 'object') {
+      var data = NPS_DATA[d];
+      var total = data.det + data.pas + data.pro;
+      if (total > 0) {
+        var val = Math.round(((data.pro - data.det) / total) * 100);
+        return "• " + d + ": NPS " + val + " (Promotores: " + data.pro + ", Pasivos: " + data.pas + ", Detractores: " + data.det + ")";
+      }
+    }
+    return null;
+  }).filter(Boolean).join("\n");
+
   var prompt =
 "Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.\n\n" +
 
@@ -1640,6 +1880,7 @@ window.openInsights = async function() {
 "═══ DATOS DE LA EVALUACIÓN ═══\n\n" +
 "PARTICIPACIÓN GLOBAL: " + partGlobal + "\n" +
 (partLines ? "Participación por área evaluada: " + partLines + "\n" : "") +
+"\nNPS (NET PROMOTER SCORE) POR DEPARTAMENTO:\n" + (npsLines ? npsLines : "Sin datos de NPS capturados en esta vista.") + "\n\n" +
 "\nRANKING DE SERVICIO (de mejor calificado a peor, según sus clientes internos):\n" + deptRanking + "\n" +
 "\nPROMEDIO GLOBAL DE SERVICIO: " + globalAvg + "/10\n\n" +
 "CALIFICACIÓN POR ASPECTO DE SERVICIO:\n" + qLines + "\n" +
@@ -1771,7 +2012,7 @@ function handleFile(file){
 }
 
 function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
-  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart;
+  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
   REPORT_DATE = new Date();
   injectDirectionAverages(); 
   document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
@@ -1798,6 +2039,7 @@ async function generateReaderLink(){
       scores: JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
       comments: COMMENTS, 
       participation: PARTICIPATION, 
+      nps: NPS_DATA,
       title: document.getElementById('dashTitle').textContent, 
       timestamp: REPORT_DATE.toISOString(),
       logoLeft: CUSTOM_LOGO_LEFT, 
@@ -1819,15 +2061,6 @@ async function generateReaderLink(){
   }
 }
 
-function copyLink(){
-  const inp = document.getElementById('linkInput');
-  if(!inp.value || inp.value.startsWith('Haz clic')) return;
-  navigator.clipboard.writeText(inp.value).then(()=>{
-    const btn = document.getElementById('btnCopyLink');
-    btn.textContent='¡Copiado!'; setTimeout(()=>btn.textContent='Copiar', 2000);
-  });
-}
-
 async function tryLoadFromURL(){
   const params = new URLSearchParams(window.location.search);
   if(params.get('mode') !== 'reader') return false;
@@ -1847,7 +2080,7 @@ async function tryLoadFromURL(){
       if(raw.dirs && raw.deptMap) { DIRS = raw.dirs; DEPT_TO_DIR = raw.deptMap; } 
       else { DIRS = ['General']; DEPT_TO_DIR = {}; raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General'); }
       DEPTS = raw.depts; QUESTIONS = raw.qs; SCORES = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
-      COMMENTS = raw.comments; PARTICIPATION = raw.participation || {}; if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
+      COMMENTS = raw.comments; PARTICIPATION = raw.participation || {}; NPS_DATA = raw.nps || {}; if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
       
       if(raw.logoLeft) CUSTOM_LOGO_LEFT = raw.logoLeft;
       if(raw.logoRight) CUSTOM_LOGO_RIGHT = raw.logoRight;
