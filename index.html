@@ -196,7 +196,7 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .filter-chip:hover{border-color:var(--if-navy);color:var(--if-navy); transform: translateY(-1px);}
 .filter-chip.active{background:var(--if-navy);color:#fff;border-color:var(--if-navy); box-shadow: 0 4px 10px rgba(21,33,48,0.15);}
 .filter-chip-dir.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 4px 10px rgba(224,112,16,0.2);}
-.filter-chip-prom { border-color: var(--prom-col, var(--text)); color: var(--prom-col, var(--text)); font-weight: 700; background: var(--surface); display: inline-flex; align-items: center; }
+.filter-chip-prom { border-color: var(--prom-col, var(--text)); color: var(--prom-col, var(--text)); font-weight: 700; background: var(--surface); }
 .filter-chip-prom.active { background: var(--prom-col, var(--text)); color: #fff; }
 
 /* ── KPI CARDS ── */
@@ -215,7 +215,7 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .kpi-dept { font-weight: 700; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); white-space: normal; overflow: visible; line-height: 1.4; flex: 1 1 0%; min-width: 100px; margin-bottom: 0; padding-right: 0; word-break: break-word; }
 .kpi-rank { font-weight: 700; font-size: .65rem; color: var(--if-navy); background: var(--surface2); padding: 4px 8px; border-radius: 6px; flex-shrink: 0; border: 1px solid var(--border);}
 
-.kpi-dept-inner{display:inline-flex; align-items:center; white-space:normal;}
+.kpi-dept-inner{display:inline; white-space:normal;}
 .kpi-score{font-weight: 800; font-size:2.6rem; letter-spacing: -0.03em; color:var(--if-navy);line-height:1;margin-bottom:6px; margin-top: auto;}
 .kpi-score sup{font-weight: 500; font-size:.9rem; color: var(--muted); }
 .kpi-bar{height:6px;background:var(--surface2);border-radius:10px;overflow:hidden;margin-top:12px;}
@@ -318,7 +318,7 @@ tbody td:first-child { text-align: left; }
 
 /* ── COMMENTS ── */
 .dept-tabs{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-.dept-tab{padding:10px 18px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-weight:600;font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
+.dept-tab{padding:10px 18px;border-radius:50px;border:1.5px solid var(--border);background:var(--surface);font-family:var(--font);font-weight:600;font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;white-space:nowrap;}
 .dept-tab:hover{border-color:var(--if-navy-light); background:var(--surface2); color:var(--if-navy);}
 .dept-tab .dot{width:8px;height:8px;border-radius:50%;background:var(--tc,var(--text));flex-shrink:0;}
 .dept-tab.active{background:var(--tc,var(--text));color:#fff;border-color:var(--tc,var(--text)); box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
@@ -378,7 +378,7 @@ tbody td:first-child { text-align: left; }
 .nps-sub { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-top: 16px; text-align: center; width:100%;}
 
 .import-hint{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:16px;font-weight:500;font-size:.78rem;color:var(--muted);margin-bottom:20px;line-height:1.6;}
-.import-hint strong{display:flex; align-items:center; margin-bottom:4px; font-weight:700; color:var(--if-navy);}
+.import-hint strong{display:block;margin-bottom:4px;font-weight:700;color:var(--if-navy);}
 .dropzone{border:2px dashed var(--border);border-radius:var(--rs);padding:40px 20px;text-align:center;background:var(--surface2);margin-bottom:24px;cursor:pointer;transition:all .2s;position:relative;}
 .dropzone:hover,.dropzone.over{border-color:var(--primary);background:var(--primary-light);}
 .dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0;}
@@ -389,7 +389,7 @@ tbody td:first-child { text-align: left; }
 .share-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-.toast{position:fixed;bottom:32px;right:32px;background:var(--if-navy);color:#fff;padding:14px 24px;border-radius:50px;font-family:var(--font);font-weight:600;font-size:.85rem;box-shadow:var(--shadow-md);z-index:1100;opacity:0;transform:translateY(12px);transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);pointer-events:none;}
+.toast{position:fixed;bottom:32px;right:32px;background:var(--if-navy);color:#fff;padding:14px 24px;border-radius:50px;font-family:var(--font);font-weight:600;font-size:.85rem;box-shadow:var(--shadow-md);z-index:1100;opacity:0;transform:translateY(12px);transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);pointer-events:none; display:flex; align-items:center;}
 .toast.show{opacity:1;transform:translateY(0);}
 .toast.ok{background:var(--success);}
 .toast.err{background:var(--danger);}
@@ -414,40 +414,70 @@ tbody td:first-child { text-align: left; }
 .insight-table ul { margin-left: 20px; margin-top: 10px; }
 .insight-table li { margin-bottom: 6px; }
 
+
 /* ── SOLUCIÓN PDF: IMPRESIÓN NATIVA EN TABLOIDE HORIZONTAL (11x17") ── */
 @page {
-  size: tabloid landscape;
+  size: tabloid landscape; /* Fuerza el papel tabloide apaisado para aprovechar el ancho */
   margin: 15mm;
 }
 
 @media print {
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; animation: none !important; }
+  
+  /* Resetear el body para usar el 100% del tamaño físico de la hoja Tabloide */
   body { background: #fff !important; color: #000; overflow: visible !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
   .header, #readerBadge, #loginScreen, .toast, .modal-overlay, #filterBarDir, #filterBarDept, .insight-container, .dept-tabs, .comment-categories { display: none !important; }
+  
+  /* El wrapper principal ya no estará limitado a 1000px */
   .main { width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  
+  /* Forzar las 2 columnas nativas ocupando todo el ancho */
   .cols-2 { display: grid !important; grid-template-columns: 1fr 1fr !important; width: 100% !important; gap: 24px !important;}
+  
+  /* Quitar sombras pero retener bordes estructurales */
   .chart-card, .table-card, .participation-card { 
-    width: 100% !important; border: 1px solid var(--border) !important; box-shadow: none !important; background: transparent !important;
-    padding: 24px !important; margin-bottom: 24px !important; break-inside: avoid !important; page-break-inside: avoid !important; 
+    width: 100% !important; 
+    border: 1px solid var(--border) !important; 
+    box-shadow: none !important; 
+    background: transparent !important;
+    padding: 24px !important;
+    margin-bottom: 24px !important;
+    break-inside: avoid !important; 
+    page-break-inside: avoid !important; 
   }
+  
+  /* Ajuste de medidores NPS para impresión a lo ancho */
   .nps-grid { display: flex !important; flex-wrap: wrap !important; gap: 16px !important; justify-content: center !important;}
   .nps-gauge-card { width: calc(33.333% - 16px) !important; border: 1px solid var(--border) !important; padding: 16px !important; margin: 0 !important; flex: none !important; break-inside: avoid !important; box-shadow: none !important; }
+  
+  /* Centrado y crecimiento de las gráficas Chart.js */
   .chart-container { display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important; height: auto !important; min-height: 350px !important;}
   canvas { margin: 0 auto !important; max-width: 100% !important; height: auto !important; }
+  
+  /* Quitar scrolls de contenedores y asegurar visibilidad */
   .kpi-grid, .rank-list, .comment-list, .table-card { max-height: none !important; overflow: visible !important; height: auto !important; }
   #commentsChartContainer { display: block !important; }
   #commentList { display: flex !important; flex-direction: column !important; }
   #radarLegend, #lineLegend { display: flex !important; max-height: none !important; overflow: visible !important; }
+  
   .rank-item { min-width: 0 !important; overflow: visible !important; height: auto !important;}
   .rank-q-wrap, .rank-q-inner { white-space: normal !important; overflow: visible !important;}
   .rank-badge, .rb-name-wrap { white-space: normal !important; overflow: visible !important; }
   tr, .comment-item, .filter-dir-group { break-inside: avoid !important; page-break-inside: avoid !important; }
   .dept-row { display: table-row !important; } 
   .toggle-arrow { display: none !important; }
+  
+  /* SOLUCIÓN: Desactivar "sticky" en print para evitar glitches visuales en el PDF */
   #detailTable td:first-child, #detailTable th:first-child { position: static !important; background: transparent !important; }
   #detailTable { width: 100% !important; border-collapse: collapse !important; }
   #detailTable td, #detailTable th { border: 1px solid var(--border) !important; }
-  .comment-item { border: none !important; box-shadow: none !important; background: transparent !important; padding: 6px 0 6px 14px !important; border-left: 3px solid var(--al, var(--primary)) !important; margin-bottom: 12px !important; font-size: .85rem !important; }
+  
+  /* Limpiar comentarios para diseño PDF */
+  .comment-item {
+    border: none !important; box-shadow: none !important; background: transparent !important;
+    padding: 6px 0 6px 14px !important; border-left: 3px solid var(--al, var(--primary)) !important;
+    margin-bottom: 12px !important; font-size: .85rem !important;
+  }
 }
 
 /* ── RESPONSIVE ── */
@@ -474,6 +504,7 @@ tbody td:first-child { text-align: left; }
   .filter-bar{padding:12px 16px;gap:8px;}
   .filter-chip{padding:6px 12px;}
   .chart-card{padding:16px;}
+  
   .rank-item { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; height: auto; min-width: 0; }
   .rank-q-wrap { width: 100%; flex: none; padding-right: 0;}
   .rank-badges { width: 100%; flex: none; justify-content: flex-start; flex-wrap: wrap; margin-left: 0; }
@@ -486,10 +517,9 @@ tbody td:first-child { text-align: left; }
   <div class="login-box">
     <div class="brand-logo-if">IF</div>
     <h2>Acceso Admin</h2>
-    <p>Ingresa tus credenciales para acceder al modo editor.</p>
-    <input class="login-input" type="email" id="loginEmail" placeholder="Correo electrónico" autocomplete="username">
+    <p>Ingresa la contraseña para acceder al modo editor del dashboard.</p>
     <input class="login-input" type="password" id="loginPwd" placeholder="Contraseña" autocomplete="current-password">
-    <div class="login-err" id="loginErr">Datos incorrectos. Intenta de nuevo.</div>
+    <div class="login-err" id="loginErr">Contraseña incorrecta. Intenta de nuevo.</div>
     <button class="login-btn" id="loginBtn">Ingresar al Dashboard</button>
   </div>
 </div>
@@ -499,15 +529,9 @@ tbody td:first-child { text-align: left; }
   Modo Lector
 </div>
 
-<input type="file" id="logoLeftInput" accept="image/png, image/jpeg" style="display:none">
-<input type="file" id="logoRightInput" accept="image/png, image/jpeg" style="display:none">
-
 <header class="header">
   <div class="header-left">
-    <div class="header-logo-upload" id="logoLeftBox" title="Clic para subir tu propio Logo">
-      <img id="logoLeftImg" class="custom-logo-img" style="display:none;" alt="Logo Izquierdo"> 
-      <div id="defaultLogoLeft">IF</div>
-    </div>
+    <div class="header-logo-small">IF</div>
     <div>
       <h1 id="dashTitle">Evaluación de Servicio</h1>
       <p id="dashSubtitle"></p>
@@ -520,7 +544,6 @@ tbody td:first-child { text-align: left; }
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
       Capturar NPS
     </button>
-    
     <button class="btn btn-import" id="btnImport">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
       Importar Datos
@@ -534,11 +557,6 @@ tbody td:first-child { text-align: left; }
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
       Generar modo lector
     </button>
-    
-    <div class="header-logo-upload" id="logoRightBox" title="Clic para subir tu propio Logo" style="border: 1px dashed var(--if-gray-300); margin-left: 8px;">
-      <img id="logoRightImg" class="custom-logo-img" style="display:none;" alt="Logo Derecho"> 
-      <span id="defaultLogoRight" style="font-size:10px; color:var(--muted);">+ Logo</span>
-    </div>
   </div>
 </header>
 
@@ -546,7 +564,8 @@ tbody td:first-child { text-align: left; }
   <div class="modal-box" style="width: 700px; max-height: 85vh; display: flex; flex-direction: column;">
     <h2>Captura de Net Promoter Score (NPS)</h2>
     <p>Ingresa la cantidad de personas que votaron en cada rubro. El NPS se calculará automáticamente. Déjalo en blanco si el área no fue evaluada.</p>
-    <div id="npsInputList" style="flex: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 10px;"></div>
+    <div id="npsInputList" style="flex: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 10px;">
+        </div>
     <div class="modal-actions">
       <button class="btn-cancel" id="btnCloseNPS">Cancelar</button>
       <button class="btn-reader" id="btnSaveNPS">Guardar y Calcular NPS</button>
@@ -559,7 +578,7 @@ tbody td:first-child { text-align: left; }
     <h2>Importar nuevo archivo</h2>
     <p>Sube tu archivo Excel. El dashboard se regenerará automáticamente.</p>
     <div class="import-hint">
-      <strong><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg> Estructura esperada</strong><br>
+      <strong><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:text-bottom;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg> Estructura esperada</strong><br>
       <b>Hoja 1 (Puntajes):</b> F1=Direcciones, F2=Departamentos, A3=Preguntas.<br>
       <b>Hoja 2 (Comentarios):</b> F1=Direcciones, F2=Departamentos, F3+=Comentarios.<br>
       <b>Hoja 3 (Participación):</b> F1=Dir, F2=Deptos, F3=Enviados, F4=Contestaron.
@@ -591,10 +610,11 @@ tbody td:first-child { text-align: left; }
 </div>
 
 <div class="modal-overlay" id="insightModal">
-  <div class="modal-box" style="width: 900px;">
+  <div class="modal-box" style="width: 850px;">
     <h2 id="insightTitle" style="display:flex; align-items:center; gap:10px;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg> Diagnóstico Estratégico Integral
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px; vertical-align:bottom;"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg> Diagnóstico Estratégico Integral
     </h2>
+    
     <div id="insightLoading">
         <div class="share-spinner" style="margin-top: 30px;"></div>
         <p style="text-align:center; margin-top:20px; font-weight:600; color:var(--muted); font-size:0.95rem;" id="loadingText">Inicializando red neuronal de diagnóstico...</p>
@@ -603,20 +623,22 @@ tbody td:first-child { text-align: left; }
         </div>
         <p style="text-align:center; margin-top:12px; font-weight:800; color:var(--primary); font-size:0.85rem;" id="loadingTimer">0%</p>
     </div>
+
     <div id="insightContent" style="display:none; margin-bottom: 24px; margin-top: 20px;"></div>
+    
     <div class="modal-actions" id="insightActions" style="display:none;">
       <button class="btn-reader" onclick="document.getElementById('insightModal').classList.remove('open')">Cerrar Diagnóstico</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast" style="display:flex; align-items:center; justify-content:center;"></div>
+<div class="toast" id="toast"></div>
 
 <main class="main">
 
   <div class="insight-container">
     <button class="btn-insight-master" onclick="openInsights()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg> Generar Análisis Ejecutivo
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg> Generar Análisis Ejecutivo
     </button>
   </div>
 
@@ -724,20 +746,6 @@ Chart.defaults.scale.grid.color = 'rgba(184, 196, 206, 0.3)';
 const PALETTE = ['#1E3347', '#E07010', '#2C4560', '#F4921E', '#3D5060', '#C86008', '#7A8D9E', '#D68940', '#152130', '#B8C4CE'];
 const PROM_PALETTE = ['#152130']; 
 
-const ICONS = {
-  star: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
-  building: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>`,
-  chart: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
-  up: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 2px;"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
-  down: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 2px;"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
-  folder: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`,
-  play: `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align: middle;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`,
-  arrowCorner: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><polyline points="9 22 15 16 9 10"></polyline><path d="M4 4v7a5 5 0 0 0 5 5h6"></path></svg>`,
-  ok: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
-  err: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
-  load: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px; animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`
-};
-
 let REPORT_DATE = new Date();
 let DIRS = [];
 let DEPTS = [];
@@ -748,9 +756,6 @@ let AVERAGES = [];
 let COMMENTS = {};
 let PARTICIPATION = {}; 
 let NPS_DATA = {}; 
-
-let CUSTOM_LOGO_LEFT = null;
-let CUSTOM_LOGO_RIGHT = null;
 
 let activeDirs = new Set(['Todas']);
 let activeDepts = new Set(['Todos']);
@@ -764,32 +769,53 @@ window.toggleDir = function(dirId) {
   const rows = document.querySelectorAll('.row-' + dirId);
   const arrow = document.getElementById('arrow-' + dirId);
   const isOpen = arrow.classList.contains('open');
-  if(isOpen) { arrow.classList.remove('open'); rows.forEach(r => r.classList.remove('open')); } 
-  else { arrow.classList.add('open'); rows.forEach(r => r.classList.add('open')); }
+  
+  if(isOpen) {
+    arrow.classList.remove('open');
+    rows.forEach(r => r.classList.remove('open'));
+  } else {
+    arrow.classList.add('open');
+    rows.forEach(r => r.classList.add('open'));
+  }
 };
 
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
   let icon = '';
-  if(type === 'ok') icon = ICONS.ok;
-  else if(type === 'err') icon = ICONS.err;
-  else if(msg.includes('Procesando') || msg.includes('Descargando')) icon = ICONS.load;
-  
-  t.innerHTML = icon + msg.replace(/^[✅❌⏳⚠️]\s*/, ''); 
+  if (msg.includes('⏳')) {
+    msg = msg.replace('⏳', '').trim();
+    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom; animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+  } else if (msg.includes('✅')) {
+    msg = msg.replace('✅', '').trim();
+    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+  } else if (msg.includes('❌')) {
+    msg = msg.replace('❌', '').trim();
+    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+  } else if (msg.includes('⚠️')) {
+    msg = msg.replace('⚠️', '').trim();
+    icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+  }
+  t.innerHTML = icon + msg;
   t.className = 'toast show ' + type;
   setTimeout(() => t.className = 'toast', 3500);
 }
 
 function injectDirectionAverages() {
   if (DEPTS.length === 0) return; 
+  
   DEPTS = DEPTS.filter(d => !d.startsWith('PROM. '));
+
   const dirs = Array.from(new Set(Object.values(DEPT_TO_DIR)));
   
   dirs.forEach(dir => {
     const promName = "PROM. " + dir;
-    DEPTS.push(promName); DEPT_TO_DIR[promName] = dir; COMMENTS[promName] = []; 
+    DEPTS.push(promName);
+    DEPT_TO_DIR[promName] = dir;
+    COMMENTS[promName] = []; 
+    
     const dirDepts = DEPTS.filter(d => DEPT_TO_DIR[d] === dir && !d.startsWith('PROM. '));
     const diProm = DEPTS.indexOf(promName);
+    
     SCORES.forEach((qScores) => {
        const validScores = dirDepts.map(d => qScores[DEPTS.indexOf(d)]).filter(v => v !== null && v !== undefined && !isNaN(v));
        const avg = validScores.length ? validScores.reduce((a,b)=>a+b,0)/validScores.length : null;
@@ -804,7 +830,10 @@ function injectDirectionAverages() {
 }
 
 function updateSubtitle(){
-  if (DEPTS.length === 0) { document.getElementById('dashSubtitle').textContent = "Cargue un archivo Excel para comenzar."; return; }
+  if (DEPTS.length === 0) {
+    document.getElementById('dashSubtitle').textContent = "Cargue un archivo Excel para comenzar.";
+    return;
+  }
   const opts = { month: 'long', year: 'numeric' };
   const dStr = REPORT_DATE.toLocaleDateString('es-ES', opts);
   const capDate = dStr.charAt(0).toUpperCase() + dStr.slice(1);
@@ -812,41 +841,43 @@ function updateSubtitle(){
   document.getElementById('dashSubtitle').textContent = realDeptsCount + " departamentos · " + DIRS.length + " direcciones · " + capDate;
 }
 
+// LOGIN CON FIREBASE AUTH
 async function doLogin(){
   const email = document.getElementById('loginEmail').value.trim();
   const pwd = document.getElementById('loginPwd').value.trim();
   const btn = document.getElementById('loginBtn');
   const err = document.getElementById('loginErr');
-  if(!email || !pwd) { err.textContent = "Ingresa tu correo y contraseña."; err.style.display = 'block'; return; }
+
+  if(!email || !pwd) {
+      err.textContent = "Ingresa tu correo y contraseña.";
+      err.style.display = 'block';
+      return;
+  }
+
   try {
-    btn.textContent = "Validando..."; btn.disabled = true; err.style.display = 'none';
+    btn.textContent = "Iniciando sesión...";
+    btn.disabled = true;
+    err.style.display = 'none';
+    
     await firebase.auth().signInWithEmailAndPassword(email, pwd);
+    
     const ls = document.getElementById('loginScreen');
     if(ls) { ls.remove(); document.documentElement.style.setProperty('--login-display', 'none'); }
     initDashboard();
+    
   } catch(error) {
-    err.textContent = "Correo o contraseña incorrectos."; err.style.display = 'block';
-    btn.textContent = "Ingresar al Dashboard"; btn.disabled = false;
+    err.textContent = "Correo o contraseña incorrectos.";
+    err.style.display = 'block';
+    btn.textContent = "Ingresar al Dashboard";
+    btn.disabled = false;
   }
 }
 
 function initDashboard(){
-  updateSubtitle(); buildFilters(); updateAllViews(); wireButtons(); applyCustomLogos();
-}
-
-function applyCustomLogos() {
-    if(CUSTOM_LOGO_LEFT) {
-        document.getElementById('defaultLogoLeft').style.display = 'none';
-        document.getElementById('logoLeftImg').src = CUSTOM_LOGO_LEFT;
-        document.getElementById('logoLeftImg').style.display = 'block';
-        document.getElementById('logoLeftBox').style.background = 'transparent';
-    }
-    if(CUSTOM_LOGO_RIGHT) {
-        document.getElementById('defaultLogoRight').style.display = 'none';
-        document.getElementById('logoRightImg').src = CUSTOM_LOGO_RIGHT;
-        document.getElementById('logoRightImg').style.display = 'block';
-        document.getElementById('logoRightBox').style.border = 'none';
-    }
+  updateSubtitle();
+  buildFilters();
+  updateAllViews();
+  wireButtons();
 }
 
 function wireButtons(){
@@ -863,26 +894,16 @@ function wireButtons(){
   document.getElementById('btnCloseNPS').onclick = () => document.getElementById('npsModal').classList.remove('open');
   document.getElementById('btnSaveNPS').onclick = saveNPSModal;
 
-  document.getElementById('logoLeftBox').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoLeftInput').click(); };
-  document.getElementById('logoLeftImg').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoLeftInput').click(); };
-  document.getElementById('logoLeftInput').onchange = (e) => {
-      const file = e.target.files[0];
-      if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_LEFT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
-  };
-  document.getElementById('logoRightBox').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoRightInput').click(); };
-  document.getElementById('logoRightInput').onchange = (e) => {
-      const file = e.target.files[0];
-      if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_RIGHT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
-  };
-
   const dropzone = document.getElementById('dropzone');
   dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('over'); };
   dropzone.ondragleave = () => dropzone.classList.remove('over');
   dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
   document.getElementById('fileInput').onchange = (e) => { if(e.target.files[0]) handleFile(e.target.files[0]); };
   
-  const lp = document.getElementById('loginPwd'); if(lp) { lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
-  const btn = document.getElementById('loginBtn'); if(btn) btn.onclick = doLogin;
+  const lp = document.getElementById('loginPwd'); 
+  if(lp) { lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
+  const btn = document.getElementById('loginBtn'); 
+  if(btn) btn.onclick = doLogin;
 }
 
 function copyLink(){
@@ -952,7 +973,7 @@ function saveNPSModal() {
 
   document.getElementById('npsModal').classList.remove('open');
   updateAllViews();
-  showToast('NPS calculado y actualizado', 'ok');
+  showToast('✅ NPS calculado y actualizado', 'ok');
 }
 
 function buildFilters() {
@@ -965,7 +986,7 @@ function buildFilters() {
     btn.className = 'filter-chip filter-chip-dir truncated' + (activeDirs.has(dir) ? ' active' : '');
     btn.textContent = dir;
     btn.onclick = () => {
-      if(dir==='Todas'){ activeDirs = new Set(['Todas']); }
+      if(dir==='Todas'){ activeDirs.clear(); activeDirs.add('Todas'); }
       else { activeDirs.delete('Todas'); if(activeDirs.has(dir)) activeDirs.delete(dir); else activeDirs.add(dir); if(activeDirs.size===0) activeDirs.add('Todas'); }
       activeDepts.clear(); activeDepts.add('Todos');
       buildFilters(); updateAllViews();
@@ -979,36 +1000,43 @@ function buildFilters() {
   document.getElementById('btnDeptTodos').onclick = () => { activeDepts.clear(); activeDepts.add('Todos'); buildFilters(); updateAllViews(); };
 
   const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
-  
-  allowedDirs.forEach(dir => {
+  const groups = getDeptsGroupedByDir(DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d])));
+
+  for (const [dir, dList] of Object.entries(groups)) {
     const groupDiv = document.createElement('div');
     groupDiv.className = 'filter-dir-group';
     groupDiv.innerHTML = "<span class='filter-dir-group-title truncated'>" + dir + "</span>";
     
-    DEPTS.forEach(d => {
-      if (DEPT_TO_DIR[d] === dir) {
-          const btn = document.createElement('button');
-          btn.className = 'filter-chip truncated' + (activeDepts.has(d) ? ' active' : '');
-          
-          if (d.startsWith('PROM. ')) {
-            btn.innerHTML = ICONS.star + " Promedio";
-            btn.classList.add('filter-chip-prom');
-            btn.style.setProperty('--prom-col', deptColor(d));
-          } else {
-            btn.textContent = d;
-          }
-          
-          btn.onclick = () => {
-            activeDepts.delete('Todos'); 
-            if(activeDepts.has(d)) activeDepts.delete(d); else activeDepts.add(d);
-            if(activeDepts.size===0) activeDepts.add('Todos');
-            buildFilters(); updateAllViews();
-          };
-          groupDiv.appendChild(btn);
-      }
+    const promName = "PROM. " + dir;
+    if (DEPTS.includes(promName)) {
+      const btnProm = document.createElement('button');
+      btnProm.className = 'filter-chip filter-chip-prom truncated' + (activeDepts.has(promName) ? ' active' : '');
+      btnProm.style.setProperty('--prom-col', deptColor(promName));
+      btnProm.innerHTML = "<svg width='14' height='14' viewBox='0 0 24 24' fill='currentColor' stroke='none' style='margin-right:4px; vertical-align:middle;'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg> Promedio";
+      btnProm.onclick = () => { 
+        activeDepts.delete('Todos'); 
+        if(activeDepts.has(promName)) activeDepts.delete(promName); else activeDepts.add(promName);
+        if(activeDepts.size===0) activeDepts.add('Todos');
+        buildFilters(); updateAllViews();
+      };
+      groupDiv.appendChild(btnProm);
+    }
+
+    dList.forEach(d => {
+      if (d.startsWith('PROM. ')) return;
+      const btn = document.createElement('button');
+      btn.className = 'filter-chip truncated' + (activeDepts.has(d) ? ' active' : '');
+      btn.textContent = d;
+      btn.onclick = () => {
+        activeDepts.delete('Todos'); 
+        if(activeDepts.has(d)) activeDepts.delete(d); else activeDepts.add(d);
+        if(activeDepts.size===0) activeDepts.add('Todos');
+        buildFilters(); updateAllViews();
+      };
+      groupDiv.appendChild(btn);
     });
     fbDept.appendChild(groupDiv);
-  });
+  }
 }
 
 function deptColor(d) { 
@@ -1098,7 +1126,7 @@ function renderNPS(orderedDepts) {
 
        const html = `
        <div class="nps-gauge-card">
-           <div class="nps-gauge-title">${d.startsWith('PROM.') ? ICONS.star + d.replace('PROM. ', 'Promedio ') : d}</div>
+           <div class="nps-gauge-title">${d.startsWith('PROM.') ? "<svg width='14' height='14' viewBox='0 0 24 24' fill='currentColor' stroke='none' style='margin-right:4px; vertical-align:middle;'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg>" + d.replace('PROM. ', 'Promedio ') : d}</div>
            <div class="nps-gauge-wrapper">
                <svg viewBox="0 0 200 120" style="width:100%; height:auto; overflow:visible;">
                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#EDF1F5" stroke-width="16" stroke-linecap="round"/>
@@ -1156,7 +1184,7 @@ function renderKPIs(orderedDepts){
       const isProm = d.startsWith('PROM. ');
       sectionHTML += "<div class='kpi-card' style='--ca:" + col + "'>" +
         "<div class='kpi-header-row'>" +
-          "<div class='kpi-dept'><span class='kpi-dept-inner'>" + (isProm ? ICONS.star + ' Promedio '+dir : d) + "</span></div>" +
+          "<div class='kpi-dept'><span class='kpi-dept-inner'>" + (isProm ? "<svg width='14' height='14' viewBox='0 0 24 24' fill='currentColor' stroke='none' style='margin-right:4px; vertical-align:middle;'><path d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/></svg> Promedio " + dir : d) + "</span></div>" +
           (!isProm ? "<div class='kpi-rank'>#" + (sortedGlobal.indexOf(d)+1) + " de " + sortedGlobal.length + "</div>" : "") +
         "</div>" +
         "<div class='kpi-score'>" + avg.toFixed(1) + "<sup>/10</sup></div>" +
@@ -1214,7 +1242,7 @@ function renderDeptTabs(orderedDepts){
   
   const btnCorp = document.createElement('button');
   btnCorp.className = 'dept-tab btn-consolidado truncated';
-  btnCorp.innerHTML = "<span class='dot'></span>" + ICONS.building + " CONSOLIDADO CORPORATIVO";
+  btnCorp.innerHTML = "<span class='dot'></span><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='margin-right:4px; vertical-align:middle;'><rect x='4' y='2' width='16' height='20' rx='2' ry='2'></rect><path d='M9 22v-4h6v4'></path><path d='M8 6h.01'></path><path d='M16 6h.01'></path><path d='M12 6h.01'></path><path d='M12 10h.01'></path><path d='M12 14h.01'></path><path d='M16 10h.01'></path><path d='M16 14h.01'></path><path d='M8 10h.01'></path><path d='M8 14h.01'></path></svg> CONSOLIDADO CORPORATIVO";
   btnCorp.onclick = () => {
     document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
     btnCorp.classList.add('active');
@@ -1229,7 +1257,7 @@ function renderDeptTabs(orderedDepts){
     
     const btnGen = document.createElement('button');
     btnGen.className = 'dept-tab dept-tab-general truncated';
-    btnGen.innerHTML = "<span class='dot'></span>" + ICONS.chart + " General " + dir;
+    btnGen.innerHTML = "<span class='dot'></span><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='margin-right:4px; vertical-align:middle;'><line x1='18' y1='20' x2='18' y2='10'></line><line x1='12' y1='20' x2='12' y2='4'></line><line x1='6' y1='20' x2='6' y2='14'></line></svg> General " + dir;
     btnGen.onclick = () => {
       document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
       btnGen.classList.add('active');
@@ -1330,7 +1358,7 @@ function renderRankingList(orderedDepts, activeQIndices){
     const q = QUESTIONS[qi];
     const vals = orderedDepts.map(d => ({n: d, v: SCORES[qi][DEPTS.indexOf(d)]})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
     if(!vals.length) return '';
-    return "<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>" + q + "</span></div><div class='rank-badges'><div class='rank-badge badge-best'>" + ICONS.up + " " + vals[0].n + " (" + vals[0].v.toFixed(1) + ")</div><div class='rank-badge badge-worst'>" + ICONS.down + " " + vals[vals.length-1].n + " (" + vals[vals.length-1].v.toFixed(1) + ")</div></div></div>";
+    return "<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>" + q + "</span></div><div class='rank-badges'><div class='rank-badge badge-best'><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' style='margin-right:2px; vertical-align:middle;'><line x1='12' y1='19' x2='12' y2='5'></line><polyline points='5 12 12 5 19 12'></polyline></svg> " + vals[0].n + " (" + vals[0].v.toFixed(1) + ")</div><div class='rank-badge badge-worst'><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' style='margin-right:2px; vertical-align:middle;'><line x1='12' y1='5' x2='12' y2='19'></line><polyline points='19 12 12 19 5 12'></polyline></svg> " + vals[vals.length-1].n + " (" + vals[vals.length-1].v.toFixed(1) + ")</div></div></div>";
   }).join('');
 }
 
@@ -1347,7 +1375,7 @@ function renderDetailTable(orderedDepts, activeQIndices){
   }).join('');
 
   const gAvg = (orderedDepts.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/orderedDepts.length).toFixed(2);
-  bodyHTML += "<tr class='row-total-general'><td class='fixed-col' style='background:#152130 !important; color:#fff !important;'>" + ICONS.building + " TOTAL GENERAL</td>" + orderedDepts.map(d => "<td>" + AVERAGES[DEPTS.indexOf(d)].toFixed(2) + "</td>").join('') + "<td>" + gAvg + "</td></tr>";
+  bodyHTML += "<tr class='row-total-general'><td class='fixed-col' style='background:#152130 !important; color:#fff !important;'><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='margin-right:4px; vertical-align:text-bottom;'><rect x='4' y='2' width='16' height='20' rx='2' ry='2'></rect><path d='M9 22v-4h6v4'></path><path d='M8 6h.01'></path><path d='M16 6h.01'></path><path d='M12 6h.01'></path><path d='M12 10h.01'></path><path d='M12 14h.01'></path><path d='M16 10h.01'></path><path d='M16 14h.01'></path><path d='M8 10h.01'></path><path d='M8 14h.01'></path></svg> TOTAL GENERAL</td>" + orderedDepts.map(d => "<td>" + AVERAGES[DEPTS.indexOf(d)].toFixed(2) + "</td>").join('') + "<td>" + gAvg + "</td></tr>";
   tbl.querySelector('tbody').innerHTML = bodyHTML;
 }
 
@@ -1359,13 +1387,13 @@ function renderParticipation(depts) {
   let body = "<tbody>" + depts.map(d => {
       const p = PARTICIPATION[d] || {sent:0, ans:0};
       const pct = p.sent > 0 ? ((p.ans/p.sent)*100).toFixed(1) : 0;
-      return "<tr><td style='text-align:left;'>" + d + "</td><td>" + p.sent + "</td><td>" + p.ans + "</td><td>" + pct + "%</td></tr>";
+      return "<tr><td style='text-align:left;'><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='margin-right:4px; vertical-align:middle;'><polyline points='9 22 15 16 9 10'></polyline><path d='M4 4v7a5 5 0 0 0 5 5h6'></path></svg> " + d + "</td><td>" + p.sent + "</td><td>" + p.ans + "</td><td>" + pct + "%</td></tr>";
   }).join('') + "</tbody>";
   tbl.innerHTML = "<thead><tr><th style='text-align:left;'>Entidad</th><th>Enviados</th><th>Contestaron</th><th>%</th></tr></thead>" + body;
 }
 
 function handleFile(file){
-  showToast('Procesando...', '');
+  showToast('Procesando...', 'load');
   const reader = new FileReader();
   reader.onload = e => {
     try {
@@ -1446,7 +1474,6 @@ window.openInsights = async function() {
   var allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
   var realDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]) && (activeDepts.has('Todos') || activeDepts.has(d)));
 
-  // ENVIANDO NPS AL PROMPT
   var npsLines = realDepts.map(function(d){
     if(NPS_DATA[d] && typeof NPS_DATA[d] === 'object') {
       var data = NPS_DATA[d];
