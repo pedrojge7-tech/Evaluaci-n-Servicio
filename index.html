@@ -557,7 +557,7 @@ tbody td:first-child { text-align: left; }
     <h2>Importar nuevo archivo</h2>
     <p>Sube tu archivo Excel. El dashboard se regenerará automáticamente.</p>
     <div class="import-hint">
-      <strong>📋 Estructura esperada</strong><br>
+      <strong><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:5px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg> Estructura esperada</strong><br>
       <b>Hoja 1 (Puntajes):</b> F1=Direcciones, F2=Departamentos, A3=Preguntas.<br>
       <b>Hoja 2 (Comentarios):</b> F1=Direcciones, F2=Departamentos, F3+=Comentarios.<br>
       <b>Hoja 3 (Participación):</b> F1=Dir, F2=Deptos, F3=Enviados, F4=Contestaron.
@@ -591,7 +591,7 @@ tbody td:first-child { text-align: left; }
 <div class="modal-overlay" id="insightModal">
   <div class="modal-box" style="width: 850px;">
     <h2 id="insightTitle" style="display:flex; align-items:center; gap:10px;">
-      ✨ Diagnóstico Estratégico Integral
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Diagnóstico Estratégico Integral
     </h2>
     
     <div id="insightLoading">
@@ -617,7 +617,7 @@ tbody td:first-child { text-align: left; }
 
   <div class="insight-container">
     <button class="btn-insight-master" onclick="openInsights()">
-      ✨ Generar Análisis Ejecutivo
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Generar Análisis Ejecutivo
     </button>
   </div>
 
@@ -761,9 +761,15 @@ window.toggleDir = function(dirId) {
   }
 };
 
+const TOAST_ICONS = {
+  ok:   `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  err:  `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
+  warn: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
+};
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  const icon = TOAST_ICONS[type] || '';
+  t.innerHTML = `<span style="display:flex;align-items:center;gap:8px;">${icon}<span>${msg}</span></span>`;
   t.className = 'toast show ' + type;
   setTimeout(() => t.className = 'toast', 3500);
 }
@@ -984,7 +990,7 @@ function saveNPSModal() {
 
   document.getElementById('npsModal').classList.remove('open');
   updateAllViews();
-  showToast('✅ NPS calculado y actualizado', 'ok');
+  showToast('NPS calculado y actualizado', 'ok');
 }
 
 function buildFilters() {
@@ -1270,7 +1276,7 @@ function renderDeptTabs(orderedDepts){
   
   const btnCorp = document.createElement('button');
   btnCorp.className = 'dept-tab btn-consolidado truncated';
-  btnCorp.innerHTML = "<span class='dot'></span>🏢 CONSOLIDADO CORPORATIVO";
+  btnCorp.innerHTML = "<span class='dot'></span><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path><line x1='12' y1='12' x2='12' y2='17'></line><line x1='9' y1='14.5' x2='15' y2='14.5'></line></svg> CONSOLIDADO CORPORATIVO";
   btnCorp.onclick = () => {
     document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
     btnCorp.classList.add('active');
@@ -1288,7 +1294,7 @@ function renderDeptTabs(orderedDepts){
     
     const btnGen = document.createElement('button');
     btnGen.className = 'dept-tab dept-tab-general truncated';
-    btnGen.innerHTML = "<span class='dot'></span>📊 General " + dir;
+    btnGen.innerHTML = "<span class='dot'></span><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><line x1='18' y1='20' x2='18' y2='10'></line><line x1='12' y1='20' x2='12' y2='4'></line><line x1='6' y1='20' x2='6' y2='14'></line></svg> General " + dir;
     btnGen.onclick = () => {
       document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active'));
       btnGen.classList.add('active');
@@ -1705,7 +1711,7 @@ function renderParticipation(orderedDepts) {
     const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, '-');
     
     body += "<tr class='dir-row' onclick=\"toggleDir('" + safeDirId + "')\" style='background:var(--surface2);'>" +
-      "<td class='truncated' style='text-align:left;'><span class='toggle-arrow' id='arrow-" + safeDirId + "'>▶</span> 📁 <span class='part-text'>" + dir + "</span></td>" +
+      "<td class='truncated' style='text-align:left;'><span class='toggle-arrow' id='arrow-" + safeDirId + "'>▶</span> <svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:3px'><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path></svg> <span class='part-text'>" + dir + "</span></td>" +
       "<td style='text-align:center'>" + dirSent + "</td><td style='text-align:center'>" + dirAns + "</td>" +
       "<td><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-weight:700;'>" + dirPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px;'><div class='kpi-bar-fill' style='width:" + dirPct + "%; background:linear-gradient(90deg, var(--if-orange), var(--if-orange-light))'></div></div></div></td>" +
     "</tr>";
@@ -1725,7 +1731,7 @@ function renderParticipation(orderedDepts) {
 
   const globalPct = globalSent > 0 ? ((globalAns / globalSent) * 100).toFixed(1) : 0;
   body += "<tr style='background:#152130; font-family:var(--font-bold);'>" +
-      "<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'>🏢 Total General</span></td>" +
+      "<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path></svg> Total General</span></td>" +
       "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important;'>" + globalSent + "</td>" +
       "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important;'>" + globalAns + "</td>" +
       "<td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td>" +
@@ -1818,7 +1824,7 @@ window.openInsights = async function() {
     var avg = vals.reduce(function(s,x){return s+x.v;},0)/vals.length;
     var sd = Math.sqrt(vals.reduce(function(s,x){return s+Math.pow(x.v-avg,2);},0)/vals.length);
     var best = vals[0], worst = vals[vals.length-1];
-    var flag = sd>=1.5 ? " ⚠️POLARIZADA" : (avg<8 ? " 🚨CRÍTICA" : (avg>=9 ? " ✅FUERTE" : ""));
+    var flag = sd>=1.5 ? " ~POLARIZADA" : (avg<8 ? " !CRÍTICA" : (avg>=9 ? " +FUERTE" : ""));
     return "• \""+q+"\": prom="+avg.toFixed(1)+flag+"\n  Mejor: "+best.d+"("+best.v.toFixed(1)+") | Peor: "+worst.d+"("+worst.v.toFixed(1)+")";
   }).filter(Boolean).join("\n");
 
@@ -1884,18 +1890,18 @@ window.openInsights = async function() {
 "\nRANKING DE SERVICIO (de mejor calificado a peor, según sus clientes internos):\n" + deptRanking + "\n" +
 "\nPROMEDIO GLOBAL DE SERVICIO: " + globalAvg + "/10\n\n" +
 "CALIFICACIÓN POR ASPECTO DE SERVICIO:\n" + qLines + "\n" +
-(fallas.length ? "\n🚨 ASPECTOS DONDE CASI TODOS LOS DEPARTAMENTOS FALLARON (el proceso está roto, no es culpa de una persona):\n" + fallas.join("\n") + "\n" : "") +
-(polarizadas.length ? "\n⚠️ ASPECTOS CON SERVICIO INCONSISTENTE (algunos clientes internos reciben buen servicio, otros no):\n" + polarizadas.join("\n") + "\n" : "") +
+(fallas.length ? "\n[CRITICO] ASPECTOS DONDE CASI TODOS LOS DEPARTAMENTOS FALLARON (el proceso está roto, no es culpa de una persona):\n" + fallas.join("\n") + "\n" : "") +
+(polarizadas.length ? "\n[INCONSISTENTE] ASPECTOS CON SERVICIO INCONSISTENTE (algunos clientes internos reciben buen servicio, otros no):\n" + polarizadas.join("\n") + "\n" : "") +
 (allComments.length ? "\nLO QUE LOS DEPARTAMENTOS ESCRIBIERON SOBRE EL SERVICIO QUE RECIBEN:\n" + allComments.map(function(x,i){return (i+1)+'. [Comentario sobre '+x.d+']: "'+x.c+'"';}).join("\n") + "\n" : "") +
 
 "\n═══ ESTRUCTURA DEL ANÁLISIS ═══\n" +
 "Formato: solo HTML con estas etiquetas: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <em>, <b>, <br>\n\n" +
 "5 SECCIONES OBLIGATORIAS:\n\n" +
-"1. 📊 Panorama General — ¿Qué tan confiables son estos datos? ¿Cuántos clientes internos participaron? ¿Qué tan representativa es la muestra? Da el veredicto general del nivel de servicio interno de la empresa.\n\n" +
-"2. 🏆 Departamentos que están haciendo un gran trabajo — ¿Quiénes tienen las mejores calificaciones de sus clientes internos? ¿En qué aspectos destacan? ¿Qué pueden enseñarle al resto?\n\n" +
-"3. 🚨 Departamentos y aspectos que necesitan atención urgente — ¿Quiénes están fallando a sus clientes internos? ¿En qué aspectos específicos? ¿Qué impacto tiene esto en la operación diaria de la empresa? ¿Hay fallas de proceso o de servicio inconsistente? Sé directo sobre la gravedad.\n\n" +
-"4. 💬 Lo que la gente está pidiendo a gritos — Interpreta los comentarios que dejaron los departamentos. ¿Qué frustraciones se repiten? ¿Qué reconocimientos hay? ¿Qué está pidiendo la gente que cambie? Conecta los comentarios con los puntajes para encontrar el patrón.\n\n" +
-"5. ✅ Plan de acción para esta semana (usa clase highlight) — Define exactamente 3 acciones concretas, en orden de impacto, con el nombre del área responsable y qué resultado se espera. Que sean acciones reales que se puedan ejecutar de inmediato, no recomendaciones genéricas.\n\n" +
+"1. [PANORAMA] Panorama General — ¿Qué tan confiables son estos datos? ¿Cuántos clientes internos participaron? ¿Qué tan representativa es la muestra? Da el veredicto general del nivel de servicio interno de la empresa.\n\n" +
+"2. [DESTACADOS] Departamentos que están haciendo un gran trabajo — ¿Quiénes tienen las mejores calificaciones de sus clientes internos? ¿En qué aspectos destacan? ¿Qué pueden enseñarle al resto?\n\n" +
+"3. [URGENTE] Departamentos y aspectos que necesitan atención urgente — ¿Quiénes están fallando a sus clientes internos? ¿En qué aspectos específicos? ¿Qué impacto tiene esto en la operación diaria de la empresa? ¿Hay fallas de proceso o de servicio inconsistente? Sé directo sobre la gravedad.\n\n" +
+"4. [COMENTARIOS] Lo que la gente está pidiendo a gritos — Interpreta los comentarios que dejaron los departamentos. ¿Qué frustraciones se repiten? ¿Qué reconocimientos hay? ¿Qué está pidiendo la gente que cambie? Conecta los comentarios con los puntajes para encontrar el patrón.\n\n" +
+"5. [PLAN DE ACCION] Plan de acción para esta semana (usa clase highlight) — Define exactamente 3 acciones concretas, en orden de impacto, con el nombre del área responsable y qué resultado se espera. Que sean acciones reales que se puedan ejecutar de inmediato, no recomendaciones genéricas.\n\n" +
 "IMPORTANTE: Solo devuelve el HTML. Sin texto antes ni después. Sin markdown.";
 
   try {
@@ -1938,7 +1944,7 @@ window.openInsights = async function() {
   } catch(err) {
     clearInterval(ltInterval);
     loadingContainer.style.display = 'none';
-    content.innerHTML = "<div class='insight-p' style='border-color:var(--danger);'><strong style='color:var(--danger)'>⚠️ Error al generar el análisis:</strong><br><br>" + err.message + "<br><br>Verifica tu conexión e intenta nuevamente.</div>";
+    content.innerHTML = "<div class='insight-p' style='border-color:var(--danger);'><strong style='color:var(--danger)'><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'></path><line x1='12' y1='9' x2='12' y2='13'></line><line x1='12' y1='17' x2='12.01' y2='17'></line></svg> Error al generar el análisis:</strong><br><br>" + err.message + "<br><br>Verifica tu conexión e intenta nuevamente.</div>";
     content.style.display = 'block';
     actions.style.display = 'flex';
   }
@@ -2003,9 +2009,9 @@ function handleFile(file){
 
       document.getElementById('importModal').classList.remove('open');
       rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name);
-      showToast(`✅ Datos cargados con éxito`,'ok');
+      showToast('Datos cargados con éxito','ok');
     } catch(err){
-      console.error(err); showToast('❌ Error al leer el Excel', 'err');
+      console.error(err); showToast('Error al leer el Excel', 'err');
     }
   };
   reader.readAsArrayBuffer(file);
@@ -2022,10 +2028,10 @@ function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
 
 async function generateReaderLink(){
   const rawId = document.getElementById('customIdInput').value.trim();
-  if(!rawId) { showToast('⚠️ Escribe un nombre para el enlace', 'err'); return; }
+  if(!rawId) { showToast('Escribe un nombre para el enlace', 'err'); return; }
   
   const customId = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
-  if(!customId) { showToast('⚠️ Usa letras o números válidos', 'err'); return; }
+  if(!customId) { showToast('Usa letras o números válidos', 'err'); return; }
 
   const btn = document.getElementById('btnOpenReader');
   btn.textContent='Subiendo a la nube…'; btn.disabled=true;
@@ -2054,10 +2060,10 @@ async function generateReaderLink(){
     document.getElementById('linkInput').value = link;
     btn.textContent='Abrir →'; btn.disabled=false; btn.onclick=()=>window.open(link,'_blank');
     navigator.clipboard.writeText(link).catch(()=>{});
-    showToast('✅ Actualizado en la nube y copiado','ok');
+    showToast('Actualizado en la nube y copiado','ok');
   } catch(err){
     btn.textContent='Guardar en la nube →'; btn.disabled=false;
-    showToast('❌ Error al guardar en Firebase','err');
+    showToast('Error al guardar en Firebase','err');
   }
 }
 
