@@ -255,7 +255,7 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .rank-q-inner { display: inline-block; white-space: normal; font-weight:600; font-size:.8rem; color:var(--if-navy); margin-bottom:0; line-height:1.4;}
 
 .rank-badges{flex-shrink:0; display:flex; gap:12px; align-items:center;}
-.rank-badge{ display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 6px; font-weight:700; font-size: .75rem; }
+.rank-badge{ display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-weight:700; font-size: .75rem; }
 .rb-name-wrap { flex: 1 1 auto; }
 .rb-name-inner { display: inline-block; white-space: normal; font-weight: 600; text-align: left;}
 
@@ -378,7 +378,7 @@ tbody td:first-child { text-align: left; }
 .nps-sub { font-size: 0.75rem; font-weight: 600; color: var(--muted); margin-top: 16px; text-align: center; width:100%;}
 
 .import-hint{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:16px;font-weight:500;font-size:.78rem;color:var(--muted);margin-bottom:20px;line-height:1.6;}
-.import-hint strong{display:block;margin-bottom:4px;font-weight:700;color:var(--if-navy);}
+.import-hint strong{display:flex; align-items:center; margin-bottom:4px; font-weight:700; color:var(--if-navy);}
 .dropzone{border:2px dashed var(--border);border-radius:var(--rs);padding:40px 20px;text-align:center;background:var(--surface2);margin-bottom:24px;cursor:pointer;transition:all .2s;position:relative;}
 .dropzone:hover,.dropzone.over{border-color:var(--primary);background:var(--primary-light);}
 .dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0;}
@@ -508,7 +508,6 @@ tbody td:first-child { text-align: left; }
       <img id="logoLeftImg" class="custom-logo-img" style="display:none;" alt="Logo Izquierdo"> 
       <div id="defaultLogoLeft">IF</div>
     </div>
-    
     <div>
       <h1 id="dashTitle">Evaluación de Servicio</h1>
       <p id="dashSubtitle"></p>
@@ -538,7 +537,7 @@ tbody td:first-child { text-align: left; }
     
     <div class="header-logo-upload" id="logoRightBox" title="Clic para subir tu propio Logo" style="border: 1px dashed var(--if-gray-300); margin-left: 8px;">
       <img id="logoRightImg" class="custom-logo-img" style="display:none;" alt="Logo Derecho"> 
-      <span id="defaultLogoRight">+ Logo</span>
+      <span id="defaultLogoRight" style="font-size:10px; color:var(--muted);">+ Logo</span>
     </div>
   </div>
 </header>
@@ -611,13 +610,13 @@ tbody td:first-child { text-align: left; }
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" style="display:flex; align-items:center; justify-content:center;"></div>
 
 <main class="main">
 
   <div class="insight-container">
     <button class="btn-insight-master" onclick="openInsights()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg> Generar Análisis Ejecutivo
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z"/></svg> Generar Análisis Ejecutivo
     </button>
   </div>
 
@@ -730,7 +729,13 @@ const ICONS = {
   building: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>`,
   chart: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>`,
   up: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 2px;"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>`,
-  down: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 2px;"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`
+  down: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 2px;"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>`,
+  folder: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`,
+  play: `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="vertical-align: middle;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`,
+  arrowCorner: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><polyline points="9 22 15 16 9 10"></polyline><path d="M4 4v7a5 5 0 0 0 5 5h6"></path></svg>`,
+  ok: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+  err: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
+  load: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px; animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`
 };
 
 let REPORT_DATE = new Date();
@@ -766,12 +771,11 @@ window.toggleDir = function(dirId) {
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
   let icon = '';
-  let cleanMsg = msg.replace(/^[⚠️✅❌⏳]\s*/, '');
-  if (type === 'ok') icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-  else if (type === 'err') icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
-  else if (cleanMsg.includes('Procesando') || cleanMsg.includes('Descargando')) icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 6px; animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+  if(type === 'ok') icon = ICONS.ok;
+  else if(type === 'err') icon = ICONS.err;
+  else if(msg.includes('Procesando') || msg.includes('Descargando')) icon = ICONS.load;
   
-  t.innerHTML = icon + cleanMsg;
+  t.innerHTML = icon + msg.replace(/^[✅❌⏳⚠️]\s*/, ''); 
   t.className = 'toast show ' + type;
   setTimeout(() => t.className = 'toast', 3500);
 }
@@ -961,7 +965,7 @@ function buildFilters() {
     btn.className = 'filter-chip filter-chip-dir truncated' + (activeDirs.has(dir) ? ' active' : '');
     btn.textContent = dir;
     btn.onclick = () => {
-      if(dir==='Todas'){ activeDirs.clear(); activeDirs.add('Todas'); }
+      if(dir==='Todas'){ activeDirs = new Set(['Todas']); }
       else { activeDirs.delete('Todas'); if(activeDirs.has(dir)) activeDirs.delete(dir); else activeDirs.add(dir); if(activeDirs.size===0) activeDirs.add('Todas'); }
       activeDepts.clear(); activeDepts.add('Todos');
       buildFilters(); updateAllViews();
@@ -975,43 +979,36 @@ function buildFilters() {
   document.getElementById('btnDeptTodos').onclick = () => { activeDepts.clear(); activeDepts.add('Todos'); buildFilters(); updateAllViews(); };
 
   const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
-  const groups = getDeptsGroupedByDir(DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d])));
-
-  for (const [dir, dList] of Object.entries(groups)) {
+  
+  allowedDirs.forEach(dir => {
     const groupDiv = document.createElement('div');
     groupDiv.className = 'filter-dir-group';
     groupDiv.innerHTML = "<span class='filter-dir-group-title truncated'>" + dir + "</span>";
     
-    const promName = "PROM. " + dir;
-    if (DEPTS.includes(promName)) {
-      const btnProm = document.createElement('button');
-      btnProm.className = 'filter-chip filter-chip-prom truncated' + (activeDepts.has(promName) ? ' active' : '');
-      btnProm.style.setProperty('--prom-col', deptColor(promName));
-      btnProm.innerHTML = ICONS.star + " Promedio";
-      btnProm.onclick = () => { 
-        activeDepts.delete('Todos'); 
-        if(activeDepts.has(promName)) activeDepts.delete(promName); else activeDepts.add(promName);
-        if(activeDepts.size===0) activeDepts.add('Todos');
-        buildFilters(); updateAllViews();
-      };
-      groupDiv.appendChild(btnProm);
-    }
-
-    dList.forEach(d => {
-      if (d.startsWith('PROM. ')) return;
-      const btn = document.createElement('button');
-      btn.className = 'filter-chip truncated' + (activeDepts.has(d) ? ' active' : '');
-      btn.textContent = d;
-      btn.onclick = () => {
-        activeDepts.delete('Todos'); 
-        if(activeDepts.has(d)) activeDepts.delete(d); else activeDepts.add(d);
-        if(activeDepts.size===0) activeDepts.add('Todos');
-        buildFilters(); updateAllViews();
-      };
-      groupDiv.appendChild(btn);
+    DEPTS.forEach(d => {
+      if (DEPT_TO_DIR[d] === dir) {
+          const btn = document.createElement('button');
+          btn.className = 'filter-chip truncated' + (activeDepts.has(d) ? ' active' : '');
+          
+          if (d.startsWith('PROM. ')) {
+            btn.innerHTML = ICONS.star + " Promedio";
+            btn.classList.add('filter-chip-prom');
+            btn.style.setProperty('--prom-col', deptColor(d));
+          } else {
+            btn.textContent = d;
+          }
+          
+          btn.onclick = () => {
+            activeDepts.delete('Todos'); 
+            if(activeDepts.has(d)) activeDepts.delete(d); else activeDepts.add(d);
+            if(activeDepts.size===0) activeDepts.add('Todos');
+            buildFilters(); updateAllViews();
+          };
+          groupDiv.appendChild(btn);
+      }
     });
     fbDept.appendChild(groupDiv);
-  }
+  });
 }
 
 function deptColor(d) { 
@@ -1044,18 +1041,6 @@ function updateAllViews() {
   renderRankingList(filtered, activeQIndices);
   renderDetailTable(filtered, activeQIndices);
   renderDeptTabs(filtered);
-
-  if(activeDepts.size === 1 && !activeDepts.has('Todos')) {
-      const single = Array.from(activeDepts)[0];
-      if(!single.startsWith('PROM.')) {
-          setTimeout(() => {
-              const tabs = document.querySelectorAll('.dept-tab');
-              for(let t of tabs) {
-                  if(t.textContent.includes(single)) { t.click(); break; }
-              }
-          }, 100);
-      }
-  }
 }
 
 // ── GENERADOR DE MEDIDORES NPS (SVG PURO) ──
@@ -1468,39 +1453,13 @@ window.openInsights = async function() {
       var total = data.det + data.pas + data.pro;
       if (total > 0) {
         var val = Math.round(((data.pro - data.det) / total) * 100);
-        return "• " + d + ": NPS " + val + " (Promotores: " + data.pro + ", Pasivos: " + data.pas + ", Detractores: " + data.det + ")";
+        return "• " + d + ": NPS " + val + " (Prom: " + data.pro + ", Pas: " + data.pas + ", Detr: " + data.det + ")";
       }
     }
     return null;
   }).filter(Boolean).join("\n");
 
-  var prompt = 
-"Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.\n\n" +
-"CONTEXTO CLAVE (muy importante para interpretar bien):\n" +
-"- Esto NO es una autoevaluación. Cada departamento fue calificado por las otras áreas con las que tiene contacto.\n" +
-"- Un puntaje bajo significa que los departamentos que dependen de ese servicio están frustrados o insatisfechos.\n" +
-"- Un puntaje alto significa que sus clientes internos los reconocen como un área que facilita el trabajo.\n" +
-"- Los comentarios son quejas, reconocimientos o sugerencias reales de otros departamentos hacia el evaluado.\n" +
-"- Una falla sistémica (casi todos mal en la misma pregunta) indica un proceso roto que afecta a toda la organización.\n" +
-"- Una polarización (opiniones muy divididas) sugiere que el servicio es inconsistente: algunos reciben buen trato y otros no.\n\n" +
-"REGLAS DE ESCRITURA ESTRICTAS:\n" +
-"- NO USES EMOJIS DE NINGÚN TIPO EN TU RESPUESTA.\n" +
-"- Escribe como si le hablaras directamente al Director General, con claridad y sin rodeos\n" +
-"- Usa palabras simples que cualquier persona entienda, sin tecnicismos\n" +
-"- Cuando algo es urgente, dilo con firmeza\n" +
-"- Cuando algo merece reconocimiento, exprésalo con entusiasmo\n" +
-"- Conecta los datos para encontrar causas reales, no solo describas números\n" +
-"- Siempre menciona nombres reales de departamentos y cifras exactas\n" +
-"- Recuerda siempre que quien califica es el cliente interno, no el propio departamento\n\n" +
-"DATOS DE LA EVALUACIÓN:\n" +
-"NPS Capturados:\n" + (npsLines || "Ninguno") + "\n\n" +
-"ESTRUCTURA DEL ANÁLISIS (Formato HTML con <div class='insight-section-title'>, <div class='insight-p'>, <ul>, <li>, <strong>, <b>):\n" +
-"1. PANORAMA GENERAL — ¿Qué tan confiables son estos datos? Veridicto general.\n" +
-"2. DEPARTAMENTOS QUE ESTÁN HACIENDO UN GRAN TRABAJO — Mejores calificaciones de clientes internos.\n" +
-"3. DEPARTAMENTOS Y ASPECTOS QUE NECESITAN ATENCIÓN URGENTE — Fallas y Riesgos.\n" +
-"4. LO QUE LA GENTE ESTÁ PIDIENDO A GRITOS — Comentarios clave.\n" +
-"5. PLAN DE ACCIÓN PARA ESTA SEMANA (usa clase highlight) — 3 acciones directas.\n" +
-"IMPORTANTE: Solo devuelve el HTML puro. Sin Markdown ni texto suelto.";
+  var prompt = "Analiza estos resultados de servicio interno. Deptos: " + realDepts.join(', ') + ". NPS Capturados:\n" + (npsLines || "Ninguno") + "\n\nNO uses emojis en tu respuesta. Utiliza viñetas o listas HTML limpias.";
 
   try {
     var response = await fetch("/api/analyze", {
