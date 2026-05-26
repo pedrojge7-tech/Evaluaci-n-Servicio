@@ -1227,6 +1227,10 @@ function renderKPIs(orderedDepts){
 
 function classifyComment(text){
   if(!text) return 'Ignorar';
+  
+  if(text.startsWith('[PET_RES]')) return 'Peticiones resueltas';
+  if(text.startsWith('[PET_NO_RES]')) return 'Peticiones no resueltas';
+
   const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
   if(t.length < 5 && !t.match(/mal|peor|pago|falla|lento/)) return 'Ignorar';
 
@@ -1430,7 +1434,10 @@ function renderComments(depts, cat){
               if (!cat) {
                   html += "<div style='font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
               }
-              html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + c.text + "</div>").join('');
+              html += grouped[cName].map(c => {
+                  const cleanText = c.text.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, '');
+                  return "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + cleanText + "</div>";
+              }).join('');
           });
       });
   } else {
@@ -1447,7 +1454,10 @@ function renderComments(depts, cat){
         if (!cat) {
             html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
         }
-        html += grouped[cName].map(c => "<div class='comment-item' style='--al:" + deptColor(deptArr[0]) + "'>" + c.text + "</div>").join('');
+        html += grouped[cName].map(c => {
+            const cleanText = c.text.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, '');
+            return "<div class='comment-item' style='--al:" + deptColor(deptArr[0]) + "'>" + cleanText + "</div>";
+        }).join('');
       });
   }
   
@@ -1848,7 +1858,14 @@ window.openInsights = async function() {
   });
 
   var allComments=[];
-  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) allComments.push({d:d,c:c}); }); });
+  realDepts.forEach(function(d){ 
+    (COMMENTS[d]||[]).forEach(function(c){ 
+      if(c&&c.length>10&&c.length<180) {
+         var cleanC = c.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, '');
+         allComments.push({d:d,c:cleanC}); 
+      }
+    }); 
+  });
   allComments=allComments.slice(0,18);
 
   var npsLines = realDepts.map(function(d){
@@ -1869,7 +1886,7 @@ window.openInsights = async function() {
 "CONTEXTO CLAVE (muy importante para interpretar bien):\n" +
 "- Esto NO es una autoevaluación. Cada departamento fue calificado por las otras áreas con las que tiene contacto.\n" +
 "- Un puntaje bajo significa que los departamentos que dependen de ese servicio están frustrados o insatisfechos.\n" +
-"- Un puntaje alto significa que sus clientes internos los reconocen como un área que facilita el trabajo.\n" +
+"- Un puntaje alto significa que sus clientes internos pos reconocen como un área que facilita el trabajo.\n" +
 "- Los comentarios son quejas, reconocimientos o sugerencias reales de otros departamentos hacia el evaluado.\n" +
 "- Una falla sistémica (casi todos mal en la misma pregunta) indica un proceso roto que afecta a toda la organización.\n" +
 "- Una polarización (opiniones muy divididas) sugiere que el servicio es inconsistente: algunos reciben buen trato y otros no.\n\n" +
@@ -2006,6 +2023,29 @@ function handleFile(file){
           }
         }
       }
+
+      // NUEVO: Leer hojas exclusivas de peticiones
+      wb.SheetNames.forEach(sheetName => {
+        const snLower = sheetName.toLowerCase().trim();
+        let prefix = null;
+        if (snLower === 'peticiones resultas' || snLower === 'peticiones resueltas') prefix = '[PET_RES] ';
+        else if (snLower === 'peticiones no resultas' || snLower === 'peticiones no resueltas') prefix = '[PET_NO_RES] ';
+
+        if (prefix) {
+          const sPet = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1});
+          const hDeptPet = sPet[1] || [];
+          for(let r=2; r<sPet.length; r++){
+            const row = sPet[r]; if(!row) continue;
+            for(let c=0; c<hDeptPet.length; c++){
+              if(row[c] && hDeptPet[c]){
+                const dName = String(hDeptPet[c]).trim();
+                const target = newDepts.find(x => x.toLowerCase() === dName.toLowerCase());
+                if(target) nComm[target].push(prefix + String(row[c]));
+              }
+            }
+          }
+        }
+      });
 
       document.getElementById('importModal').classList.remove('open');
       rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name);
