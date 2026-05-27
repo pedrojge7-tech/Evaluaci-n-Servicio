@@ -1798,10 +1798,30 @@ function renderPeticiones(depts) {
   let resueltas = [];
   let noResueltas = [];
   
+  const isMeaningful = (text, isNoSection) => {
+      const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
+      if(t.length < 2) return false;
+      
+      const useless = ['na', 'n/a', 'ningun', 'ninguna', 'nada', 'todo ok', 'ok', 'todo bien', 'sin observaci', 'no tengo', 'no hay', 'sin comentario', 'excelente', 'muy bien', 'bien', 'sin detalle', 'desconozco', 'no conozco', 'ignoro', 'no aplica', 'todo en orden', 'sin queja', 'x', '-', 'ninguno'];
+      
+      if (isNoSection && (t.includes('si resuelven') || t.includes('sí resuelven') || t.includes('todo lo resuelven') || t === 'todo' || t === 'todas')) return false;
+      
+      for(let u of useless){ 
+          if(t === u || t.startsWith(u + ' ')) return false; 
+      }
+      return true;
+  };
+
   deptArr.forEach(d => {
       (COMMENTS[d]||[]).forEach(c => {
-          if (c.startsWith('[PET_RES]')) resueltas.push({text: c.replace(/^\[PET_RES\]\s*/, ''), dept: d});
-          else if (c.startsWith('[PET_NO_RES]')) noResueltas.push({text: c.replace(/^\[PET_NO_RES\]\s*/, ''), dept: d});
+          if (c.startsWith('[PET_RES]')) {
+              const text = c.replace(/^\[PET_RES\]\s*/, '');
+              if (isMeaningful(text, false)) resueltas.push({text, dept: d});
+          }
+          else if (c.startsWith('[PET_NO_RES]')) {
+              const text = c.replace(/^\[PET_NO_RES\]\s*/, '');
+              if (isMeaningful(text, true)) noResueltas.push({text, dept: d});
+          }
       });
   });
 
@@ -1817,11 +1837,11 @@ function renderPeticiones(depts) {
   
   const subtitle = document.getElementById('petSubtitle');
   if (subtitle) {
-      subtitle.innerHTML = `De <b>${total}</b> respuestas de clientes internos, <b>${resueltas.length}</b> indican que sí se les resuelve, reflejando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>.`;
+      subtitle.innerHTML = `De <b>${total}</b> solicitudes concretas mencionadas, <b>${resueltas.length}</b> son marcadas como resueltas, reflejando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron respuestas como "nada", "N/A" o "todo bien")</span>`;
   }
   
   const renderList = (arr) => {
-      if (arr.length === 0) return '<div class="no-comments" style="padding:24px;">Ninguna registrada</div>';
+      if (arr.length === 0) return '<div class="no-comments" style="padding:24px;">Ninguna solicitud concreta registrada.</div>';
       return arr.map(c => "<div class='comment-item' style='--al:" + deptColor(c.dept) + "; margin-bottom:12px;'>" + (deptArr.length > 1 ? "<strong style='display:block; margin-bottom:4px; font-size:0.75rem; text-transform:uppercase; color:var(--muted);'>" + c.dept + "</strong>" : "") + c.text + "</div>").join('');
   };
 
