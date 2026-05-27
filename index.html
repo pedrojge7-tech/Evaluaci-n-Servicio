@@ -1666,20 +1666,19 @@ async function generateReaderLink(){
   btn.textContent='Subiendo a la nube…'; btn.disabled=true;
 
   try {
-    // BLINDAJE MÁXIMO: Convertimos los objetos a JSON para que Firebase no se queje de los nombres de departamentos con puntos o diagonales.
     const payload = {
-      dirs: DIRS, 
-      depts: DEPTS.filter(d => !d.startsWith('PROM. ')), 
+      dirs: JSON.stringify(DIRS), 
+      depts: JSON.stringify(DEPTS.filter(d => !d.startsWith('PROM. '))), 
       deptMap: JSON.stringify(DEPT_TO_DIR), 
-      qs: QUESTIONS,
+      qs: JSON.stringify(QUESTIONS),
       scores: JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
       comments: JSON.stringify(COMMENTS), 
       participation: JSON.stringify(PARTICIPATION), 
       nps: JSON.stringify(NPS_DATA),
-      title: document.getElementById('dashTitle').textContent, 
+      title: document.getElementById('dashTitle').textContent || "Reporte", 
       timestamp: REPORT_DATE.toISOString(),
-      logoLeft: CUSTOM_LOGO_LEFT || null, 
-      logoRight: CUSTOM_LOGO_RIGHT || null 
+      logoLeft: CUSTOM_LOGO_LEFT || "", 
+      logoRight: CUSTOM_LOGO_RIGHT || "" 
     };
     
     await window.db.collection("reportes").doc(customId).set(payload);
@@ -1695,16 +1694,9 @@ async function generateReaderLink(){
     console.error("Error detallado de Firebase:", err);
     btn.textContent='Guardar en la nube →'; btn.disabled=false; 
     
-    let errorMsg = 'Error al guardar.';
-    if (err.message && (err.message.includes('permission') || err.message.includes('Missing or insufficient'))) {
-        errorMsg = 'Permiso denegado (Revisa sesión o reglas).';
-    } else if (err.message && (err.message.includes('payload size') || err.message.includes('exceeds'))) {
-        errorMsg = 'El archivo o los logos son demasiado pesados.';
-    } else if (err.message) {
-        // Expandimos el límite de caracteres para ver el error real si vuelve a fallar
-        errorMsg = 'Error: ' + err.message.substring(0, 70); 
-    }
-    showToast(errorMsg, 'err'); 
+    // Alerta directa para poder ver el error completo si vuelve a fallar
+    alert("DETALLE DEL ERROR DE FIREBASE:\n\n" + err.message + "\n\nSi el problema persiste, toma captura de esta ventana.");
+    showToast('Revisa la alerta con el error', 'err'); 
   }
 }
 
@@ -1725,18 +1717,18 @@ async function tryLoadFromURL(){
     if(docSnap.exists){
       const raw = docSnap.data();
       
-      // CARGA BLINDADA: Soporta reportes viejos (objetos) y nuevos (JSON strings)
       if(raw.dirs && raw.deptMap) { 
-          DIRS = raw.dirs; 
+          DIRS = typeof raw.dirs === 'string' ? JSON.parse(raw.dirs) : raw.dirs; 
           DEPT_TO_DIR = typeof raw.deptMap === 'string' ? JSON.parse(raw.deptMap) : raw.deptMap; 
       } else { 
           DIRS = ['General']; 
           DEPT_TO_DIR = {}; 
-          raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General'); 
+          const dpt = typeof raw.depts === 'string' ? JSON.parse(raw.depts) : raw.depts;
+          dpt.forEach(d => DEPT_TO_DIR[d] = 'General'); 
       }
       
-      DEPTS = raw.depts; 
-      QUESTIONS = raw.qs; 
+      DEPTS = typeof raw.depts === 'string' ? JSON.parse(raw.depts) : raw.depts; 
+      QUESTIONS = typeof raw.qs === 'string' ? JSON.parse(raw.qs) : raw.qs; 
       SCORES = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
       COMMENTS = typeof raw.comments === 'string' ? JSON.parse(raw.comments) : raw.comments; 
       PARTICIPATION = typeof raw.participation === 'string' ? JSON.parse(raw.participation) : (raw.participation || {}); 
