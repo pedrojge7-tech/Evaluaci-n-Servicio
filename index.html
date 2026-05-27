@@ -1814,7 +1814,6 @@ function renderPeticiones(depts) {
       ];
       
       if (junk.includes(t)) return false;
-      
       return true;
   };
 
@@ -1837,13 +1836,32 @@ function renderPeticiones(depts) {
       return;
   }
   card.style.display = 'flex';
+
+  const isPositive = (text) => {
+      const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      
+      if (t.includes('todo bien') || t.includes('todo en orden') || t.includes('todo super') || t.includes('todo al 100') || t.includes('todo perfecto') || t.includes('excelente') || t.includes('todo excelente')) return true;
+      if (t.includes('todas resueltas') || t.includes('todo se resuelve') || t.includes('siempre resuelven') || t.includes('siempre se resuelven') || t.includes('todo lo resuelven') || t.includes('siempre atienden')) return true;
+      if (t.includes('sin problema') || t.includes('ningun problema') || t.includes('ninguna queja') || t.includes('sin inconveniente') || t.includes('ningun inconveniente')) return true;
+      if (t.match(/^(ninguna|ninguno|nada)( por el momento| hasta el momento| hasta ahorita| al momento)?$/)) return true;
+      if (t === 'ninguna' || t === 'ninguno' || t === 'nada') return true;
+      if (t.includes('hasta ahorita ninguna') || t.includes('al momento se han atendido') || t.includes('se le ha dado seguimiento') || t.includes('se le a dado seguimiento')) return true;
+
+      return false;
+  };
   
   const total = resueltas.length + noResueltas.length;
-  const pct = total > 0 ? Math.round((resueltas.length / total) * 100) : 0;
+  let favorables = resueltas.length; 
+  
+  noResueltas.forEach(c => {
+      if (isPositive(c.text)) favorables++;
+  });
+  
+  const pct = total > 0 ? Math.round((favorables / total) * 100) : 0;
   
   const subtitle = document.getElementById('petSubtitle');
   if (subtitle) {
-      subtitle.innerHTML = `De <b>${total}</b> respuestas registradas, <b>${resueltas.length}</b> mencionan que SÍ resuelven, logrando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron N/A o sin comentarios)</span>`;
+      subtitle.innerHTML = `De <b>${total}</b> respuestas válidas registradas, <b>${favorables}</b> son favorables (indican qué resuelven o que no hay quejas), logrando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron N/A o sin comentarios)</span>`;
   }
   
   const renderList = (arr) => {
