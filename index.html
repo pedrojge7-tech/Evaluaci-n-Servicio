@@ -602,22 +602,22 @@ tbody td:first-child { text-align: left; }
   <div class="chart-card" id="peticionesCard" style="display:none; margin-top:24px;">
     <div class="chart-hdr">
       <div>
-        <div class="chart-title">Desglose de Peticiones y Solicitudes</div>
-        <div class="chart-sub">¿Qué solicitudes SÍ resuelve el departamento y cuáles NO?</div>
+        <div class="chart-title">Resolución de Solicitudes (Servicio Interno)</div>
+        <div class="chart-sub" id="petSubtitle">Menciones sobre lo que el departamento logra y no logra resolver</div>
       </div>
     </div>
     <div style="display:flex; gap:24px; flex-wrap:wrap; margin-top: 10px;">
       <div style="flex:1; min-width:280px;">
-        <h4 style="color:var(--success); font-weight:800; font-size:.9rem; margin-bottom:12px; border-bottom:2px solid var(--success-bg); padding-bottom:6px; display:flex; align-items:center; gap:8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          SÍ Resueltas
+        <h4 style="color:var(--success); font-weight:800; font-size:.85rem; margin-bottom:12px; border-bottom:2px solid var(--success-bg); padding-bottom:6px; display:flex; align-items:flex-start; gap:8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <span>¿Qué solicitudes o peticiones SÍ te resuelve el departamento?</span>
         </h4>
         <div id="petResList" class="comment-list" style="max-height:400px; padding-right:8px;"></div>
       </div>
       <div style="flex:1; min-width:280px;">
-        <h4 style="color:var(--danger); font-weight:800; font-size:.9rem; margin-bottom:12px; border-bottom:2px solid var(--danger-bg); padding-bottom:6px; display:flex; align-items:center; gap:8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-          NO Resueltas
+        <h4 style="color:var(--danger); font-weight:800; font-size:.85rem; margin-bottom:12px; border-bottom:2px solid var(--danger-bg); padding-bottom:6px; display:flex; align-items:flex-start; gap:8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+          <span>¿Qué solicitudes o peticiones NO te resuelve el departamento?</span>
         </h4>
         <div id="petNoResList" class="comment-list" style="max-height:400px; padding-right:8px;"></div>
       </div>
@@ -1811,6 +1811,14 @@ function renderPeticiones(depts) {
       return;
   }
   card.style.display = 'flex';
+  
+  const total = resueltas.length + noResueltas.length;
+  const pct = total > 0 ? Math.round((resueltas.length / total) * 100) : 0;
+  
+  const subtitle = document.getElementById('petSubtitle');
+  if (subtitle) {
+      subtitle.innerHTML = `De <b>${total}</b> respuestas de clientes internos, <b>${resueltas.length}</b> indican que sí se les resuelve, reflejando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>.`;
+  }
   
   const renderList = (arr) => {
       if (arr.length === 0) return '<div class="no-comments" style="padding:24px;">Ninguna registrada</div>';
