@@ -156,6 +156,7 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .part-text { display: inline-block; white-space: normal; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;}
 .part-input { width: 70px; text-align: center; border: 1px solid var(--border); border-radius: 6px; padding: 6px; font-family: var(--font); font-size: .8rem; color: var(--text); background: var(--surface); outline: none; transition: border-color 0.2s, box-shadow 0.2s; font-weight: 600; }
 .part-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.part-input::placeholder { color: var(--muted); font-weight: 400; font-size: 0.7rem; }
 
 .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 24px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow);}
 .filter-label{font-weight:700;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;margin-top:8px;min-width:160px;}
@@ -795,11 +796,20 @@ function wireButtons(){
       if(e.target.classList.contains('part-input')) {
           const dept = e.target.getAttribute('data-dept');
           const type = e.target.getAttribute('data-type');
-          let val = parseInt(e.target.value, 10);
-          if (isNaN(val) || val < 0) val = 0;
+          let valStr = e.target.value.trim();
           
-          if (!PARTICIPATION[dept]) PARTICIPATION[dept] = { sent: 0, ans: 0 };
-          PARTICIPATION[dept][type] = val;
+          if (valStr === '') {
+              // Si borran el número, borramos el override para que vuelva a calcular solo
+              if (PARTICIPATION[dept]) {
+                  delete PARTICIPATION[dept][type];
+                  if(Object.keys(PARTICIPATION[dept]).length === 0) delete PARTICIPATION[dept];
+              }
+          } else {
+              let val = parseInt(valStr, 10);
+              if (isNaN(val) || val < 0) val = 0;
+              if (!PARTICIPATION[dept]) PARTICIPATION[dept] = {};
+              PARTICIPATION[dept][type] = val;
+          }
           
           const openDirs = Array.from(document.querySelectorAll('.toggle-arrow.open')).map(el => el.id);
           
@@ -1389,7 +1399,7 @@ function renderParticipation(orderedDepts) {
   
   let head = "<thead><tr><th style='text-align:left; border-top-left-radius:var(--rs);'>Entidad</th><th style='text-align:center'>Enviados</th><th style='text-align:center'>Contestaron</th><th style='width:200px; text-align:left; border-top-right-radius:var(--rs);'>Participación</th></tr></thead>";
   let body = "<tbody>";
-  let globalSent = 0, globalAns = 0, hasAnyData = false;
+  let calcGlobalSent = 0, calcGlobalAns = 0, hasAnyData = false;
 
   for (const [dirRaw, dList] of Object.entries(groups)) {
     const dir = String(dirRaw);
@@ -1397,20 +1407,15 @@ function renderParticipation(orderedDepts) {
     if (validDepts.length === 0) continue; 
     
     hasAnyData = true;
-    let dirSent = 0, dirAns = 0;
-    validDepts.forEach(d => { if(!PARTICIPATION[d]) PARTICIPATION[d] = {sent:0, ans:0}; dirSent += PARTICIPATION[d].sent || 0; dirAns += PARTICIPATION[d].ans || 0; });
-    globalSent += dirSent; globalAns += dirAns;
-
-    const dirPct = dirSent > 0 ? ((dirAns / dirSent) * 100).toFixed(1) : 0;
-    const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, '-');
-    
-    body += "<tr class='dir-row' onclick=\"toggleDir('" + safeDirId + "')\" style='background:var(--surface2);'>" +
-      "<td class='truncated' style='text-align:left;'><span class='toggle-arrow' id='arrow-" + safeDirId + "'>▶</span> <svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:3px'><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path></svg> <span class='part-text'>" + dir + "</span></td>" +
-      "<td style='text-align:center'>" + dirSent + "</td><td style='text-align:center'>" + dirAns + "</td>" +
-      "<td><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-weight:700;'>" + dirPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px;'><div class='kpi-bar-fill' style='width:" + dirPct + "%; background:linear-gradient(90deg, var(--if-orange), var(--if-orange-light))'></div></div></div></td></tr>";
+    let sumDirSent = 0, sumDirAns = 0;
+    let deptRowsHtml = "";
 
     validDepts.forEach(dRaw => {
        const d = String(dRaw); 
+       if(!PARTICIPATION[d]) PARTICIPATION[d] = {sent:0, ans:0};
+       sumDirSent += PARTICIPATION[d].sent || 0;
+       sumDirAns += PARTICIPATION[d].ans || 0;
+
        const p = PARTICIPATION[d];
        const pct = p.sent > 0 ? ((p.ans / p.sent) * 100).toFixed(1) : 0;
        const sentVal = p.sent || 0, ansVal = p.ans || 0;
@@ -1418,20 +1423,49 @@ function renderParticipation(orderedDepts) {
        const sentCell = isReader ? sentVal : `<input type="number" class="part-input" data-dept="${escD}" data-type="sent" value="${sentVal}" min="0" onclick="event.stopPropagation()">`;
        const ansCell = isReader ? ansVal : `<input type="number" class="part-input" data-dept="${escD}" data-type="ans" value="${ansVal}" min="0" onclick="event.stopPropagation()">`;
 
-       body += "<tr class='dept-row row-" + safeDirId + "'>" +
+       const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, '-');
+       deptRowsHtml += "<tr class='dept-row row-" + safeDirId + "'>" +
          "<td class='truncated' style='text-align:left; padding-left:32px; color:var(--muted); font-family:var(--font); font-weight:500;'>↳ <span class='part-text'>" + d + "</span></td>" +
          "<td style='text-align:center; font-family:var(--font); font-weight:500;'>" + sentCell + "</td><td style='text-align:center; font-family:var(--font); font-weight:500;'>" + ansCell + "</td>" +
          "<td><div style='display:flex; align-items:center; gap:10px; font-family:var(--font); font-weight:500;'><span style='min-width:38px; text-align:right; font-size:.7rem;'>" + pct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:6px;'><div class='kpi-bar-fill' style='width:" + pct + "%; background:" + deptColor(d) + "'></div></div></div></td></tr>";
     });
+
+    calcGlobalSent += sumDirSent;
+    calcGlobalAns += sumDirAns;
+
+    const dirKey = '__DIR__' + dir;
+    const dirSent = (PARTICIPATION[dirKey] && PARTICIPATION[dirKey].sent !== undefined) ? PARTICIPATION[dirKey].sent : sumDirSent;
+    const dirAns = (PARTICIPATION[dirKey] && PARTICIPATION[dirKey].ans !== undefined) ? PARTICIPATION[dirKey].ans : sumDirAns;
+    const dirPct = dirSent > 0 ? ((dirAns / dirSent) * 100).toFixed(1) : 0;
+    
+    const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, '-');
+    const escDirKey = dirKey.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+    
+    const dirSentCell = isReader ? dirSent : `<input type="number" class="part-input" style="background:var(--surface2); border-color:var(--border);" data-dept="${escDirKey}" data-type="sent" value="${dirSent}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
+    const dirAnsCell = isReader ? dirAns : `<input type="number" class="part-input" style="background:var(--surface2); border-color:var(--border);" data-dept="${escDirKey}" data-type="ans" value="${dirAns}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
+
+    body += "<tr class='dir-row' onclick=\"toggleDir('" + safeDirId + "')\" style='background:var(--surface2);'>" +
+      "<td class='truncated' style='text-align:left;'><span class='toggle-arrow' id='arrow-" + safeDirId + "'>▶</span> <svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:3px'><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path></svg> <span class='part-text'>" + dir + "</span></td>" +
+      "<td style='text-align:center'>" + dirSentCell + "</td><td style='text-align:center'>" + dirAnsCell + "</td>" +
+      "<td><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-weight:700;'>" + dirPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px;'><div class='kpi-bar-fill' style='width:" + dirPct + "%; background:linear-gradient(90deg, var(--if-orange), var(--if-orange-light))'></div></div></div></td></tr>";
+
+    body += deptRowsHtml;
   }
 
   if (!hasAnyData && isReader) { card.style.display = 'none'; return; }
 
+  const globKey = '__GLOBAL__';
+  const globalSent = (PARTICIPATION[globKey] && PARTICIPATION[globKey].sent !== undefined) ? PARTICIPATION[globKey].sent : calcGlobalSent;
+  const globalAns = (PARTICIPATION[globKey] && PARTICIPATION[globKey].ans !== undefined) ? PARTICIPATION[globKey].ans : calcGlobalAns;
   const globalPct = globalSent > 0 ? ((globalAns / globalSent) * 100).toFixed(1) : 0;
+
+  const globSentCell = isReader ? globalSent : `<input type="number" class="part-input" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);" data-dept="${globKey}" data-type="sent" value="${globalSent}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
+  const globAnsCell = isReader ? globalAns : `<input type="number" class="part-input" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);" data-dept="${globKey}" data-type="ans" value="${globalAns}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
+
   body += "<tr style='background:#152130; font-family:var(--font-bold);'>" +
       "<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path></svg> Total General</span></td>" +
-      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globalSent + "</td>" +
-      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globalAns + "</td>" +
+      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globSentCell + "</td>" +
+      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globAnsCell + "</td>" +
       "<td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em; font-weight: 700;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td></tr></tbody>";
   tbl.innerHTML = head + body;
 }
