@@ -799,7 +799,6 @@ function wireButtons(){
           let valStr = e.target.value.trim();
           
           if (valStr === '') {
-              // Si borran el número, borramos el override para que vuelva a calcular solo
               if (PARTICIPATION[dept]) {
                   delete PARTICIPATION[dept][type];
                   if(Object.keys(PARTICIPATION[dept]).length === 0) delete PARTICIPATION[dept];
@@ -998,7 +997,6 @@ function renderNPS(orderedDepts) {
   const card = document.getElementById('npsCard');
   const grid = document.getElementById('npsGrid');
   grid.innerHTML = '';
-  
   let hasData = false;
   
   orderedDepts.forEach(d => {
@@ -1009,7 +1007,6 @@ function renderNPS(orderedDepts) {
        const dir = d.replace('PROM. ', '');
        const subDepts = DEPTS.filter(x => DEPT_TO_DIR[x] === dir && !x.startsWith('PROM. '));
        const validSubDepts = subDepts.filter(x => NPS_DATA[x] !== undefined && typeof NPS_DATA[x] === 'object');
-       
        if(validSubDepts.length > 0) {
          let tDet = 0, tPas = 0, tPro = 0;
          validSubDepts.forEach(sub => { tDet += NPS_DATA[sub].det; tPas += NPS_DATA[sub].pas; tPro += NPS_DATA[sub].pro; });
@@ -1031,11 +1028,7 @@ function renderNPS(orderedDepts) {
        const arcLength = Math.PI * 80; 
        const fillLength = p * arcLength;
        const rotation = (p * 180) - 90;
-
-       let color = '#EF4444'; 
-       if (val >= 0) color = '#F59E0B'; 
-       if (val >= 50) color = '#10B981'; 
-
+       let color = '#EF4444'; if (val >= 0) color = '#F59E0B'; if (val >= 50) color = '#10B981'; 
        const html = `
        <div class="nps-gauge-card">
            <div class="nps-gauge-title">${d}</div>
@@ -1064,7 +1057,6 @@ function renderNPS(orderedDepts) {
        grid.innerHTML += html;
     }
   });
-  
   if(!hasData) { card.style.display = 'none'; } else { card.style.display = 'block'; }
 }
 
@@ -1669,14 +1661,23 @@ async function generateReaderLink(){
 
   try {
     const payload = {
-      dirs: DIRS, depts: DEPTS.filter(d => !d.startsWith('PROM. ')), deptMap: DEPT_TO_DIR, qs: QUESTIONS,
+      dirs: DIRS, 
+      depts: DEPTS.filter(d => !d.startsWith('PROM. ')), 
+      deptMap: DEPT_TO_DIR, 
+      qs: QUESTIONS,
       scores: JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
-      comments: COMMENTS, participation: PARTICIPATION, nps: NPS_DATA,
-      title: document.getElementById('dashTitle').textContent, timestamp: REPORT_DATE.toISOString(),
-      logoLeft: CUSTOM_LOGO_LEFT, logoRight: CUSTOM_LOGO_RIGHT 
+      comments: COMMENTS, 
+      participation: PARTICIPATION, 
+      nps: NPS_DATA,
+      title: document.getElementById('dashTitle').textContent, 
+      timestamp: REPORT_DATE.toISOString(),
+      logoLeft: CUSTOM_LOGO_LEFT || null, 
+      logoRight: CUSTOM_LOGO_RIGHT || null 
     };
     
-    await window.db.collection("reportes").doc(customId).set(payload);
+    const cleanPayload = JSON.parse(JSON.stringify(payload));
+    
+    await window.db.collection("reportes").doc(customId).set(cleanPayload, { merge: true });
     
     const baseURL = window.location.href.split('?')[0];
     const link = baseURL + '?mode=reader&id=' + customId;
@@ -1685,7 +1686,17 @@ async function generateReaderLink(){
     btn.textContent='Abrir →'; btn.disabled=false; btn.onclick=()=>window.open(link,'_blank');
     navigator.clipboard.writeText(link).catch(()=>{});
     showToast('Actualizado en la nube y copiado','ok');
-  } catch(err){ btn.textContent='Guardar en la nube →'; btn.disabled=false; showToast('Error al guardar en Firebase','err'); }
+  } catch(err){ 
+    console.error("Error de Firebase:", err);
+    btn.textContent='Guardar en la nube →'; btn.disabled=false; 
+    let errorMsg = 'Error al guardar.';
+    if(err.message && (err.message.includes('permission') || err.message.includes('Missing or insufficient'))) {
+        errorMsg = 'Permiso denegado. Revisa reglas de Firebase.';
+    } else if (err.message) {
+        errorMsg = 'Error: ' + err.message.substring(0, 30);
+    }
+    showToast(errorMsg, 'err'); 
+  }
 }
 
 async function tryLoadFromURL(){
