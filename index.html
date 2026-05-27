@@ -1798,57 +1798,23 @@ function renderPeticiones(depts) {
   let resueltas = [];
   let noResueltas = [];
   
-  const isMeaningful = (text, isNoSection) => {
-      // 1. Limpieza extrema: fuera acentos y TODO lo que no sea alfanumérico
+  const isMeaningful = (text) => {
       const t = text.toLowerCase()
           .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
           .replace(/[^a-z0-9\s]/g, ' ')
           .replace(/\s+/g, ' ')
           .trim();
 
-      if (t.length <= 2) return false; 
+      if (t.length <= 1) return false; 
       
-      const exactUseless = [
-          'n a', 'ninguna', 'ninguno', 'nada', 'ok', 'todo', 'todas', 
-          'todo ok', 'todo bien', 'bien', 'muy bien', 'excelente', 'no aplica', 
-          'desconozco', 'ignoro', 'sin comentarios', 'sin observaciones', 
-          'todo en orden', 'todo correcto', 'ningun problema', 'sin problemas', 
-          'sin problema', 'ninguna queja', 'ninguna en especial'
+      const junk = [
+          'na', 'n a', 'no aplica', 'sin comentario', 'sin comentarios', 
+          'sin observacion', 'sin observaciones', 'desconozco', 'ignoro', 
+          'ningun comentario', 'no tengo comentarios'
       ];
-      if (exactUseless.includes(t)) return false;
-
-      const startsUseless = [
-          'sin observaci', 'sin coment', 'no hay coment', 'no hay queja', 
-          'no tengo coment', 'no tengo queja', 'no aplica', 'sin detalle'
-      ];
-      for (let u of startsUseless) { if (t.startsWith(u)) return false; }
-
-      // 2. DESTRUCCIÓN QUIRÚRGICA EN LA SECCIÓN "NO RESUELTAS"
-      if (isNoSection) {
-          // Destruir cualquier frase que indique que "SÍ resuelven" o "han sido resueltas"
-          if (/si\s.*resuelv|se\s.*resuelv|han\s+sido\s+resuelt|todo\s.*resuelv|siempre\s.*resuelv/i.test(t)) return false;
-          if (t.includes('si resuelv') || t.includes('se resuelv') || t.includes('han sido resuelt') || t.includes('todo lo resuelv') || t.includes('todo resuelv') || t.includes('siempre')) return false;
-          
-          // Destruir cualquier frase que indique que "SÍ atienden" o "se da seguimiento"
-          if (/se\s+han\s+atendid/.test(t) || t.includes('la mayoria')) return false;
-          if (/a\s+dado\s+seguimiento/.test(t) || /ha\s+dado\s+seguimiento/.test(t)) return false;
-          if (t.includes('siempre apoyan') || t.includes('todo fluye')) return false;
-
-          // Destruir frases de "hasta el momento nada/ninguna"
-          if (/(hasta|por|al)\s+(ahora|ahorita|el\s+momento)\s+(ningun|nada|todo|se\s+han|han\s+sido|han\s+estado)/.test(t)) return false;
-          if (/(ningun|nada|todo)\s+(hasta|por|al)\s+(ahora|ahorita|el\s+momento)/.test(t)) return false;
-
-          // Destruir variaciones de "sin inconvenientes" / "sin problemas"
-          if (/inconveniente|problem/.test(t) && /no\s+(he|hemos)\s+tenido|no\s+tengo|ningun|sin/.test(t)) return false;
-          if (t.includes('inconveniente') && (t.includes('no he tenido') || t.includes('no hemos tenido') || t.includes('no tengo') || t.includes('ningun') || t.includes('sin '))) return false;
-          
-          // Filtros de positividad genérica
-          if (t.includes('todo bien') || t.includes('todo ok') || t.includes('todo excelente') || t.includes('todo en orden')) return false;
-
-          // Filtrar "ninguna, gracias" o "nada por ahora"
-          if (/^(ninguna|ninguno|nada)\s+(gracias|todo|bien|por|el|momento|hasta|ahora|ahorita|queja|observacion)s?(\s|$)/.test(t)) return false;
-      }
-
+      
+      if (junk.includes(t)) return false;
+      
       return true;
   };
 
@@ -1856,11 +1822,11 @@ function renderPeticiones(depts) {
       (COMMENTS[d]||[]).forEach(c => {
           if (c.startsWith('[PET_RES]')) {
               const text = c.replace(/^\[PET_RES\]\s*/, '');
-              if (isMeaningful(text, false)) resueltas.push({text, dept: d});
+              if (isMeaningful(text)) resueltas.push({text, dept: d});
           }
           else if (c.startsWith('[PET_NO_RES]')) {
               const text = c.replace(/^\[PET_NO_RES\]\s*/, '');
-              if (isMeaningful(text, true)) noResueltas.push({text, dept: d});
+              if (isMeaningful(text)) noResueltas.push({text, dept: d});
           }
       });
   });
@@ -1877,11 +1843,11 @@ function renderPeticiones(depts) {
   
   const subtitle = document.getElementById('petSubtitle');
   if (subtitle) {
-      subtitle.innerHTML = `De <b>${total}</b> respuestas de clientes internos, <b>${resueltas.length}</b> indican que sí se les resuelve, reflejando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron respuestas vacías o sin queja)</span>`;
+      subtitle.innerHTML = `De <b>${total}</b> respuestas registradas, <b>${resueltas.length}</b> mencionan que SÍ resuelven, logrando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron N/A o sin comentarios)</span>`;
   }
   
   const renderList = (arr) => {
-      if (arr.length === 0) return '<div class="no-comments" style="padding:24px;">Ninguna solicitud concreta registrada.</div>';
+      if (arr.length === 0) return '<div class="no-comments" style="padding:24px;">Ninguna respuesta registrada.</div>';
       return arr.map(c => "<div class='comment-item' style='--al:" + deptColor(c.dept) + "; margin-bottom:12px;'>" + (deptArr.length > 1 ? "<strong style='display:block; margin-bottom:4px; font-size:0.75rem; text-transform:uppercase; color:var(--muted);'>" + c.dept + "</strong>" : "") + c.text + "</div>").join('');
   };
 
