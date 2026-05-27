@@ -252,26 +252,73 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .rl-chip{display:flex;align-items:center;gap:6px;font-weight:600;font-size:.72rem;color:var(--text);white-space:nowrap;}
 .rl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
 
-/* ── RANKING POR PREGUNTA (TEXTO SIEMPRE COMPLETO) ── */
-.rank-list{display:flex;flex-direction:column;gap:10px;flex-grow:1;overflow-y:auto; overflow-x:auto; padding-right:8px; padding-bottom: 8px;}
-.rank-list::-webkit-scrollbar{width:6px; height: 6px;}
-.rank-list::-webkit-scrollbar-track{background:transparent;}
-.rank-list::-webkit-scrollbar-thumb{background:var(--if-gray-300);border-radius:10px;}
-.rank-list::-webkit-scrollbar-thumb:hover{background:var(--if-gray-500);}
+/* ── RANKING POR PREGUNTA (FIX) ── */
+.rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+  padding-bottom: 8px;
+}
+.rank-list::-webkit-scrollbar { width: 6px; }
+.rank-list::-webkit-scrollbar-track { background: transparent; }
+.rank-list::-webkit-scrollbar-thumb { background: var(--if-gray-300); border-radius: 10px; }
+.rank-list::-webkit-scrollbar-thumb:hover { background: var(--if-gray-500); }
 
-.rank-item{border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:24px;min-height:52px; transition: border-color 0.2s; min-width: max-content;}
+.rank-item {
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  padding: 16px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  transition: border-color 0.2s;
+  width: 100%;
+}
 .rank-item:hover { border-color: var(--if-gray-300); }
 
-.rank-q-wrap { flex: 1; min-width: 0; white-space: normal; padding-bottom: 4px; margin-right: 12px; overflow: visible;}
-.rank-q-inner { display: inline-block; white-space: normal; font-weight:600; font-size:.8rem; color:var(--if-navy); margin-bottom:0; line-height:1.4;}
+.rank-q-wrap {
+  width: 100%;
+  white-space: normal;
+}
+.rank-q-inner {
+  display: block;
+  white-space: normal;
+  font-weight: 600;
+  font-size: .85rem;
+  color: var(--if-navy);
+  margin-bottom: 0;
+  line-height: 1.5;
+}
 
-.rank-badges{flex-shrink:0; display:flex; gap:12px; align-items:center;}
-.rank-badge{ display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-weight:700; font-size: .75rem; }
+.rank-badges {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: .75rem;
+  flex: 1 1 auto;
+  white-space: normal;
+  text-align: left;
+}
 .rb-name-wrap { flex: 1 1 auto; }
-.rb-name-inner { display: inline-block; white-space: normal; font-weight: 600; text-align: left;}
+.rb-name-inner { font-weight: 600; }
 
-.badge-best{background:var(--success-bg);color:var(--success);}
-.badge-worst{background:var(--danger-bg);color:var(--danger);}
+.badge-best { background: var(--success-bg); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+.badge-worst { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
 
 /* ── TABLA DE RESULTADOS DETALLADA FIX DE SCROLL STICKY ── */
 .table-card {background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--shadow);margin-bottom:24px;}
