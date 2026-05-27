@@ -1799,16 +1799,45 @@ function renderPeticiones(depts) {
   let noResueltas = [];
   
   const isMeaningful = (text, isNoSection) => {
-      const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
-      if(t.length < 2) return false;
+      const t = text.toLowerCase()
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+          .replace(/[.,!¡?¿()"']/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+      if (t.length <= 2 && t !== 'no' && t !== 'na') return false; 
       
-      const useless = ['na', 'n/a', 'ningun', 'ninguna', 'nada', 'todo ok', 'ok', 'todo bien', 'sin observaci', 'no tengo', 'no hay', 'sin comentario', 'excelente', 'muy bien', 'bien', 'sin detalle', 'desconozco', 'no conozco', 'ignoro', 'no aplica', 'todo en orden', 'sin queja', 'x', '-', 'ninguno'];
-      
-      if (isNoSection && (t.includes('si resuelven') || t.includes('sí resuelven') || t.includes('todo lo resuelven') || t === 'todo' || t === 'todas')) return false;
-      
-      for(let u of useless){ 
-          if(t === u || t.startsWith(u + ' ')) return false; 
+      const exactUseless = [
+          'na', 'n a', 'ninguna', 'ninguno', 'nada', 'ok', 'todo', 'todas', 
+          'todo ok', 'todo bien', 'bien', 'muy bien', 'excelente', 'no aplica', 
+          'desconozco', 'ignoro', 'ninguna por el momento', 'ninguna hasta el momento', 
+          'sin comentarios', 'sin observaciones', 'todo en orden', 'todo correcto', 
+          'ningun problema', 'sin problemas', 'sin problema', 'ninguna queja', 'ninguna en especial'
+      ];
+      if (exactUseless.includes(t)) return false;
+
+      const startsUseless = [
+          'sin observaci', 'sin coment', 'no hay coment', 'no hay queja', 
+          'no tengo coment', 'no tengo queja', 'no aplica', 'sin detalle'
+      ];
+      for (let u of startsUseless) { if (t.startsWith(u)) return false; }
+
+      if (isNoSection) {
+          const noSectionJunk = [
+              'si resuelv', 'todo lo resuelv', 'todo resuelv', 'siempre resuelv', 
+              'todo se resuelv', 'todo nos resuelv', 'hasta el momento ningun', 
+              'hasta ahora ningun', 'por el momento ningun', 'ninguna en especifico', 
+              'ninguna en especial', 'ninguna queja', 'ningun inconveniente', 
+              'sin inconveniente', 'no he tenido problem', 'no hemos tenido problem', 
+              'todo fluye', 'siempre apoyan', 'no tengo nada que'
+          ];
+          for (let junk of noSectionJunk) { if (t.includes(junk)) return false; }
+          
+          if (t.includes('todo bien') || t.includes('todo ok') || t.includes('todo excelente')) return false;
+          
+          if (/^ninguna(\s(gracias|todo|bien|por|el|momento|hasta|ahora|queja|observacion)){1,4}$/.test(t)) return false;
       }
+
       return true;
   };
 
