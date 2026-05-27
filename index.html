@@ -1666,24 +1666,23 @@ async function generateReaderLink(){
   btn.textContent='Subiendo a la nube…'; btn.disabled=true;
 
   try {
+    // BLINDAJE MÁXIMO: Convertimos los objetos a JSON para que Firebase no se queje de los nombres de departamentos con puntos o diagonales.
     const payload = {
       dirs: DIRS, 
       depts: DEPTS.filter(d => !d.startsWith('PROM. ')), 
-      deptMap: DEPT_TO_DIR, 
+      deptMap: JSON.stringify(DEPT_TO_DIR), 
       qs: QUESTIONS,
       scores: JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
-      comments: COMMENTS, 
-      participation: PARTICIPATION, 
-      nps: NPS_DATA,
+      comments: JSON.stringify(COMMENTS), 
+      participation: JSON.stringify(PARTICIPATION), 
+      nps: JSON.stringify(NPS_DATA),
       title: document.getElementById('dashTitle').textContent, 
       timestamp: REPORT_DATE.toISOString(),
       logoLeft: CUSTOM_LOGO_LEFT || null, 
       logoRight: CUSTOM_LOGO_RIGHT || null 
     };
     
-    const cleanPayload = JSON.parse(JSON.stringify(payload));
-    
-    await window.db.collection("reportes").doc(customId).set(cleanPayload);
+    await window.db.collection("reportes").doc(customId).set(payload);
     
     const baseURL = window.location.href.split('?')[0];
     const link = baseURL + '?mode=reader&id=' + customId;
@@ -1697,12 +1696,13 @@ async function generateReaderLink(){
     btn.textContent='Guardar en la nube →'; btn.disabled=false; 
     
     let errorMsg = 'Error al guardar.';
-    if (err.message.includes('permission') || err.message.includes('Missing or insufficient')) {
+    if (err.message && (err.message.includes('permission') || err.message.includes('Missing or insufficient'))) {
         errorMsg = 'Permiso denegado (Revisa sesión o reglas).';
-    } else if (err.message.includes('payload size') || err.message.includes('exceeds')) {
+    } else if (err.message && (err.message.includes('payload size') || err.message.includes('exceeds'))) {
         errorMsg = 'El archivo o los logos son demasiado pesados.';
-    } else {
-        errorMsg = 'Error: ' + err.message.substring(0, 30);
+    } else if (err.message) {
+        // Expandimos el límite de caracteres para ver el error real si vuelve a fallar
+        errorMsg = 'Error: ' + err.message.substring(0, 70); 
     }
     showToast(errorMsg, 'err'); 
   }
@@ -1724,14 +1724,40 @@ async function tryLoadFromURL(){
     const docSnap = await window.db.collection("reportes").doc(reportId).get();
     if(docSnap.exists){
       const raw = docSnap.data();
-      if(raw.dirs && raw.deptMap) { DIRS = raw.dirs; DEPT_TO_DIR = raw.deptMap; } else { DIRS = ['General']; DEPT_TO_DIR = {}; raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General'); }
-      DEPTS = raw.depts; QUESTIONS = raw.qs; SCORES = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
-      COMMENTS = raw.comments; PARTICIPATION = raw.participation || {}; NPS_DATA = raw.nps || {}; if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
-      if(raw.logoLeft) CUSTOM_LOGO_LEFT = raw.logoLeft; if(raw.logoRight) CUSTOM_LOGO_RIGHT = raw.logoRight;
-      injectDirectionAverages(); const t = document.getElementById('dashTitle'); if(t && raw.title) t.textContent = raw.title;
-      loader.remove(); initDashboard(); return true;
+      
+      // CARGA BLINDADA: Soporta reportes viejos (objetos) y nuevos (JSON strings)
+      if(raw.dirs && raw.deptMap) { 
+          DIRS = raw.dirs; 
+          DEPT_TO_DIR = typeof raw.deptMap === 'string' ? JSON.parse(raw.deptMap) : raw.deptMap; 
+      } else { 
+          DIRS = ['General']; 
+          DEPT_TO_DIR = {}; 
+          raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General'); 
+      }
+      
+      DEPTS = raw.depts; 
+      QUESTIONS = raw.qs; 
+      SCORES = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
+      COMMENTS = typeof raw.comments === 'string' ? JSON.parse(raw.comments) : raw.comments; 
+      PARTICIPATION = typeof raw.participation === 'string' ? JSON.parse(raw.participation) : (raw.participation || {}); 
+      NPS_DATA = typeof raw.nps === 'string' ? JSON.parse(raw.nps) : (raw.nps || {}); 
+      
+      if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
+      if(raw.logoLeft) CUSTOM_LOGO_LEFT = raw.logoLeft; 
+      if(raw.logoRight) CUSTOM_LOGO_RIGHT = raw.logoRight;
+
+      injectDirectionAverages(); 
+      const t = document.getElementById('dashTitle'); 
+      if(t && raw.title) t.textContent = raw.title;
+      
+      loader.remove(); 
+      initDashboard(); 
+      return true;
     } else { throw new Error("No existe"); }
-  } catch(err){ loader.innerHTML = '<p style="font-family:var(--font);font-weight:600;color:var(--danger);font-size:.9rem;padding:20px;text-align:center;">No se pudo cargar el dashboard. El enlace puede estar roto o expirado.</p>'; return true; }
+  } catch(err){ 
+      loader.innerHTML = '<p style="font-family:var(--font);font-weight:600;color:var(--danger);font-size:.9rem;padding:20px;text-align:center;">No se pudo cargar el dashboard. El enlace puede estar roto o expirado.</p>'; 
+      return true; 
+  }
 }
 
 (async ()=>{
