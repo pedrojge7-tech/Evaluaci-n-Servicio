@@ -1799,20 +1799,21 @@ function renderPeticiones(depts) {
   let noResueltas = [];
   
   const isMeaningful = (text, isNoSection) => {
+      // 1. Limpieza extrema: fuera acentos y TODO lo que no sea alfanumérico (adiós al "/" de "N/A")
       const t = text.toLowerCase()
           .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-          .replace(/[.,!¡?¿()"']/g, ' ')
+          .replace(/[^a-z0-9\s]/g, ' ')
           .replace(/\s+/g, ' ')
           .trim();
 
-      if (t.length <= 2 && t !== 'no' && t !== 'na') return false; 
+      if (t.length <= 2) return false; 
       
       const exactUseless = [
-          'na', 'n a', 'ninguna', 'ninguno', 'nada', 'ok', 'todo', 'todas', 
+          'n a', 'ninguna', 'ninguno', 'nada', 'ok', 'todo', 'todas', 
           'todo ok', 'todo bien', 'bien', 'muy bien', 'excelente', 'no aplica', 
-          'desconozco', 'ignoro', 'ninguna por el momento', 'ninguna hasta el momento', 
-          'sin comentarios', 'sin observaciones', 'todo en orden', 'todo correcto', 
-          'ningun problema', 'sin problemas', 'sin problema', 'ninguna queja', 'ninguna en especial'
+          'desconozco', 'ignoro', 'sin comentarios', 'sin observaciones', 
+          'todo en orden', 'todo correcto', 'ningun problema', 'sin problemas', 
+          'sin problema', 'ninguna queja', 'ninguna en especial'
       ];
       if (exactUseless.includes(t)) return false;
 
@@ -1823,19 +1824,23 @@ function renderPeticiones(depts) {
       for (let u of startsUseless) { if (t.startsWith(u)) return false; }
 
       if (isNoSection) {
-          const noSectionJunk = [
-              'si resuelv', 'todo lo resuelv', 'todo resuelv', 'siempre resuelv', 
-              'todo se resuelv', 'todo nos resuelv', 'hasta el momento ningun', 
-              'hasta ahora ningun', 'por el momento ningun', 'ninguna en especifico', 
-              'ninguna en especial', 'ninguna queja', 'ningun inconveniente', 
-              'sin inconveniente', 'no he tenido problem', 'no hemos tenido problem', 
-              'todo fluye', 'siempre apoyan', 'no tengo nada que'
-          ];
-          for (let junk of noSectionJunk) { if (t.includes(junk)) return false; }
+          // Filtrar "todo resuelto" / "siempre resuelven"
+          if (/si(\s\w+)?\sresuelv/.test(t)) return false;
+          if (/siempre(\s\w+)?\sresuelv/.test(t)) return false;
+          if (/todo(\s\w+)?\sresuelv/.test(t)) return false;
+          if (t.includes('todas se resuelv') || t.includes('todo fluye') || t.includes('siempre apoyan')) return false;
+          if (t.includes('todo bien') || t.includes('todo ok') || t.includes('todo excelente') || t.includes('todo en orden')) return false;
+
+          // Filtrar variaciones de "sin inconvenientes" / "sin problemas"
+          if (t.includes('inconveniente') && (t.includes('no he tenido') || t.includes('no hemos tenido') || t.includes('no tengo') || t.includes('ningun') || t.includes('sin '))) return false;
+          if (t.includes('problem') && (t.includes('no he tenido') || t.includes('no hemos tenido') || t.includes('no tengo') || t.includes('ningun') || t.includes('sin '))) return false;
           
-          if (t.includes('todo bien') || t.includes('todo ok') || t.includes('todo excelente')) return false;
+          // Filtrar "hasta ahora ninguna" / "nada por el momento"
+          if (/(hasta|por)\s(ahora|ahorita|el momento)\s(ningun|nada)/.test(t)) return false;
+          if (/(ningun|nada)\s(hasta|por)\s(ahora|ahorita|el momento)/.test(t)) return false;
           
-          if (/^ninguna(\s(gracias|todo|bien|por|el|momento|hasta|ahora|queja|observacion)){1,4}$/.test(t)) return false;
+          // Filtrar "ninguna, gracias" o "nada por ahora"
+          if (/^(ninguna|ninguno|nada)\s+(gracias|todo|bien|por|el|momento|hasta|ahora|ahorita|queja|observacion)s?(\s|$)/.test(t)) return false;
       }
 
       return true;
@@ -1866,7 +1871,7 @@ function renderPeticiones(depts) {
   
   const subtitle = document.getElementById('petSubtitle');
   if (subtitle) {
-      subtitle.innerHTML = `De <b>${total}</b> solicitudes concretas mencionadas, <b>${resueltas.length}</b> son marcadas como resueltas, reflejando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron respuestas como "nada", "N/A" o "todo bien")</span>`;
+      subtitle.innerHTML = `De <b>${total}</b> respuestas de clientes internos, <b>${resueltas.length}</b> indican que sí se les resuelve, reflejando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron respuestas vacías o sin queja)</span>`;
   }
   
   const renderList = (arr) => {
