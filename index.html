@@ -242,27 +242,27 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 
 .chart-container { position: relative; flex: 1 1 auto; min-height: 340px; width: 100%; display: flex; flex-direction: column; }
 
-#radarLegend, #lineLegend { display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:center; padding:16px 8px 4px;margin-top:16px; max-height: 100px; overflow-y: auto; }
-#radarLegend::-webkit-scrollbar, #lineLegend::-webkit-scrollbar {width:4px;}
-#radarLegend::-webkit-scrollbar-track, #lineLegend::-webkit-scrollbar-track {background:transparent;}
-#radarLegend::-webkit-scrollbar-thumb, #lineLegend::-webkit-scrollbar-thumb {background:var(--if-gray-300);border-radius:4px;}
+#lineLegend { display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:center; padding:16px 8px 4px;margin-top:16px; max-height: 100px; overflow-y: auto; }
+#lineLegend::-webkit-scrollbar {width:4px;}
+#lineLegend::-webkit-scrollbar-track {background:transparent;}
+#lineLegend::-webkit-scrollbar-thumb {background:var(--if-gray-300);border-radius:4px;}
 
 #lineLegend .rl-chip { cursor: pointer; padding: 4px 10px; border-radius: 6px; transition: all 0.2s; border: 1px solid transparent; }
 #lineLegend .rl-chip:hover { border-color: var(--border); background: var(--surface2); }
 .rl-chip{display:flex;align-items:center;gap:6px;font-weight:600;font-size:.72rem;color:var(--text);white-space:nowrap;}
 .rl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
 
-/* ── RANKING POR PREGUNTA (TEXTO SIEMPRE COMPLETO) ── */
-.rank-list{display:flex;flex-direction:column;gap:10px;flex-grow:1;overflow-y:auto; overflow-x:auto; padding-right:8px; padding-bottom: 8px;}
-.rank-list::-webkit-scrollbar{width:6px; height: 6px;}
+/* ── RANKING POR PREGUNTA (AHORA EN FORMATO GRID PARA APROVECHAR ESPACIO) ── */
+.rank-list{display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:12px; align-content:start; flex-grow:1; max-height: 420px; overflow-y:auto; overflow-x:hidden; padding-right:8px; padding-bottom: 8px;}
+.rank-list::-webkit-scrollbar{width:6px;}
 .rank-list::-webkit-scrollbar-track{background:transparent;}
 .rank-list::-webkit-scrollbar-thumb{background:var(--if-gray-300);border-radius:10px;}
 .rank-list::-webkit-scrollbar-thumb:hover{background:var(--if-gray-500);}
 
-.rank-item{border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:24px;min-height:52px; transition: border-color 0.2s; min-width: max-content;}
+.rank-item{border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:52px; transition: border-color 0.2s; min-width: 0;}
 .rank-item:hover { border-color: var(--if-gray-300); }
 
-.rank-q-wrap { flex: 1; min-width: 0; white-space: normal; padding-bottom: 4px; margin-right: 12px; overflow: visible;}
+.rank-q-wrap { flex: 1; min-width: 0; white-space: normal; padding-bottom: 4px; margin-right: 8px; overflow: visible;}
 .rank-q-inner { display: inline-block; white-space: normal; font-weight:600; font-size:.8rem; color:var(--if-navy); margin-bottom:0; line-height:1.4;}
 
 .rank-badges{flex-shrink:0; display:flex; gap:12px; align-items:center;}
@@ -427,7 +427,7 @@ tbody td:first-child { text-align: left; }
   .kpi-grid, .rank-list, .comment-list, .table-wrapper { max-height: none !important; overflow: visible !important; height: auto !important; }
   #commentsChartContainer { display: block !important; }
   #commentList { display: flex !important; flex-direction: column !important; }
-  #radarLegend, #lineLegend { display: flex !important; max-height: none !important; overflow: visible !important; }
+  #lineLegend { display: flex !important; max-height: none !important; overflow: visible !important; }
   
   .rank-item { min-width: 0 !important; overflow: visible !important; height: auto !important;}
   .rank-q-wrap, .rank-q-inner { white-space: normal !important; overflow: visible !important;}
@@ -471,6 +471,7 @@ tbody td:first-child { text-align: left; }
   .filter-chip{padding:6px 12px;}
   .chart-card{padding:16px;}
   
+  .rank-list { grid-template-columns: 1fr; }
   .rank-item { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; height: auto; min-width: 0; }
   .rank-q-wrap { width: 100%; flex: none; padding-right: 0;}
   .rank-badges { width: 100%; flex: none; justify-content: flex-start; flex-wrap: wrap; margin-left: 0; }
@@ -646,25 +647,15 @@ tbody td:first-child { text-align: left; }
 
   <div id="kpiContainer"></div>
 
-  <div class="charts-row cols-2">
+  <div class="charts-row">
     <div class="chart-card">
       <div class="chart-hdr">
         <div>
-          <div class="chart-title">Promedio General por Entidad</div>
-          <div class="chart-sub">Escala 1–10 · Promedio de todas las preguntas</div>
+          <div class="chart-title">Ranking por Pregunta</div>
+          <div class="chart-sub">Mejor ↑ y peor ↓ evaluado en cada pregunta</div>
         </div>
       </div>
-      <div class="chart-container"><canvas id="barChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-hdr">
-        <div>
-          <div class="chart-title">Radar por Pregunta</div>
-          <div class="chart-sub">Comparativa entre entidades filtradas</div>
-        </div>
-      </div>
-      <div class="chart-container"><canvas id="radarChart"></canvas></div>
-      <div id="radarLegend"></div>
+      <div class="rank-list" id="rankList"></div>
     </div>
   </div>
 
@@ -682,11 +673,11 @@ tbody td:first-child { text-align: left; }
     <div class="chart-card">
       <div class="chart-hdr">
         <div>
-          <div class="chart-title">Ranking por Pregunta</div>
-          <div class="chart-sub">Mejor ↑ y peor ↓ evaluado en cada pregunta</div>
+          <div class="chart-title">Promedio General por Entidad</div>
+          <div class="chart-sub">Escala 1–10 · Promedio de todas las preguntas</div>
         </div>
       </div>
-      <div class="rank-list" id="rankList"></div>
+      <div class="chart-container"><canvas id="barChart"></canvas></div>
     </div>
   </div>
 
@@ -741,7 +732,7 @@ let CUSTOM_LOGO_RIGHT = null;
 
 let activeDirs = new Set(['Todas']);
 let activeDepts = new Set(['Todos']);
-let barChart, radarChart, lineChart, commentsChart;
+let barChart, lineChart, commentsChart;
 window.selectedLineIdx = null;
 
 window.cachedAnalysisHTML = "";
@@ -766,6 +757,7 @@ const TOAST_ICONS = {
   err:  `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
   warn: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
 };
+
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
   const icon = TOAST_ICONS[type] || '';
@@ -879,7 +871,6 @@ function wireButtons(){
   document.getElementById('btnOpenReader').onclick = generateReaderLink;
   document.getElementById('btnCopyLink').onclick = copyLink;
 
-  // Lógica Modal NPS
   document.getElementById('btnNPS').onclick = openNPSModal;
   document.getElementById('btnCloseNPS').onclick = () => document.getElementById('npsModal').classList.remove('open');
   document.getElementById('btnSaveNPS').onclick = saveNPSModal;
@@ -1082,7 +1073,6 @@ function updateAllViews() {
   renderNPS(orderedDepts);
   renderKPIs(orderedDepts);
   renderBarChart(orderedDepts);
-  renderRadarChart(orderedDepts, activeQIndices);
   renderLineChart(orderedDepts, activeQIndices);
   renderRankingList(orderedDepts, activeQIndices);
   renderDetailTable(orderedDepts, activeQIndices);
@@ -1101,7 +1091,6 @@ function updateAllViews() {
   }
 }
 
-// ── GENERADOR DE MEDIDORES NPS (SVG PURO) ──
 function renderNPS(orderedDepts) {
   const card = document.getElementById('npsCard');
   const grid = document.getElementById('npsGrid');
@@ -1475,32 +1464,6 @@ function renderBarChart(orderedDepts){
   });
 }
 
-function renderRadarChart(orderedDepts, activeQIndices){
-  const ctx = document.getElementById('radarChart').getContext('2d');
-  if(radarChart) radarChart.destroy();
-  if(!orderedDepts.length || !activeQIndices.length) return;
-  
-  const shortQ = activeQIndices.map(qi => "P" + (qi+1));
-  
-  radarChart = new Chart(ctx, {
-    type: 'radar',
-    data: { 
-      labels: shortQ, 
-      datasets: orderedDepts.map(d => ({ 
-        label: d, 
-        data: activeQIndices.map(qi => SCORES[qi][DEPTS.indexOf(d)] ?? null), 
-        borderColor: deptColor(d), 
-        backgroundColor: deptColor(d)+'1A', 
-        borderWidth: d.startsWith('PROM.')?3:2, 
-        spanGaps: true 
-      })) 
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { min: 5, max: 10 } } }
-  });
-  const leg = document.getElementById('radarLegend');
-  leg.innerHTML = orderedDepts.map(d => "<span class='rl-chip truncated'><span class='rl-dot' style='background:" + deptColor(d) + "'></span>" + d + "</span>").join('');
-}
-
 const showValuesPlugin = {
   id: 'showValuesOnSelect',
   afterDatasetsDraw(chart) {
@@ -1754,7 +1717,6 @@ function getDeptsGroupedByDir(list) {
   list.forEach(d => { const dir = DEPT_TO_DIR[d] || 'General'; if(!g[dir]) g[dir] = []; g[dir].push(d); });
   return g;
 }
-
 
 // ── ANÁLISIS EJECUTIVO CON IA (CLAUDE) ──
 window.openInsights = async function() {
