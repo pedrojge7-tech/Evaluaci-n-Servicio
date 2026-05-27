@@ -1799,7 +1799,7 @@ function renderPeticiones(depts) {
   let noResueltas = [];
   
   const isMeaningful = (text, isNoSection) => {
-      // 1. Limpieza extrema: fuera acentos y TODO lo que no sea alfanumérico (adiós al "/" de "N/A")
+      // 1. Limpieza extrema: fuera acentos y TODO lo que no sea alfanumérico
       const t = text.toLowerCase()
           .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
           .replace(/[^a-z0-9\s]/g, ' ')
@@ -1823,22 +1823,28 @@ function renderPeticiones(depts) {
       ];
       for (let u of startsUseless) { if (t.startsWith(u)) return false; }
 
+      // 2. DESTRUCCIÓN QUIRÚRGICA EN LA SECCIÓN "NO RESUELTAS"
       if (isNoSection) {
-          // Filtrar "todo resuelto" / "siempre resuelven"
-          if (/si(\s\w+)?\sresuelv/.test(t)) return false;
-          if (/siempre(\s\w+)?\sresuelv/.test(t)) return false;
-          if (/todo(\s\w+)?\sresuelv/.test(t)) return false;
-          if (t.includes('todas se resuelv') || t.includes('todo fluye') || t.includes('siempre apoyan')) return false;
+          // Destruir cualquier frase que indique que "SÍ resuelven" o "han sido resueltas"
+          if (/si\s.*resuelv|se\s.*resuelv|han\s+sido\s+resuelt|todo\s.*resuelv|siempre\s.*resuelv/i.test(t)) return false;
+          if (t.includes('si resuelv') || t.includes('se resuelv') || t.includes('han sido resuelt') || t.includes('todo lo resuelv') || t.includes('todo resuelv') || t.includes('siempre')) return false;
+          
+          // Destruir cualquier frase que indique que "SÍ atienden" o "se da seguimiento"
+          if (/se\s+han\s+atendid/.test(t) || t.includes('la mayoria')) return false;
+          if (/a\s+dado\s+seguimiento/.test(t) || /ha\s+dado\s+seguimiento/.test(t)) return false;
+          if (t.includes('siempre apoyan') || t.includes('todo fluye')) return false;
+
+          // Destruir frases de "hasta el momento nada/ninguna"
+          if (/(hasta|por|al)\s+(ahora|ahorita|el\s+momento)\s+(ningun|nada|todo|se\s+han|han\s+sido|han\s+estado)/.test(t)) return false;
+          if (/(ningun|nada|todo)\s+(hasta|por|al)\s+(ahora|ahorita|el\s+momento)/.test(t)) return false;
+
+          // Destruir variaciones de "sin inconvenientes" / "sin problemas"
+          if (/inconveniente|problem/.test(t) && /no\s+(he|hemos)\s+tenido|no\s+tengo|ningun|sin/.test(t)) return false;
+          if (t.includes('inconveniente') && (t.includes('no he tenido') || t.includes('no hemos tenido') || t.includes('no tengo') || t.includes('ningun') || t.includes('sin '))) return false;
+          
+          // Filtros de positividad genérica
           if (t.includes('todo bien') || t.includes('todo ok') || t.includes('todo excelente') || t.includes('todo en orden')) return false;
 
-          // Filtrar variaciones de "sin inconvenientes" / "sin problemas"
-          if (t.includes('inconveniente') && (t.includes('no he tenido') || t.includes('no hemos tenido') || t.includes('no tengo') || t.includes('ningun') || t.includes('sin '))) return false;
-          if (t.includes('problem') && (t.includes('no he tenido') || t.includes('no hemos tenido') || t.includes('no tengo') || t.includes('ningun') || t.includes('sin '))) return false;
-          
-          // Filtrar "hasta ahora ninguna" / "nada por el momento"
-          if (/(hasta|por)\s(ahora|ahorita|el momento)\s(ningun|nada)/.test(t)) return false;
-          if (/(ningun|nada)\s(hasta|por)\s(ahora|ahorita|el momento)/.test(t)) return false;
-          
           // Filtrar "ninguna, gracias" o "nada por ahora"
           if (/^(ninguna|ninguno|nada)\s+(gracias|todo|bien|por|el|momento|hasta|ahora|ahorita|queja|observacion)s?(\s|$)/.test(t)) return false;
       }
