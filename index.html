@@ -169,7 +169,7 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 /* ── MAIN ── */
 .main{max-width:1440px;margin:0 auto;padding:10px 40px 80px;}
 
-/* ── PARTICIPATION TABLE ── */
+/* ── PARTICIPATION TABLE & INPUTS ── */
 .participation-card { display: none; margin-bottom: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 28px; box-shadow: var(--shadow); overflow-x: auto; -webkit-overflow-scrolling: touch; }
 #participationTable { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .8rem; }
 #participationTable th { background: var(--surface2); padding: 12px 16px; font-weight: 700; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-bottom: 1px solid var(--border); text-align: center; }
@@ -189,6 +189,25 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .dept-row:hover .part-text { transform: translateX(6px); color: var(--if-orange); }
 .dept-row:hover .kpi-bar-fill { filter: brightness(1.15); box-shadow: 0 0 8px rgba(224, 112, 16, 0.3); }
 .part-text { display: inline-block; white-space: normal; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;}
+
+.part-input {
+  width: 70px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px;
+  font-family: var(--font);
+  font-size: .8rem;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-weight: 600;
+}
+.part-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
 
 /* ── FILTERS ── */
 .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 24px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow);}
@@ -958,6 +977,39 @@ function wireButtons(){
   if(lp) { lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
   const btn = document.getElementById('loginBtn'); 
   if(btn) btn.onclick = doLogin;
+
+  // NUEVO: Delegación de eventos para capturar los inputs de participación sin perder focus ni el estado de las filas
+  document.getElementById('participationTable').addEventListener('change', (e) => {
+      if(e.target.classList.contains('part-input')) {
+          const dept = e.target.getAttribute('data-dept');
+          const type = e.target.getAttribute('data-type');
+          let val = parseInt(e.target.value, 10);
+          if (isNaN(val) || val < 0) val = 0;
+          
+          if (!PARTICIPATION[dept]) PARTICIPATION[dept] = { sent: 0, ans: 0 };
+          PARTICIPATION[dept][type] = val;
+          
+          // Guardar estado actual de las direcciones abiertas (acordeones)
+          const openDirs = Array.from(document.querySelectorAll('.toggle-arrow.open')).map(el => el.id);
+          
+          // Re-renderizar SOLO la tabla de participación
+          const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
+          const filteredDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
+          const orderedDepts = activeDepts.has('Todos') ? filteredDepts.filter(d => !d.startsWith('PROM. ')) : filteredDepts.filter(d => activeDepts.has(d));
+          renderParticipation(orderedDepts);
+          
+          // Restaurar los acordeones que estaban abiertos
+          openDirs.forEach(id => {
+              const arrow = document.getElementById(id);
+              if(arrow && !arrow.classList.contains('open')) {
+                   const dirId = id.replace('arrow-', '');
+                   toggleDir(dirId);
+              }
+          });
+          
+          showToast('Participación actualizada', 'ok');
+      }
+  });
 }
 
 function copyLink(){
@@ -1705,7 +1757,9 @@ function renderParticipation(orderedDepts) {
   const card = document.getElementById('participationCard');
   const tbl = document.getElementById('participationTable');
   
-  if(!orderedDepts.length || Object.keys(PARTICIPATION).length === 0) {
+  const isReader = document.body.classList.contains('reader-mode');
+  
+  if(!orderedDepts.length || (isReader && Object.keys(PARTICIPATION).length === 0)) {
     card.style.display = 'none'; return;
   }
   card.style.display = 'block';
@@ -1719,12 +1773,20 @@ function renderParticipation(orderedDepts) {
   let globalSent = 0, globalAns = 0, hasAnyData = false;
 
   for (const [dir, dList] of Object.entries(groups)) {
-    const validDepts = dList.filter(d => PARTICIPATION[d] && PARTICIPATION[d].sent > 0);
+    // En modo lector ocultar los departamentos sin participación. En Admin mostrarlos todos.
+    const validDepts = isReader 
+        ? dList.filter(d => PARTICIPATION[d] && PARTICIPATION[d].sent > 0)
+        : dList;
+    
     if (validDepts.length === 0) continue; 
     
     hasAnyData = true;
     let dirSent = 0, dirAns = 0;
-    validDepts.forEach(d => { dirSent += PARTICIPATION[d].sent || 0; dirAns += PARTICIPATION[d].ans || 0; });
+    validDepts.forEach(d => { 
+        if(!PARTICIPATION[d]) PARTICIPATION[d] = {sent:0, ans:0};
+        dirSent += PARTICIPATION[d].sent || 0; 
+        dirAns += PARTICIPATION[d].ans || 0; 
+    });
     globalSent += dirSent; globalAns += dirAns;
 
     const dirPct = dirSent > 0 ? ((dirAns / dirSent) * 100).toFixed(1) : 0;
@@ -1739,22 +1801,32 @@ function renderParticipation(orderedDepts) {
     validDepts.forEach(d => {
        const p = PARTICIPATION[d];
        const pct = p.sent > 0 ? ((p.ans / p.sent) * 100).toFixed(1) : 0;
+       
+       const sentVal = p.sent || 0;
+       const ansVal = p.ans || 0;
+       
+       // Limpiar posibles comillas en el nombre para no romper el HTML
+       const escD = d.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+       
+       const sentCell = isReader ? sentVal : `<input type="number" class="part-input" data-dept="${escD}" data-type="sent" value="${sentVal}" min="0" onclick="event.stopPropagation()">`;
+       const ansCell = isReader ? ansVal : `<input type="number" class="part-input" data-dept="${escD}" data-type="ans" value="${ansVal}" min="0" onclick="event.stopPropagation()">`;
+
        body += "<tr class='dept-row row-" + safeDirId + "'>" +
          "<td class='truncated' style='text-align:left; padding-left:32px; color:var(--muted); font-family:var(--font); font-weight:500;'>↳ <span class='part-text'>" + d + "</span></td>" +
-         "<td style='text-align:center; font-family:var(--font); font-weight:500;'>" + p.sent + "</td><td style='text-align:center; font-family:var(--font); font-weight:500;'>" + p.ans + "</td>" +
+         "<td style='text-align:center; font-family:var(--font); font-weight:500;'>" + sentCell + "</td><td style='text-align:center; font-family:var(--font); font-weight:500;'>" + ansCell + "</td>" +
          "<td><div style='display:flex; align-items:center; gap:10px; font-family:var(--font); font-weight:500;'><span style='min-width:38px; text-align:right; font-size:.7rem;'>" + pct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:6px;'><div class='kpi-bar-fill' style='width:" + pct + "%; background:" + deptColor(d) + "'></div></div></div></td>" +
        "</tr>";
     });
   }
 
-  if (!hasAnyData) { card.style.display = 'none'; return; }
+  if (!hasAnyData && isReader) { card.style.display = 'none'; return; }
 
   const globalPct = globalSent > 0 ? ((globalAns / globalSent) * 100).toFixed(1) : 0;
   body += "<tr style='background:#152130; font-family:var(--font-bold);'>" +
       "<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path></svg> Total General</span></td>" +
-      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important;'>" + globalSent + "</td>" +
-      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important;'>" + globalAns + "</td>" +
-      "<td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td>" +
+      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globalSent + "</td>" +
+      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globalAns + "</td>" +
+      "<td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em; font-weight: 700;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td>" +
     "</tr></tbody>";
   tbl.innerHTML = head + body;
 }
@@ -2025,146 +2097,4 @@ function handleFile(file){
       if(wb.SheetNames.length > 2){
         const s3 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]], {header:1, defval:null});
         const hDept3 = s3[1] || [], rowSent = s3[2] || [], rowAns = s3[3] || [];
-        for(let c=1; c<hDept3.length; c++){
-          if(hDept3[c]){
-            const dName = String(hDept3[c]).trim();
-            const target = newDepts.find(x=>x.toLowerCase()===dName.toLowerCase());
-            if(target) nPart[target] = { sent: parseInt(rowSent[c]) || 0, ans: parseInt(rowAns[c]) || 0 };
-          }
-        }
-      }
-
-      // NUEVO: Leer hojas exclusivas de peticiones
-      wb.SheetNames.forEach(sheetName => {
-        const snLower = sheetName.toLowerCase().trim();
-        let prefix = null;
-        if (snLower === 'peticiones resultas' || snLower === 'peticiones resueltas') prefix = '[PET_RES] ';
-        else if (snLower === 'peticiones no resultas' || snLower === 'peticiones no resueltas') prefix = '[PET_NO_RES] ';
-
-        if (prefix) {
-          const sPet = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1});
-          const hDeptPet = sPet[1] || [];
-          for(let r=2; r<sPet.length; r++){
-            const row = sPet[r]; if(!row) continue;
-            for(let c=0; c<hDeptPet.length; c++){
-              if(row[c] && hDeptPet[c]){
-                const dName = String(hDeptPet[c]).trim();
-                const target = newDepts.find(x => x.toLowerCase() === dName.toLowerCase());
-                if(target) nComm[target].push(prefix + String(row[c]));
-              }
-            }
-          }
-        }
-      });
-
-      document.getElementById('importModal').classList.remove('open');
-      rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name);
-      showToast('Datos cargados con éxito','ok');
-    } catch(err){
-      console.error(err); showToast('Error al leer el Excel', 'err');
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
-  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
-  REPORT_DATE = new Date();
-  injectDirectionAverages(); 
-  document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
-  activeDirs.clear(); activeDirs.add('Todas'); activeDepts.clear(); activeDepts.add('Todos');
-  initDashboard(); 
-}
-
-async function generateReaderLink(){
-  const rawId = document.getElementById('customIdInput').value.trim();
-  if(!rawId) { showToast('Escribe un nombre para el enlace', 'err'); return; }
-  
-  const customId = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
-  if(!customId) { showToast('Usa letras o números válidos', 'err'); return; }
-
-  const btn = document.getElementById('btnOpenReader');
-  btn.textContent='Subiendo a la nube…'; btn.disabled=true;
-
-  try {
-    const payload = {
-      dirs: DIRS, 
-      depts: DEPTS.filter(d => !d.startsWith('PROM. ')), 
-      deptMap: DEPT_TO_DIR, 
-      qs: QUESTIONS,
-      scores: JSON.stringify(SCORES.map(row => row.filter((_, idx) => !DEPTS[idx].startsWith('PROM. ')))), 
-      comments: COMMENTS, 
-      participation: PARTICIPATION, 
-      nps: NPS_DATA,
-      title: document.getElementById('dashTitle').textContent, 
-      timestamp: REPORT_DATE.toISOString(),
-      logoLeft: CUSTOM_LOGO_LEFT, 
-      logoRight: CUSTOM_LOGO_RIGHT 
-    };
-    
-    await window.db.collection("reportes").doc(customId).set(payload);
-    
-    const baseURL = window.location.href.split('?')[0];
-    const link = baseURL + '?mode=reader&id=' + customId;
-    
-    document.getElementById('linkInput').value = link;
-    btn.textContent='Abrir →'; btn.disabled=false; btn.onclick=()=>window.open(link,'_blank');
-    navigator.clipboard.writeText(link).catch(()=>{});
-    showToast('Actualizado en la nube y copiado','ok');
-  } catch(err){
-    btn.textContent='Guardar en la nube →'; btn.disabled=false;
-    showToast('Error al guardar en Firebase','err');
-  }
-}
-
-async function tryLoadFromURL(){
-  const params = new URLSearchParams(window.location.search);
-  if(params.get('mode') !== 'reader') return false;
-  const reportId = params.get('id');
-  if(!reportId) return false;
-
-  document.body.classList.add('reader-mode');
-  const loader = document.createElement('div');
-  loader.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;';
-  loader.innerHTML = '<div class="share-spinner"></div><p style="font-family:var(--font);font-weight:500;font-size:.85rem;color:var(--muted);">Descargando reporte seguro…</p>';
-  document.body.appendChild(loader);
-
-  try {
-    const docSnap = await window.db.collection("reportes").doc(reportId).get();
-    if(docSnap.exists){
-      const raw = docSnap.data();
-      if(raw.dirs && raw.deptMap) { DIRS = raw.dirs; DEPT_TO_DIR = raw.deptMap; } 
-      else { DIRS = ['General']; DEPT_TO_DIR = {}; raw.depts.forEach(d => DEPT_TO_DIR[d] = 'General'); }
-      DEPTS = raw.depts; QUESTIONS = raw.qs; SCORES = typeof raw.scores === 'string' ? JSON.parse(raw.scores) : raw.scores; 
-      COMMENTS = raw.comments; PARTICIPATION = raw.participation || {}; NPS_DATA = raw.nps || {}; if(raw.timestamp) REPORT_DATE = new Date(raw.timestamp);
-      
-      if(raw.logoLeft) CUSTOM_LOGO_LEFT = raw.logoLeft;
-      if(raw.logoRight) CUSTOM_LOGO_RIGHT = raw.logoRight;
-
-      injectDirectionAverages();
-      const t = document.getElementById('dashTitle'); if(t && raw.title) t.textContent = raw.title;
-      loader.remove(); initDashboard(); return true;
-    } else { throw new Error("No existe"); }
-  } catch(err){
-    loader.innerHTML = '<p style="font-family:var(--font);font-weight:600;color:var(--danger);font-size:.9rem;padding:20px;text-align:center;">No se pudo cargar el dashboard. El enlace puede estar roto o expirado.</p>';
-    return true;
-  }
-}
-
-// ════════════ INICIALIZACIÓN ════════════
-(async ()=>{
-  while(!window.db) { await new Promise(r => setTimeout(r, 50)); }
-  const loaded = await tryLoadFromURL();
-  if(!loaded){
-    if(document.body.classList.contains('reader-mode')){
-      const ls=document.getElementById('loginScreen'); if(ls) { ls.style.display = 'none'; ls.remove(); }
-      initDashboard();
-    } else {
-      const lp=document.getElementById('loginPwd'); if(lp) { lp.focus(); lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
-      const btn = document.getElementById('loginBtn'); if(btn) btn.onclick = doLogin;
-    }
-  }
-})();
-</script>
-</body>
-</html>
+        for(let c=
