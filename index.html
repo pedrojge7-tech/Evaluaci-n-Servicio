@@ -103,13 +103,11 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
 .header-left{display: flex; align-items: center; gap: 16px;}
 
-/* Estilos UNIFICADOS de los Logos Subibles (50px de altura fija para todos) */
 .header-logo-upload { height: 50px; min-width: 50px; max-width: 250px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: transform 0.2s;}
 .header-logo-upload:hover { transform: scale(1.03); }
 #logoLeftBox { background: transparent; }
 #logoRightBox { background: transparent; border: 1.5px dashed var(--if-gray-300); }
 
-/* Esta clase fuerza a que la imagen respete los 50px exactos y mantenga su proporción */
 .custom-logo-img { height: 50px !important; width: auto !important; max-width: 250px !important; object-fit: contain !important; display: block; }
 
 #defaultLogoLeft { width: 50px; height: 50px; background: var(--if-orange); color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; border-radius: 8px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3);}
@@ -891,15 +889,24 @@ async function doLogin(){
     
     await firebase.auth().signInWithEmailAndPassword(email, pwd);
     
-    const ls = document.getElementById('loginScreen');
-    if(ls) { ls.remove(); document.documentElement.style.setProperty('--login-display', 'none'); }
-    initDashboard();
-    
   } catch(error) {
     err.textContent = "Correo o contraseña incorrectos.";
     err.style.display = 'block';
     btn.textContent = "Ingresar al Dashboard";
     btn.disabled = false;
+    return; // Detenemos aquí si falla el login
+  }
+
+  // Solo si el login fue exitoso llegamos aquí:
+  const ls = document.getElementById('loginScreen');
+  if(ls) { ls.remove(); document.documentElement.style.setProperty('--login-display', 'none'); }
+  
+  // Envolvemos el renderizado en try/catch para que jamás detenga la aplicación
+  try {
+      initDashboard();
+  } catch(e) {
+      console.error("Error crítico al dibujar el dashboard:", e);
+      showToast('Error al visualizar los datos', 'err');
   }
 }
 
@@ -1772,7 +1779,10 @@ function renderParticipation(orderedDepts) {
 
   let globalSent = 0, globalAns = 0, hasAnyData = false;
 
-  for (const [dir, dList] of Object.entries(groups)) {
+  for (const [dirRaw, dList] of Object.entries(groups)) {
+    // Protección contra números accidentales en los nombres
+    const dir = String(dirRaw);
+    
     // En modo lector ocultar los departamentos sin participación. En Admin mostrarlos todos.
     const validDepts = isReader 
         ? dList.filter(d => PARTICIPATION[d] && PARTICIPATION[d].sent > 0)
@@ -1798,14 +1808,15 @@ function renderParticipation(orderedDepts) {
       "<td><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-weight:700;'>" + dirPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px;'><div class='kpi-bar-fill' style='width:" + dirPct + "%; background:linear-gradient(90deg, var(--if-orange), var(--if-orange-light))'></div></div></div></td>" +
     "</tr>";
 
-    validDepts.forEach(d => {
+    validDepts.forEach(dRaw => {
+       const d = String(dRaw); // Forzar que sea texto
        const p = PARTICIPATION[d];
        const pct = p.sent > 0 ? ((p.ans / p.sent) * 100).toFixed(1) : 0;
        
        const sentVal = p.sent || 0;
        const ansVal = p.ans || 0;
        
-       // Limpiar posibles comillas en el nombre para no romper el HTML
+       // Limpiar posibles comillas para no romper el HTML
        const escD = d.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
        
        const sentCell = isReader ? sentVal : `<input type="number" class="part-input" data-dept="${escD}" data-type="sent" value="${sentVal}" min="0" onclick="event.stopPropagation()">`;
@@ -2097,4 +2108,57 @@ function handleFile(file){
       if(wb.SheetNames.length > 2){
         const s3 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]], {header:1, defval:null});
         const hDept3 = s3[1] || [], rowSent = s3[2] || [], rowAns = s3[3] || [];
-        for(let c=
+        for(let c=1; c<hDept3.length; c++){
+          if(hDept3[c]){
+            const dName = String(hDept3[c]).trim();
+            const target = newDepts.find(x=>x.toLowerCase()===dName.toLowerCase());
+            if(target) nPart[target] = { sent: parseInt(rowSent[c]) || 0, ans: parseInt(rowAns[c]) || 0 };
+          }
+        }
+      }
+
+      // NUEVO: Leer hojas exclusivas de peticiones
+      wb.SheetNames.forEach(sheetName => {
+        const snLower = sheetName.toLowerCase().trim();
+        let prefix = null;
+        if (snLower === 'peticiones resultas' || snLower === 'peticiones resueltas') prefix = '[PET_RES] ';
+        else if (snLower === 'peticiones no resultas' || snLower === 'peticiones no resueltas') prefix = '[PET_NO_RES] ';
+
+        if (prefix) {
+          const sPet = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1});
+          const hDeptPet = sPet[1] || [];
+          for(let r=2; r<sPet.length; r++){
+            const row = sPet[r]; if(!row) continue;
+            for(let c=0; c<hDeptPet.length; c++){
+              if(row[c] && hDeptPet[c]){
+                const dName = String(hDeptPet[c]).trim();
+                const target = newDepts.find(x => x.toLowerCase() === dName.toLowerCase());
+                if(target) nComm[target].push(prefix + String(row[c]));
+              }
+            }
+          }
+        }
+      });
+
+      document.getElementById('importModal').classList.remove('open');
+      rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name);
+      showToast('Datos cargados con éxito','ok');
+    } catch(err){
+      console.error(err); showToast('Error al leer el Excel', 'err');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
+  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
+  REPORT_DATE = new Date();
+  injectDirectionAverages(); 
+  document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
+  activeDirs.clear(); activeDirs.add('Todas'); activeDepts.clear(); activeDepts.add('Todos');
+  initDashboard(); 
+}
+
+async function generateReaderLink(){
+  const rawId = document.getElementById('customIdInput').value.trim();
+  if(!rawId) { show
