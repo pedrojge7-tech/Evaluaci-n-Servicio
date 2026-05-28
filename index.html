@@ -75,6 +75,23 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing: antialiased;}
 
+/* Menú Hamburguesa & Sidebar */
+.hamburger-btn { background: none; border: none; cursor: pointer; color: var(--if-navy); padding: 8px; margin-right: 12px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: background 0.2s; }
+.hamburger-btn:hover { background: var(--surface2); }
+.sidebar-overlay { position: fixed; inset: 0; background: rgba(21, 33, 48, 0.5); z-index: 1050; display: none; opacity: 0; transition: opacity 0.3s; }
+.sidebar-overlay.show { display: block; opacity: 1; }
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 300px; background: var(--surface); z-index: 1100; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-md); display: flex; flex-direction: column; }
+.sidebar.open { transform: translateX(0); }
+.sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.sidebar-header h3 { font-weight: 800; color: var(--if-navy); font-size: 1.1rem; letter-spacing:-0.02em; }
+.close-sidebar { background: none; border: none; cursor: pointer; color: var(--muted); transition: color 0.2s; display:flex; align-items:center; justify-content:center; }
+.close-sidebar:hover { color: var(--danger); }
+.sidebar-menu { padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; }
+.sidebar-item { padding: 14px 16px; border-radius: 8px; border: 1.5px solid transparent; background: transparent; text-align: left; font-family: var(--font); font-weight: 600; font-size: .95rem; color: var(--text); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+.sidebar-item:hover { background: var(--surface2); border-color: var(--border); }
+.sidebar-item.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); box-shadow: 0 2px 8px rgba(224,112,16,0.15); }
+.sidebar-item svg { flex-shrink: 0; }
+
 #loginScreen{position:fixed;inset:0;background:rgba(237, 241, 245, 0.95);backdrop-filter:blur(8px);z-index:9999;display:var(--login-display, flex);align-items:center;justify-content:center;}
 #loginScreen ~ * { visibility: hidden; }
 body.reader-mode #loginScreen ~ * { visibility: visible; }
@@ -89,11 +106,11 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .login-err{color:var(--danger);font-weight:500;font-size:.8rem;margin-top:8px;display:none; background: var(--danger-bg); padding: 8px; border-radius: var(--rs);}
 
 .header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
-.header-left{display: flex; align-items: center; gap: 16px;}
-.header-logo-upload { height: 50px; min-width: 50px; max-width: 250px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: transform 0.2s;}
+.header-left{display: flex; align-items: center;}
+.header-logo-upload { height: 50px; min-width: 50px; max-width: 250px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: transform 0.2s; margin-right: 16px;}
 .header-logo-upload:hover { transform: scale(1.03); }
 #logoLeftBox { background: transparent; }
-#logoRightBox { background: transparent; border: 1.5px dashed var(--if-gray-300); }
+#logoRightBox { background: transparent; border: 1.5px dashed var(--if-gray-300); margin-left: 8px; margin-right:0;}
 .custom-logo-img { height: 50px !important; width: auto !important; max-width: 250px !important; object-fit: contain !important; display: block; }
 #defaultLogoLeft { width: 50px; height: 50px; background: var(--if-orange); color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; border-radius: 8px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3);}
 #defaultLogoRight { font-size: 0.85rem; color: var(--muted); font-weight: 600; padding: 0 16px; white-space: nowrap;}
@@ -132,6 +149,11 @@ body.reader-mode #logoLeftBox, body.reader-mode #logoRightBox { cursor: default;
 body.reader-mode #logoLeftBox:hover, body.reader-mode #logoRightBox:hover { transform: none; }
 body.reader-mode #logoRightBox { border: none !important; }
 body.reader-mode #defaultLogoRight { display: none !important; }
+
+/* Ocultar menú en Reader Mode */
+body.reader-mode #btnHamburger { display: none !important; }
+body.reader-mode #sidebar { display: none !important; }
+body.reader-mode #sidebarOverlay { display: none !important; }
 
 .main{max-width:1440px;margin:0 auto;padding:10px 40px 80px;}
 
@@ -395,8 +417,31 @@ tbody td:first-child { text-align: left; }
 <input type="file" id="logoLeftInput" accept="image/png, image/jpeg" style="display:none">
 <input type="file" id="logoRightInput" accept="image/png, image/jpeg" style="display:none">
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h3>Modo de Dashboard</h3>
+    <button class="close-sidebar" id="closeSidebar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+  <div class="sidebar-menu">
+    <button class="sidebar-item active" id="modeInterno">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      Servicio Interno
+    </button>
+    <button class="sidebar-item" id="modeExterno">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+      Cliente Externo
+    </button>
+  </div>
+</div>
+
 <header class="header">
   <div class="header-left">
+    <button class="hamburger-btn" id="btnHamburger">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
     <div class="header-logo-upload" id="logoLeftBox" title="Clic para subir tu propio Logo">
       <img id="logoLeftImg" class="custom-logo-img" style="display:none;" alt="Logo Izquierdo"> 
       <div id="defaultLogoLeft">IF</div>
@@ -518,7 +563,7 @@ tbody td:first-child { text-align: left; }
     <div class="chart-hdr">
       <div>
         <div class="chart-title">Tasa de Participación</div>
-        <div class="chart-sub">Colaboradores encuestados vs. respuestas recibidas</div>
+        <div class="chart-sub" id="partSub">Colaboradores encuestados vs. respuestas recibidas</div>
       </div>
     </div>
     <table id="participationTable"><thead></thead><tbody></tbody></table>
@@ -589,7 +634,7 @@ tbody td:first-child { text-align: left; }
     <div class="chart-hdr">
       <div>
         <div class="chart-title">Análisis de Comentarios</div>
-        <div class="chart-sub">Clasificados automáticamente · Selecciona un departamento o vista general</div>
+        <div class="chart-sub" id="comSub">Clasificados automáticamente · Selecciona un departamento o vista general</div>
       </div>
     </div>
     <div class="dept-tabs" id="deptTabs"></div>
@@ -602,8 +647,8 @@ tbody td:first-child { text-align: left; }
   <div class="chart-card" id="peticionesCard" style="display:none; margin-top:24px;">
     <div class="chart-hdr">
       <div>
-        <div class="chart-title">Resolución de Solicitudes (Servicio Interno)</div>
-        <div class="chart-sub" id="petSubtitle">Menciones sobre lo que el departamento logra y no logra resolver</div>
+        <div class="chart-title">Resolución de Solicitudes</div>
+        <div class="chart-sub" id="petSubtitle">Menciones sobre lo que se logra y no se logra resolver</div>
       </div>
     </div>
     <div style="display:flex; gap:24px; flex-wrap:wrap; margin-top: 10px;">
@@ -629,6 +674,8 @@ tbody td:first-child { text-align: left; }
 Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
 Chart.defaults.color = '#7A8D9E'; 
 Chart.defaults.scale.grid.color = 'rgba(184, 196, 206, 0.3)'; 
+
+let appMode = 'interno'; // 'interno' o 'externo'
 
 const PALETTE = ['#1E3347', '#E07010', '#2C4560', '#F4921E', '#3D5060', '#C86008', '#7A8D9E', '#D68940', '#152130', '#B8C4CE'];
 const PROM_PALETTE = ['#152130']; 
@@ -718,7 +765,10 @@ function updateSubtitle(){
   const dStr = REPORT_DATE.toLocaleDateString('es-ES', opts);
   const capDate = dStr.charAt(0).toUpperCase() + dStr.slice(1);
   const realDeptsCount = DEPTS.filter(d => !d.startsWith('PROM. ')).length;
-  document.getElementById('dashSubtitle').textContent = realDeptsCount + " departamentos · " + DIRS.length + " direcciones · " + capDate;
+  
+  let labelDir = appMode === 'externo' ? 'clientes' : 'direcciones';
+  
+  document.getElementById('dashSubtitle').textContent = realDeptsCount + " entidades · " + DIRS.length + " " + labelDir + " · " + capDate;
 }
 
 async function doLogin(){
@@ -757,8 +807,29 @@ async function doLogin(){
   }
 }
 
-function initDashboard(){
+function setAppMode(mode) {
+  appMode = mode;
+  document.getElementById('modeInterno').classList.toggle('active', mode === 'interno');
+  document.getElementById('modeExterno').classList.toggle('active', mode === 'externo');
+
+  document.getElementById('dashTitle').textContent = mode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno";
+  
+  const partSub = document.getElementById('partSub');
+  if(partSub) partSub.textContent = mode === 'externo' ? "Encuestados vs. respuestas recibidas" : "Colaboradores encuestados vs. respuestas recibidas";
+  
+  const comSub = document.getElementById('comSub');
+  if(comSub) comSub.textContent = mode === 'externo' ? "Clasificados automáticamente · Selecciona a un cliente o vista general" : "Clasificados automáticamente · Selecciona un departamento o vista general";
+  
   updateSubtitle();
+  
+  if(DIRS.length > 0) {
+    buildFilters(); 
+    updateAllViews();
+  }
+}
+
+function initDashboard(){
+  setAppMode(appMode);
   buildFilters();
   updateAllViews();
   wireButtons();
@@ -805,6 +876,21 @@ function wireButtons(){
       const file = e.target.files[0];
       if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_RIGHT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
   };
+
+  // Menú Hamburguesa
+  document.getElementById('btnHamburger').onclick = () => {
+    document.getElementById('sidebarOverlay').classList.add('show');
+    document.getElementById('sidebar').classList.add('open');
+  };
+  const closeSidebar = () => {
+    document.getElementById('sidebarOverlay').classList.remove('show');
+    document.getElementById('sidebar').classList.remove('open');
+  };
+  document.getElementById('closeSidebar').onclick = closeSidebar;
+  document.getElementById('sidebarOverlay').onclick = closeSidebar;
+
+  document.getElementById('modeInterno').onclick = () => { setAppMode('interno'); closeSidebar(); };
+  document.getElementById('modeExterno').onclick = () => { setAppMode('externo'); closeSidebar(); };
 
   const dropzone = document.getElementById('dropzone');
   dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('over'); };
@@ -916,7 +1002,9 @@ function saveNPSModal() {
 
 function buildFilters() {
   const fbDir = document.getElementById('filterBarDir');
-  fbDir.innerHTML = "<span class='filter-label'>Filtrar por Dirección:</span>";
+  const dirLabel = appMode === 'externo' ? 'FILTRAR POR CLIENTE:' : 'FILTRAR POR DIRECCIÓN:';
+  fbDir.innerHTML = `<span class='filter-label'>${dirLabel}</span>`;
+  
   if (DIRS.length === 0) return; 
 
   ['Todas'].concat(DIRS).forEach(dir => {
@@ -933,7 +1021,7 @@ function buildFilters() {
   });
 
   const fbDept = document.getElementById('filterBarDept');
-  fbDept.innerHTML = "<div style='display:flex; width:100%; align-items:center; gap:10px; margin-bottom:12px;'><span class='filter-label' style='margin:0;'>Filtrar por Entidad:</span><button class='filter-chip " + (activeDepts.has('Todos') ? 'active' : '') + "' id='btnDeptTodos'>Todos los Deptos</button></div>";
+  fbDept.innerHTML = `<div style='display:flex; width:100%; align-items:center; gap:10px; margin-bottom:12px;'><span class='filter-label' style='margin:0;'>FILTRAR POR ENTIDAD:</span><button class='filter-chip ${activeDepts.has('Todos') ? 'active' : ''}' id='btnDeptTodos'>Todos los Deptos</button></div>`;
   document.getElementById('btnDeptTodos').onclick = () => { activeDepts.clear(); activeDepts.add('Todos'); buildFilters(); updateAllViews(); };
 
   const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
@@ -1115,9 +1203,11 @@ function classifyComment(text){
   if(!text) return 'Ignorar';
   if(text.startsWith('[PET_RES]')) return 'Peticiones resueltas';
   if(text.startsWith('[PET_NO_RES]')) return 'Peticiones no resueltas';
+  
   const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
   if(t.length < 5 && !t.match(/mal|peor|pago|falla|lento/)) return 'Ignorar';
-  const uselessStarts = ['na', 'n/a', 'ningun', 'nada', 'todo ok', 'ok', 'todo bien', 'sin observaci', 'no tengo comentario', 'no hay comentario', 'sin comentario', 'todo excelente', 'excelente', 'muy bien', 'bien', 'sin detalle', 'desconozco', 'no conozco', 'ignoro', 'no aplica', 'todo en orden', 'sin queja', 'ninguna sugerencia', 'no ', 'si '];
+  
+  const uselessStarts = ['na', 'n/a', 'ningun', 'nada', 'todo ok', 'ok', 'todo bien', 'sin observaci', 'no tengo comentario', 'no hay comentario', 'sin comentario', 'todo excelente', 'excelente', 'muy bien', 'bien', 'sin detalle', 'desconozco', 'no conozco', 'ignoro', 'no aplica', 'todo en orden', 'sin queja', 'ninguna sugerencia'];
   for(let start of uselessStarts){ if(t.startsWith(start) || t === start) return 'Ignorar'; }
   if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien|sin comentarios|sin observaciones|todo muy bien)$/.test(t)) return 'Ignorar';
 
@@ -1146,6 +1236,9 @@ function classifyComment(text){
   if(raw.match(/carga|mucho trabajo|saturad|estr.s|presi|exceso|pesad/)) return 'Carga de Trabajo y Estrés';
   if(raw.match(/ambiente|clima|compañer|chisme|rumor|respeto|valores|cultura|equipo|integraci/)) return 'Clima Laboral y Compañerismo';
   if(raw.match(/falta|necesita|requiere|ocupamos|deber.an|sugerencia|recomiendo|mejorar|oportunidad/)) return 'Sugerencias de Mejora';
+  
+  if(t.length > 8) return 'Otras Observaciones';
+  
   return 'Ignorar'; 
 }
 
@@ -1158,7 +1251,8 @@ function renderDeptTabs(orderedDepts){
   
   const btnCorp = document.createElement('button');
   btnCorp.className = 'dept-tab btn-consolidado truncated';
-  btnCorp.innerHTML = "<span class='dot'></span><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path><line x1='12' y1='12' x2='12' y2='17'></line><line x1='9' y1='14.5' x2='15' y2='14.5'></line></svg> CONSOLIDADO CORPORATIVO";
+  const consolidadoText = appMode === 'externo' ? "CONSOLIDADO" : "CONSOLIDADO CORPORATIVO";
+  btnCorp.innerHTML = `<span class='dot'></span><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path><line x1='12' y1='12' x2='12' y2='17'></line><line x1='9' y1='14.5' x2='15' y2='14.5'></line></svg> ${consolidadoText}`;
   btnCorp.onclick = () => { document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active')); btnCorp.classList.add('active'); renderCatChips(realDepts); renderPeticiones(realDepts); };
   c.appendChild(btnCorp);
 
@@ -1384,7 +1478,7 @@ function renderDetailTable(orderedDepts, activeQIndices){
   if(!orderedDepts.length || !activeQIndices.length) return;
   const groups = getDeptsGroupedByDir(orderedDepts);
   
-  let h1 = "<tr><th rowspan='2' class='border-right-bold fixed-col'>Pregunta</th>";
+  let h1 = `<tr><th rowspan='2' class='border-right-bold fixed-col'>Pregunta</th>`;
   let h2 = "<tr>";
   let flat = [];
   let dirEndIndices = new Set();
@@ -1400,7 +1494,7 @@ function renderDetailTable(orderedDepts, activeQIndices){
       currentIndex++;
     });
   }
-  tbl.querySelector('thead').innerHTML = h1 + "<th rowspan='2'>Promedio</th></tr>" + h2 + "</tr>";
+  tbl.querySelector('thead').innerHTML = h1 + `<th rowspan='2'>Promedio</th></tr>` + h2 + "</tr>";
   
   let bodyHTML = activeQIndices.map(qi => {
     const q = QUESTIONS[qi];
@@ -1414,7 +1508,7 @@ function renderDetailTable(orderedDepts, activeQIndices){
     return rowStr;
   }).join('');
 
-  bodyHTML += "<tr style='background:var(--surface2);font-weight:700'><td style='text-align:left;' class='border-right-bold fixed-col'>Promedio General</td>";
+  bodyHTML += `<tr style='background:var(--surface2);font-weight:700'><td style='text-align:left;' class='border-right-bold fixed-col'>Promedio General</td>`;
   flat.forEach((d, idx) => { let isLast = dirEndIndices.has(idx); const avg = AVERAGES[DEPTS.indexOf(d)]; bodyHTML += "<td class='" + (isLast ? "border-right-bold" : "") + "'><span class='score-pill " + (avg>=9?'score-high':avg>=8?'score-mid':'score-low') + "'>" + (avg?avg.toFixed(2):'—') + "</span></td>"; });
   bodyHTML += "<td><span style='color:var(--primary); font-weight:800; font-size:1.1em;'>" + (flat.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/flat.length).toFixed(2) + "</span></td></tr>";
   tbl.querySelector('tbody').innerHTML = bodyHTML;
@@ -1431,7 +1525,7 @@ function renderParticipation(orderedDepts) {
   const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
   const groups = getDeptsGroupedByDir(realDepts);
   
-  let head = "<thead><tr><th style='text-align:left; border-top-left-radius:var(--rs);'>Entidad</th><th style='text-align:center'>Enviados</th><th style='text-align:center'>Contestaron</th><th style='width:200px; text-align:left; border-top-right-radius:var(--rs);'>Participación</th></tr></thead>";
+  let head = `<thead><tr><th style='text-align:left; border-top-left-radius:var(--rs);'>Entidad</th><th style='text-align:center'>Enviados</th><th style='text-align:center'>Contestaron</th><th style='width:200px; text-align:left; border-top-right-radius:var(--rs);'>Participación</th></tr></thead>`;
   let body = "<tbody>";
   let calcGlobalSent = 0, calcGlobalAns = 0, hasAnyData = false;
 
@@ -1497,7 +1591,7 @@ function renderParticipation(orderedDepts) {
   const globAnsCell = isReader ? globalAns : `<input type="number" class="part-input" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);" data-dept="${globKey}" data-type="ans" value="${globalAns}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
 
   body += "<tr style='background:#152130; font-family:var(--font-bold);'>" +
-      "<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path></svg> Total General</span></td>" +
+      `<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path></svg> Total General</span></td>` +
       "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globSentCell + "</td>" +
       "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globAnsCell + "</td>" +
       "<td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em; font-weight: 700;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td></tr></tbody>";
@@ -1576,7 +1670,41 @@ window.openInsights = async function() {
     } return null;
   }).filter(Boolean).join("\n");
 
-  var prompt = "Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.\n\nCONTEXTO CLAVE (muy importante para interpretar bien):\n- Esto NO es una autoevaluación. Cada departamento fue calificado por las otras áreas con las que tiene contacto.\n- Un puntaje bajo significa que los departamentos que dependen de ese servicio están frustrados o insatisfechos.\n- Un puntaje alto significa que sus clientes internos pos reconocen como un área que facilita el trabajo.\n- Los comentarios son quejas, reconocimientos o sugerencias reales de otros departamentos hacia el evaluado.\n- Una falla sistémica (casi todos mal en la misma pregunta) indica un proceso roto que afecta a toda la organización.\n- Una polarización (opiniones muy divididas) sugiere que el servicio es inconsistente: algunos reciben buen trato y otros no.\n\nREGLAS DE ESCRITURA:\n- Escribe como si le hablaras directamente al Director General, con claridad y sin rodeos\n- Usa palabras simples que cualquier persona entienda, sin tecnicismos\n- Cuando algo es urgente, dilo con firmeza\n- Cuando algo merece reconocimiento, exprésalo con entusiasmo\n- Conecta los datos para encontrar causas reales, no solo describas números\n- Siempre menciona nombres reales de departamentos y cifras exactas\n- Recuerda siempre que quien califica es el cliente interno, no el propio departamento\n\n═══ DATOS DE LA EVALUACIÓN ═══\n\nPARTICIPACIÓN GLOBAL: " + partGlobal + "\n" + (partLines ? "Participación por área evaluada: " + partLines + "\n" : "") + "\nNPS (NET PROMOTER SCORE) POR DEPARTAMENTO:\n" + (npsLines ? npsLines : "Sin datos de NPS capturados en esta vista.") + "\n\n\nRANKING DE SERVICIO (de mejor calificado a peor, según sus clientes internos):\n" + deptRanking + "\n\nPROMEDIO GLOBAL DE SERVICIO: " + globalAvg + "/10\n\nCALIFICACIÓN POR ASPECTO DE SERVICIO:\n" + qLines + "\n" + (fallas.length ? "\n[CRITICO] ASPECTOS DONDE CASI TODOS LOS DEPARTAMENTOS FALLARON (el proceso está roto, no es culpa de una persona):\n" + fallas.join("\n") + "\n" : "") + (polarizadas.length ? "\n[INCONSISTENTE] ASPECTOS CON SERVICIO INCONSISTENTE (algunos clientes internos reciben buen servicio, otros no):\n" + polarizadas.join("\n") + "\n" : "") + (allComments.length ? "\nLO QUE LOS DEPARTAMENTOS ESCRIBIERON SOBRE EL SERVICIO QUE RECIBEN:\n" + allComments.map(function(x,i){return (i+1)+'. [Comentario sobre '+x.d+']: "'+x.c+'"';}).join("\n") + "\n" : "") + "\n═══ ESTRUCTURA DEL ANÁLISIS ═══\nFormato: solo HTML con estas etiquetas: <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <em>, <b>, <br>\n\n5 SECCIONES OBLIGATORIAS:\n\n1. [PANORAMA] Panorama General — ¿Qué tan confiables son estos datos? ¿Cuántos clientes internos participaron? ¿Qué tan representativa es la muestra? Da el veredicto general del nivel de servicio interno de la empresa.\n\n2. [DESTACADOS] Departamentos que están haciendo un gran trabajo — ¿Quiénes tienen las mejores calificaciones de sus clientes internos? ¿En qué aspectos destacan? ¿Qué pueden enseñarle al resto?\n\n3. [URGENTE] Departamentos y aspectos que necesitan atención urgente — ¿Quiénes están fallando a sus clientes internos? ¿En qué aspectos específicos? ¿Qué impacto tiene esto en la operación diaria de la empresa? ¿Hay fallas de proceso o de servicio inconsistente? Sé directo sobre la gravedad.\n\n4. [COMENTARIOS] Lo que la gente está pidiendo a gritos — Interpreta los comentarios que dejaron los departamentos. ¿Qué frustraciones se repiten? ¿Qué reconocimientos hay? ¿Qué está pidiendo la gente que cambie? Conecta los comentarios con los puntajes para encontrar el patrón.\n\n5. [PLAN DE ACCION] Plan de acción para esta semana (usa clase highlight) — Define exactamente 3 acciones concretas, en orden de impacto, con el nombre del área responsable y qué resultado se espera. Que sean acciones reales que se puedan ejecutar de inmediato, no recomendaciones genéricas.\n\nIMPORTANTE: Solo devuelve el HTML. Sin texto antes ni después. Sin markdown.";
+  var prompt = `Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.
+
+CONTEXTO CLAVE:
+- Esto NO es una autoevaluación. Cada departamento fue calificado por las áreas con las que interactúa.
+- Un puntaje bajo significa que los clientes internos de ese departamento están frustrados.
+- Un puntaje alto significa que sus clientes internos lo reconocen como un facilitador.
+- Los comentarios son opiniones reales de otros departamentos hacia el evaluado.
+- Una falla sistémica indica un proceso roto a nivel general.
+- Una polarización sugiere servicio inconsistente.
+
+REGLAS DE ESCRITURA:
+- Escribe como si le hablaras directamente a la Dirección, con claridad.
+- Usa palabras simples, sin rodeos.
+- Sé firme con lo urgente y entusiasta con lo bueno.
+- Conecta datos con causas.
+- Menciona nombres reales y cifras.
+
+═══ DATOS DE LA EVALUACIÓN ═══
+PARTICIPACIÓN: ${partGlobal}
+NPS POR DEPARTAMENTO:
+${npsLines || "Sin datos."}
+
+RANKING DE SERVICIO:
+${deptRanking}
+
+PROMEDIO GLOBAL: ${globalAvg}/10
+
+CALIFICACIÓN POR ASPECTO:
+${qLines}
+
+COMENTARIOS DESTACADOS:
+${allComments.map((x,i)=>`${i+1}. [${x.d}]: "${x.c}"`).join("\n")}
+
+═══ ESTRUCTURA DEL ANÁLISIS ═══
+Formato: SOLO HTML con <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <b>, <br>. 5 Secciones: [PANORAMA], [DESTACADOS], [URGENTE], [COMENTARIOS], [PLAN DE ACCION] (usa class highlight para este). Sin markdown.`;
 
   try {
     var response = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 6000, messages: [{ role: "user", content: prompt }] }) });
@@ -1687,7 +1815,7 @@ function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
   DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
   REPORT_DATE = new Date();
   injectDirectionAverages(); 
-  document.getElementById('dashTitle').textContent=`Evaluación de Servicio — ${fname.replace(/\.(xlsx|xls)$/i,'')}`;
+  document.getElementById('dashTitle').textContent = appMode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno";
   activeDirs.clear(); activeDirs.add('Todas'); activeDepts.clear(); activeDepts.add('Todos');
   initDashboard(); 
 }
@@ -1720,7 +1848,8 @@ async function generateReaderLink(){
       title: document.getElementById('dashTitle').textContent || "Reporte", 
       timestamp: REPORT_DATE.toISOString(),
       logoLeft: CUSTOM_LOGO_LEFT || "", 
-      logoRight: CUSTOM_LOGO_RIGHT || "" 
+      logoRight: CUSTOM_LOGO_RIGHT || "",
+      appMode: appMode
     };
     
     await window.db.collection("reportes").doc(customId).set(payload);
@@ -1735,7 +1864,6 @@ async function generateReaderLink(){
   } catch(err){ 
     console.error("Error detallado de Firebase:", err);
     btn.textContent='Guardar en la nube →'; btn.disabled=false; 
-    
     alert("DETALLE DEL ERROR DE FIREBASE:\n\n" + err.message + "\n\nSi el problema persiste, toma captura de esta ventana.");
     showToast('Revisa la alerta con el error', 'err'); 
   }
@@ -1784,6 +1912,11 @@ async function tryLoadFromURL(){
       if(t && raw.title) t.textContent = raw.title;
       
       loader.remove(); 
+      
+      if(raw.appMode) {
+          appMode = raw.appMode;
+      }
+      
       initDashboard(); 
       return true;
     } else { throw new Error("No existe"); }
@@ -1840,8 +1973,8 @@ function renderPeticiones(depts) {
   const isPositive = (text) => {
       const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
       
-      if (t.includes('todo bien') || t.includes('todo en orden') || t.includes('todo super') || t.includes('todo al 100') || t.includes('todo perfecto') || t.includes('excelente') || t.includes('todo excelente')) return true;
-      if (t.includes('todas resueltas') || t.includes('todo se resuelve') || t.includes('siempre resuelven') || t.includes('siempre se resuelven') || t.includes('todo lo resuelven') || t.includes('siempre atienden')) return true;
+      if (t.includes('todo bien') || t.includes('todo en orden') || t.includes('todo super') || t.includes('todo al 100') || t.includes('todo perfecto') || t.includes('excelente') || t.includes('todo excelente') || t.includes('bien')) return true;
+      if (t.includes('todas resueltas') || t.includes('han sido resueltas') || t.includes('todo se resuelve') || t.includes('siempre resuelven') || t.includes('siempre se resuelven') || t.includes('todo lo resuelven') || t.includes('siempre atienden')) return true;
       if (t.includes('sin problema') || t.includes('ningun problema') || t.includes('ninguna queja') || t.includes('sin inconveniente') || t.includes('ningun inconveniente')) return true;
       if (t.match(/^(ninguna|ninguno|nada)( por el momento| hasta el momento| hasta ahorita| al momento)?$/)) return true;
       if (t === 'ninguna' || t === 'ninguno' || t === 'nada') return true;
@@ -1861,7 +1994,8 @@ function renderPeticiones(depts) {
   
   const subtitle = document.getElementById('petSubtitle');
   if (subtitle) {
-      subtitle.innerHTML = `De <b>${total}</b> respuestas válidas registradas, <b>${favorables}</b> son favorables (indican qué resuelven o que no hay quejas), logrando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron N/A o sin comentarios)</span>`;
+      let clientText = appMode === 'externo' ? 'clientes' : 'clientes internos';
+      subtitle.innerHTML = `De <b>${total}</b> respuestas de ${clientText}, <b>${favorables}</b> son favorables (indican qué resuelven o que no hay quejas), logrando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron N/A o sin comentarios)</span>`;
   }
   
   const renderList = (arr) => {
