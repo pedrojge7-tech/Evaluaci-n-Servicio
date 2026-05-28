@@ -746,6 +746,7 @@ function showToast(msg, type='') {
   setTimeout(() => t.className = 'toast', 3500);
 }
 
+// Funciones para guardar y cargar desde el "store" dual
 function saveState() {
   store[appMode] = {
     DIRS: DIRS, DEPTS: DEPTS, DEPT_TO_DIR: DEPT_TO_DIR, QUESTIONS: QUESTIONS, 
@@ -933,6 +934,7 @@ function wireButtons(){
       if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_RIGHT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
   };
 
+  // Menú Hamburguesa
   document.getElementById('btnHamburger').onclick = () => {
     document.getElementById('sidebarOverlay').classList.add('show');
     document.getElementById('sidebar').classList.add('open');
@@ -1724,13 +1726,13 @@ window.openInsights = async function() {
     } return null;
   }).filter(Boolean).join("\n");
 
-  var prompt = `Eres un analista experto de Servicio Interno y Externo y Clima Organizacional. Tu especialidad es interpretar evaluaciones donde departamentos/clientes califican el servicio que reciben de otras áreas de la misma empresa.
+  var prompt = `Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.
 
 CONTEXTO CLAVE:
-- Esto NO es una autoevaluación. Cada departamento fue calificado por las áreas/clientes con las que interactúa.
-- Un puntaje bajo significa frustración e insatisfacción.
-- Un puntaje alto significa que son reconocidos como facilitadores.
-- Los comentarios son opiniones reales de usuarios hacia el evaluado.
+- Esto NO es una autoevaluación. Cada departamento fue calificado por las áreas con las que interactúa.
+- Un puntaje bajo significa que los clientes internos de ese departamento están frustrados.
+- Un puntaje alto significa que sus clientes internos lo reconocen como un facilitador.
+- Los comentarios son opiniones reales de otros departamentos hacia el evaluado.
 - Una falla sistémica indica un proceso roto a nivel general.
 - Una polarización sugiere servicio inconsistente.
 
@@ -1743,7 +1745,7 @@ REGLAS DE ESCRITURA:
 
 ═══ DATOS DE LA EVALUACIÓN ═══
 PARTICIPACIÓN: ${partGlobal}
-NPS POR ÁREA:
+NPS POR DEPARTAMENTO:
 ${npsLines || "Sin datos."}
 
 RANKING DE SERVICIO:
