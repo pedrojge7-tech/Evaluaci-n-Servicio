@@ -95,7 +95,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 #loginScreen{position:fixed;inset:0;background:rgba(237, 241, 245, 0.95);backdrop-filter:blur(8px);z-index:9999;display:var(--login-display, flex);align-items:center;justify-content:center;}
 #loginScreen ~ * { visibility: hidden; }
 body.reader-mode #loginScreen ~ * { visibility: visible; }
-.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:48px 40px;width:100%;max-width:380px;margin:0 20px;box-shadow:var(--shadow-md);text-align:center;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:48px 40px;width:380px;box-shadow:var(--shadow-md);text-align:center;}
 .brand-logo-if { background: var(--if-orange); color: #fff; font-weight: 900; font-size: 28px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin: 0 auto 24px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3); }
 .login-box h2{font-weight:800;font-size:1.6rem;letter-spacing:-0.03em;margin-bottom:8px; color: var(--if-navy);}
 .login-box p{font-weight:400;font-size:.85rem;color:var(--muted);margin-bottom:28px;}
@@ -114,7 +114,7 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .custom-logo-img { height: 50px !important; width: auto !important; max-width: 250px !important; object-fit: contain !important; display: block; }
 #defaultLogoLeft { width: 50px; height: 50px; background: var(--if-orange); color: #fff; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; border-radius: 8px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3);}
 #defaultLogoRight { font-size: 0.85rem; color: var(--muted); font-weight: 600; padding: 0 16px; white-space: nowrap;}
-.header-left h1{font-weight:800;font-size:1.4rem;letter-spacing:-0.03em;max-width:520px;white-space:normal;overflow:hidden;text-overflow:ellipsis;}
+.header-left h1{font-weight:800;font-size:1.4rem;letter-spacing:-0.03em;max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .header-left p{font-weight:500;font-size:.75rem;color:var(--muted);margin-top:2px;}
 .header-right{display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .badge{background:var(--primary-light);border:1px solid rgba(224, 112, 16, 0.2);padding:6px 14px;border-radius:50px;font-weight:600;font-size:.72rem;color:var(--primary);}
@@ -130,7 +130,6 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .btn-insight-master:active { transform: scale(0.98); }
 @keyframes gradient-shift { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
 @keyframes pulse-neon { 0% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(240, 152, 25, 0); } 100% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0); } }
-body.reader-mode .insight-container { display: none !important; }
 
 .nps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
 .nps-gauge-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
@@ -149,11 +148,6 @@ body.reader-mode #logoLeftBox, body.reader-mode #logoRightBox { cursor: default;
 body.reader-mode #logoLeftBox:hover, body.reader-mode #logoRightBox:hover { transform: none; }
 body.reader-mode #logoRightBox { border: none !important; }
 body.reader-mode #defaultLogoRight { display: none !important; }
-
-/* Ocultar menú en Reader Mode */
-body.reader-mode #btnHamburger { display: none !important; }
-body.reader-mode #sidebar { display: none !important; }
-body.reader-mode #sidebarOverlay { display: none !important; }
 
 .main{max-width:1440px;margin:0 auto;padding:10px 40px 80px;}
 
@@ -181,7 +175,7 @@ body.reader-mode #sidebarOverlay { display: none !important; }
 .part-input::placeholder { color: var(--muted); font-weight: 400; font-size: 0.7rem; }
 
 .filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 24px;margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;box-shadow:var(--shadow);}
-.filter-label{font-weight:700;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;white-space:normal;margin-top:8px;}
+.filter-label{font-weight:700;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;margin-top:8px;min-width:160px;}
 #filterBarDept { flex-direction: column; flex-wrap: nowrap; align-items: stretch; max-height: 400px; overflow-y: auto; overflow-x: hidden; padding-right: 12px; }
 #filterBarDept::-webkit-scrollbar{width:6px;}
 #filterBarDept::-webkit-scrollbar-track{background:transparent;}
@@ -367,42 +361,31 @@ tbody td:first-child { text-align: left; }
 }
 
 @media(max-width:960px){
-  .main{padding:24px 16px 60px;}
-  .insight-container { padding: 0 16px; }
-  .header{padding:16px;flex-wrap:wrap;gap:12px;}
+  .main{padding:24px 20px 60px;}
+  .insight-container { padding: 0 20px; }
+  .header{padding:16px 20px;flex-wrap:wrap;gap:12px;}
   .header-left h1{font-size:1.3rem;white-space:normal;max-width:100%;}
-  .header-right{gap:8px; flex-wrap: wrap;}
+  .header-right{gap:8px;}
   .cols-2{grid-template-columns:1fr;}
   .kpi-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
   .chart-card{padding:20px;}
   .table-card{padding:20px;}
 }
 @media(max-width:640px){
-  .main{padding:16px 12px 60px;}
-  .insight-container { padding: 0 12px; }
-  .btn-insight-master { padding: 12px 20px; font-size: 1rem; width: 100%; justify-content: center; text-align: center; }
-  .header{padding:12px; flex-direction: column; align-items: flex-start; gap: 16px;}
-  .header-left { width: 100%; }
-  .header-left h1{font-size:1.15rem; line-height: 1.3;}
-  .header-right{width:100%; justify-content:flex-start; flex-wrap: wrap;}
-  .btn { padding: 8px 14px; font-size: 0.75rem; }
-  .nps-grid { grid-template-columns: 1fr; }
-  .kpi-grid{grid-template-columns: 1fr; gap:12px;}
+  .main{padding:16px 14px 60px;}
+  .insight-container { padding: 0 14px; justify-content: center; }
+  .header{padding:12px 16px;}
+  .header-left h1{font-size:1.2rem; line-height: 1.2;}
+  .header-right{width:100%;justify-content:flex-end;}
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:12px;}
   .kpi-card { padding: 16px; }
   .kpi-score{font-size:2rem;}
-  .filter-bar{padding:16px; gap:8px;}
-  .filter-label { min-width: 100%; margin-bottom: 8px; margin-top: 0; white-space: normal; display: block;}
-  .filter-chip{padding:8px 14px; max-width: 100%; white-space: normal; text-align: left;}
+  .filter-bar{padding:12px 16px;gap:8px;}
+  .filter-chip{padding:6px 12px;}
   .chart-card{padding:16px;}
-  .chart-title { font-size: 1.05rem; }
-  .chart-sub { font-size: 0.7rem; }
   .rank-item { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; height: auto; min-width: 0; }
   .rank-q-wrap { width: 100%; flex: none; padding-right: 0;}
   .rank-badges { width: 100%; flex: none; justify-content: flex-start; flex-wrap: wrap; margin-left: 0; }
-  .dept-tab { white-space: normal; height: auto; text-align: left; align-items: flex-start; padding: 10px 14px;}
-  .dept-tab svg { margin-top: 2px; }
-  .pet-col { min-width: 100% !important; flex: 1 1 100% !important; margin-bottom: 16px; }
-  .login-box { width: 90%; max-width: 380px; padding: 32px 20px; }
 }
 </style>
 </head>
@@ -663,14 +646,14 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
     <div style="display:flex; gap:24px; flex-wrap:wrap; margin-top: 10px;">
-      <div class="pet-col" style="flex:1; min-width:280px;">
+      <div style="flex:1; min-width:280px;">
         <h4 style="color:var(--success); font-weight:800; font-size:.85rem; margin-bottom:12px; border-bottom:2px solid var(--success-bg); padding-bottom:6px; display:flex; align-items:flex-start; gap:8px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           <span>¿Qué solicitudes o peticiones SÍ se resuelven?</span>
         </h4>
         <div id="petResList" class="comment-list" style="max-height:400px; padding-right:8px;"></div>
       </div>
-      <div class="pet-col" style="flex:1; min-width:280px;">
+      <div style="flex:1; min-width:280px;">
         <h4 style="color:var(--danger); font-weight:800; font-size:.85rem; margin-bottom:12px; border-bottom:2px solid var(--danger-bg); padding-bottom:6px; display:flex; align-items:flex-start; gap:8px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
           <span>¿Qué solicitudes o peticiones NO se resuelven?</span>
@@ -1077,7 +1060,7 @@ function buildFilters() {
   });
 
   const fbDept = document.getElementById('filterBarDept');
-  fbDept.innerHTML = `<div style='display:flex; width:100%; align-items:flex-start; gap:10px; margin-bottom:12px; flex-wrap:wrap;'><span class='filter-label' style='margin:0;'>FILTRAR POR ENTIDAD:</span><button class='filter-chip ${activeDepts.has('Todos') ? 'active' : ''}' id='btnDeptTodos'>Todos los Deptos</button></div>`;
+  fbDept.innerHTML = `<div style='display:flex; width:100%; align-items:center; gap:10px; margin-bottom:12px;'><span class='filter-label' style='margin:0;'>FILTRAR POR ENTIDAD:</span><button class='filter-chip ${activeDepts.has('Todos') ? 'active' : ''}' id='btnDeptTodos'>Todos los Deptos</button></div>`;
   document.getElementById('btnDeptTodos').onclick = () => { activeDepts.clear(); activeDepts.add('Todos'); buildFilters(); updateAllViews(); };
 
   const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
@@ -1293,6 +1276,7 @@ function classifyComment(text){
   if(raw.match(/ambiente|clima|compañer|chisme|rumor|respeto|valores|cultura|equipo|integraci/)) return 'Clima Laboral y Compañerismo';
   if(raw.match(/falta|necesita|requiere|ocupamos|deber.an|sugerencia|recomiendo|mejorar|oportunidad/)) return 'Sugerencias de Mejora';
   
+  // SOLUCIÓN: Atrapa cualquier comentario largo que no haya encajado en lo anterior.
   if(t.length >= 8) return 'Otras Observaciones';
   
   return 'Ignorar'; 
@@ -1783,6 +1767,292 @@ Formato: SOLO HTML con <div class='insight-section-title'>, <div class='insight-
     content.style.display = 'block'; actions.style.display = 'flex';
   }
 };
+
+function handleFile(file){
+  showToast('⏳ Procesando...'); window.cachedAnalysisHTML = ""; window.cachedFilterKey = "";
+  const reader = new FileReader();
+  reader.onload = e => {
+    try{
+      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+      const s1 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, raw:true});
+      const hDir = s1[0] || [], hDept = s1[1] || [], newDepts = [], newDirs = new Set(), newMap = {}, vCols = [];
+      let curDir = "General";
+      
+      for(let c=1; c<hDept.length; c++){
+        if(hDir[c]) curDir = String(hDir[c]).trim();
+        if(hDept[c]){ const d = String(hDept[c]).trim(); newDepts.push(d); newMap[d] = curDir; newDirs.add(curDir); vCols.push({c, d}); }
+      }
+      
+      const nQ = [], nSc = [];
+      for(let r=2; r<s1.length; r++){
+        const row = s1[r]; if(!row || !row[0]) continue;
+        const vals = vCols.map(vc => {
+          const raw = row[vc.c];
+          if(raw === undefined || raw === null) return null;
+          const strVal = String(raw).trim().toUpperCase();
+          if(strVal === 'NA' || strVal === 'N/A' || strVal === '') return null;
+          const n = parseFloat(strVal.replace(',', '.'));
+          return isNaN(n) ? null : (n <= 1 ? n * 10 : n);
+        });
+        if(vals.some(v=>v!==null)){ nQ.push(String(row[0])); nSc.push(vals); }
+      }
+      
+      const nComm = {}; newDepts.forEach(d => nComm[d] = []);
+      if(wb.SheetNames.length > 1){
+        const s2 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]], {header:1});
+        const h2 = s2[1]||[];
+        for(let r=2; r<s2.length; r++){
+          const row = s2[r]; if(!row) continue;
+          for(let c=0; c<h2.length; c++){
+            if(row[c] && h2[c]){ const d = String(h2[c]).trim(); const target=newDepts.find(x=>x.toLowerCase()===d.toLowerCase()); if(target) nComm[target].push(String(row[c])); }
+          }
+        }
+      }
+
+      const nPart = {};
+      if(wb.SheetNames.length > 2){
+        const s3 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]], {header:1, defval:null});
+        const hDept3 = s3[1] || [], rowSent = s3[2] || [], rowAns = s3[3] || [];
+        for(let c=1; c<hDept3.length; c++){
+          if(hDept3[c]){
+            const dName = String(hDept3[c]).trim();
+            const target = newDepts.find(x=>x.toLowerCase()===dName.toLowerCase());
+            if(target) nPart[target] = { sent: parseInt(rowSent[c]) || 0, ans: parseInt(rowAns[c]) || 0 };
+          }
+        }
+      }
+
+      wb.SheetNames.forEach(sheetName => {
+        const snLower = sheetName.toLowerCase().trim();
+        let prefix = null;
+        if (snLower === 'peticiones resultas' || snLower === 'peticiones resueltas') prefix = '[PET_RES] ';
+        else if (snLower === 'peticiones no resultas' || snLower === 'peticiones no resueltas') prefix = '[PET_NO_RES] ';
+        if (prefix) {
+          const sPet = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1});
+          const hDeptPet = sPet[1] || [];
+          for(let r=2; r<sPet.length; r++){
+            const row = sPet[r]; if(!row) continue;
+            for(let c=0; c<hDeptPet.length; c++){
+              if(row[c] && hDeptPet[c]){
+                const dName = String(hDeptPet[c]).trim();
+                const target = newDepts.find(x => x.toLowerCase() === dName.toLowerCase());
+                if(target) nComm[target].push(prefix + String(row[c]));
+              }
+            }
+          }
+        }
+      });
+
+      document.getElementById('importModal').classList.remove('open');
+      rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name);
+      showToast('Datos cargados con éxito','ok');
+    } catch(err){ console.error(err); showToast('Error al leer el Excel', 'err'); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
+  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
+  REPORT_DATE = new Date();
+  injectDirectionAverages(); 
+  document.getElementById('dashTitle').textContent = appMode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno";
+  activeDirs.clear(); activeDirs.add('Todas'); activeDepts.clear(); activeDepts.add('Todos');
+  saveState();
+  initDashboard(); 
+}
+
+async function generateReaderLink(){
+  const rawId = document.getElementById('customIdInput').value.trim();
+  if(!rawId) { showToast('Escribe un nombre para el enlace', 'err'); return; }
+  
+  const customId = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
+  if(!customId) { showToast('Usa letras o números válidos', 'err'); return; }
+
+  if (!firebase.auth().currentUser) {
+      showToast('Tu sesión expiró. Recarga la página e ingresa de nuevo.', 'err');
+      return;
+  }
+
+  const btn = document.getElementById('btnOpenReader');
+  btn.textContent='Subiendo a la nube…'; btn.disabled=true;
+
+  try {
+    saveState();
+    const payload = {
+      store: JSON.stringify(store),
+      logoLeft: CUSTOM_LOGO_LEFT || "", 
+      logoRight: CUSTOM_LOGO_RIGHT || "",
+      appMode: appMode
+    };
+    
+    await window.db.collection("reportes").doc(customId).set(payload);
+    
+    const baseURL = window.location.href.split('?')[0];
+    const link = baseURL + '?mode=reader&id=' + customId;
+    
+    document.getElementById('linkInput').value = link;
+    btn.textContent='Abrir →'; btn.disabled=false; btn.onclick=()=>window.open(link,'_blank');
+    navigator.clipboard.writeText(link).catch(()=>{});
+    showToast('Actualizado en la nube y copiado','ok');
+  } catch(err){ 
+    console.error("Error detallado de Firebase:", err);
+    btn.textContent='Guardar en la nube →'; btn.disabled=false; 
+    alert("DETALLE DEL ERROR DE FIREBASE:\n\n" + err.message + "\n\nSi el problema persiste, toma captura de esta ventana.");
+    showToast('Revisa la alerta con el error', 'err'); 
+  }
+}
+
+async function tryLoadFromURL(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('mode') !== 'reader') return false;
+  const reportId = params.get('id');
+  if(!reportId) return false;
+
+  document.body.classList.add('reader-mode');
+  const loader = document.createElement('div');
+  loader.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;';
+  loader.innerHTML = '<div class="share-spinner"></div><p style="font-family:var(--font);font-weight:500;font-size:.85rem;color:var(--muted);">Descargando reporte seguro…</p>';
+  document.body.appendChild(loader);
+
+  try {
+    const docSnap = await window.db.collection("reportes").doc(reportId).get();
+    if(docSnap.exists){
+      const raw = docSnap.data();
+      
+      if(raw.store) {
+          store = JSON.parse(raw.store);
+          if(store.interno.REPORT_DATE) store.interno.REPORT_DATE = new Date(store.interno.REPORT_DATE);
+          if(store.externo.REPORT_DATE) store.externo.REPORT_DATE = new Date(store.externo.REPORT_DATE);
+      } else {
+          let oldDirs = ['General'];
+          let oldDeptMap = {};
+          let oldDepts = typeof raw.depts === 'string' ? JSON.parse(raw.depts) : raw.depts;
+          
+          if(raw.dirs && raw.deptMap) {
+              oldDirs = typeof raw.dirs === 'string' ? JSON.parse(raw.dirs) : raw.dirs;
+              oldDeptMap = typeof raw.deptMap === 'string' ? JSON.parse(raw.deptMap) : raw.deptMap;
+          } else {
+              if(oldDepts) oldDepts.forEach(d => oldDeptMap[d] = 'General');
+          }
+          
+          store.interno = {
+              DIRS: oldDirs,
+              DEPTS: oldDepts || [],
+              DEPT_TO_DIR: oldDeptMap,
+              QUESTIONS: typeof raw.qs === 'string' ? JSON.parse(raw.qs) : (raw.qs || []),
+              SCORES: typeof raw.scores === 'string' ? JSON.parse(raw.scores) : (raw.scores || []),
+              AVERAGES: [], 
+              COMMENTS: typeof raw.comments === 'string' ? JSON.parse(raw.comments) : (raw.comments || {}),
+              PARTICIPATION: typeof raw.participation === 'string' ? JSON.parse(raw.participation) : (raw.participation || {}),
+              NPS_DATA: typeof raw.nps === 'string' ? JSON.parse(raw.nps) : (raw.nps || {}),
+              REPORT_DATE: raw.timestamp ? new Date(raw.timestamp) : new Date(),
+              fileName: raw.title || "Servicio Interno"
+          };
+          
+          DIRS = store.interno.DIRS;
+          DEPTS = store.interno.DEPTS;
+          DEPT_TO_DIR = store.interno.DEPT_TO_DIR;
+          SCORES = store.interno.SCORES;
+          injectDirectionAverages();
+          store.interno.DEPTS = DEPTS;
+          store.interno.SCORES = SCORES;
+          store.interno.AVERAGES = AVERAGES;
+      }
+      
+      if(raw.logoLeft) CUSTOM_LOGO_LEFT = raw.logoLeft; 
+      if(raw.logoRight) CUSTOM_LOGO_RIGHT = raw.logoRight;
+      if(raw.appMode) appMode = raw.appMode;
+
+      loader.remove(); 
+      initDashboard(); 
+      return true;
+    } else { throw new Error("No existe"); }
+  } catch(err){ 
+      loader.innerHTML = '<p style="font-family:var(--font);font-weight:600;color:var(--danger);font-size:.9rem;padding:20px;text-align:center;">No se pudo cargar el dashboard. El enlace puede estar roto o expirado.</p>'; 
+      return true; 
+  }
+}
+
+function renderPeticiones(depts) {
+  const deptArr = Array.isArray(depts) ? depts : [depts];
+  let resueltas = [];
+  let noResueltas = [];
+  
+  const isMeaningful = (text) => {
+      const t = text.toLowerCase()
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+          .replace(/[^a-z0-9\s]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+      if (t.length <= 1) return false; 
+      
+      const junk = [
+          'na', 'n a', 'no aplica', 'sin comentario', 'sin comentarios', 
+          'sin observacion', 'sin observaciones', 'desconozco', 'ignoro', 
+          'ningun comentario', 'no tengo comentarios'
+      ];
+      
+      if (junk.includes(t)) return false;
+      return true;
+  };
+
+  deptArr.forEach(d => {
+      (COMMENTS[d]||[]).forEach(c => {
+          if (c.startsWith('[PET_RES]')) {
+              const text = c.replace(/^\[PET_RES\]\s*/, '');
+              if (isMeaningful(text)) resueltas.push({text, dept: d});
+          }
+          else if (c.startsWith('[PET_NO_RES]')) {
+              const text = c.replace(/^\[PET_NO_RES\]\s*/, '');
+              if (isMeaningful(text)) noResueltas.push({text, dept: d});
+          }
+      });
+  });
+
+  const card = document.getElementById('peticionesCard');
+  if (resueltas.length === 0 && noResueltas.length === 0) {
+      card.style.display = 'none';
+      return;
+  }
+  card.style.display = 'flex';
+
+  const isPositive = (text) => {
+      const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      
+      if (t.includes('todo bien') || t.includes('todo en orden') || t.includes('todo super') || t.includes('todo al 100') || t.includes('todo perfecto') || t.includes('excelente') || t.includes('todo excelente') || t.includes('bien')) return true;
+      if (t.includes('todas resueltas') || t.includes('han sido resueltas') || t.includes('todo se resuelve') || t.includes('siempre resuelven') || t.includes('siempre se resuelven') || t.includes('todo lo resuelven') || t.includes('siempre atienden') || t.includes('mayoria')) return true;
+      if (t.includes('sin problema') || t.includes('ningun problema') || t.includes('ninguna queja') || t.includes('sin inconveniente') || t.includes('ningun inconveniente')) return true;
+      if (t.match(/^(ninguna|ninguno|nada)( por el momento| hasta el momento| hasta ahorita| al momento)?$/)) return true;
+      if (t === 'ninguna' || t === 'ninguno' || t === 'nada') return true;
+      if (t.includes('hasta ahorita ninguna') || t.includes('al momento se han atendido') || t.includes('se le ha dado seguimiento') || t.includes('se le a dado seguimiento')) return true;
+
+      return false;
+  };
+  
+  const total = resueltas.length + noResueltas.length;
+  let favorables = resueltas.length; 
+  
+  noResueltas.forEach(c => {
+      if (isPositive(c.text)) favorables++;
+  });
+  
+  const pct = total > 0 ? Math.round((favorables / total) * 100) : 0;
+  
+  const subtitle = document.getElementById('petSubtitle');
+  if (subtitle) {
+      let clientText = appMode === 'externo' ? 'clientes' : 'clientes internos';
+      subtitle.innerHTML = `De <b>${total}</b> respuestas de ${clientText}, <b>${favorables}</b> son favorables (indican qué resuelven o que no hay quejas), logrando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron N/A o sin comentarios)</span>`;
+  }
+  
+  const renderList = (arr) => {
+      if (arr.length === 0) return '<div class="no-comments" style="padding:24px;">Ninguna respuesta registrada.</div>';
+      return arr.map(c => "<div class='comment-item' style='--al:" + deptColor(c.dept) + "; margin-bottom:12px;'>" + (deptArr.length > 1 ? "<strong style='display:block; margin-bottom:4px; font-size:0.75rem; text-transform:uppercase; color:var(--muted);'>" + c.dept + "</strong>" : "") + c.text + "</div>").join('');
+  };
+
+  document.getElementById('petResList').innerHTML = renderList(resueltas);
+  document.getElementById('petNoResList').innerHTML = renderList(noResueltas);
+}
 
 (async ()=>{
   while(!window.db) { await new Promise(r => setTimeout(r, 50)); }
