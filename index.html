@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Dashboard de Servicio</title>
   <link rel="icon" type="image/png" href="IF.png">
 
@@ -148,6 +148,8 @@ body.reader-mode #logoLeftBox, body.reader-mode #logoRightBox { cursor: default;
 body.reader-mode #logoLeftBox:hover, body.reader-mode #logoRightBox:hover { transform: none; }
 body.reader-mode #logoRightBox { border: none !important; }
 body.reader-mode #defaultLogoRight { display: none !important; }
+body.reader-mode #btnHamburger { display: none !important; }
+body.reader-mode #sidebar, body.reader-mode #sidebarOverlay { display: none !important; }
 
 .main{max-width:1440px;margin:0 auto;padding:10px 40px 80px;}
 
@@ -360,33 +362,8 @@ tbody td:first-child { text-align: left; }
   .comment-item { border: none !important; box-shadow: none !important; background: transparent !important; padding: 6px 0 6px 14px !important; border-left: 3px solid var(--al, var(--primary)) !important; margin-bottom: 12px !important; font-size: .85rem !important; }
 }
 
-@media(max-width:960px){
-  .main{padding:24px 20px 60px;}
-  .insight-container { padding: 0 20px; }
-  .header{padding:16px 20px;flex-wrap:wrap;gap:12px;}
-  .header-left h1{font-size:1.3rem;white-space:normal;max-width:100%;}
-  .header-right{gap:8px;}
-  .cols-2{grid-template-columns:1fr;}
-  .kpi-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
-  .chart-card{padding:20px;}
-  .table-card{padding:20px;}
-}
-@media(max-width:640px){
-  .main{padding:16px 14px 60px;}
-  .insight-container { padding: 0 14px; justify-content: center; }
-  .header{padding:12px 16px;}
-  .header-left h1{font-size:1.2rem; line-height: 1.2;}
-  .header-right{width:100%;justify-content:flex-end;}
-  .kpi-grid{grid-template-columns:1fr 1fr;gap:12px;}
-  .kpi-card { padding: 16px; }
-  .kpi-score{font-size:2rem;}
-  .filter-bar{padding:12px 16px;gap:8px;}
-  .filter-chip{padding:6px 12px;}
-  .chart-card{padding:16px;}
-  .rank-item { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; height: auto; min-width: 0; }
-  .rank-q-wrap { width: 100%; flex: none; padding-right: 0;}
-  .rank-badges { width: 100%; flex: none; justify-content: flex-start; flex-wrap: wrap; margin-left: 0; }
-}
+@media(max-width:960px){.main{padding:24px 16px 60px;}.insight-container{padding:0 16px;}.header{padding:16px;flex-wrap:wrap;gap:12px;}.header-left h1{font-size:1.3rem;white-space:normal;max-width:100%;}.header-right{gap:8px;flex-wrap:wrap;}.cols-2{grid-template-columns:1fr;}.kpi-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}.chart-card,.table-card{padding:20px;width:100%;box-sizing:border-box;}}
+@media(max-width:640px){body,html{overflow-x:hidden;width:100%;max-width:100vw;margin:0;padding:0;}.main{padding:16px 12px 60px;overflow-x:hidden;box-sizing:border-box;}.insight-container{padding:0 12px;}.btn-insight-master{padding:12px 20px;font-size:1rem;width:100%;justify-content:center;text-align:center;}.header{padding:12px;flex-direction:column;align-items:flex-start;gap:16px;}.header-left{width:100%;display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;}.header-left h1{font-size:1.15rem;line-height:1.3;white-space:normal;}.header-right{width:100%;justify-content:flex-start;flex-wrap:wrap;}.btn{padding:8px 14px;font-size:0.75rem;}.nps-grid,.kpi-grid{grid-template-columns:1fr;}.kpi-grid{gap:12px;}.kpi-card{padding:16px;}.kpi-score{font-size:2rem;}.filter-bar{padding:16px;gap:8px;}.filter-label{min-width:100%;margin-bottom:8px;margin-top:0;white-space:normal;display:block;}.filter-chip{padding:8px 14px;max-width:100%;white-space:normal;text-align:left;}.cols-2{grid-template-columns:1fr;}.chart-card{padding:16px;width:100%;box-sizing:border-box;}.chart-title{font-size:1.05rem;white-space:normal;line-height:1.3;}.chart-sub{font-size:0.7rem;white-space:normal;line-height:1.4;}.rank-item{flex-direction:column;align-items:flex-start;gap:10px;padding:14px;height:auto;min-width:0;width:100%;box-sizing:border-box;}.rank-q-wrap{width:100%;flex:none;padding-right:0;}.rank-badges{width:100%;flex:none;justify-content:flex-start;flex-wrap:wrap;margin-left:0;}.dept-tab{white-space:normal;height:auto;text-align:left;align-items:flex-start;padding:10px 14px;width:100%;box-sizing:border-box;}.dept-tab svg{margin-top:2px;flex-shrink:0;}.pet-col{min-width:100% !important;flex:1 1 100% !important;margin-bottom:16px;}.modal-box{padding:24px;width:95%;max-width:95vw;margin:0 auto;box-sizing:border-box;}#insightModal .modal-box{padding:24px;width:95%;max-width:95vw;}#lineLegend{max-height:150px;overflow-y:auto;}.login-box{width:90%;max-width:380px;padding:32px 20px;box-sizing:border-box;margin:0 auto;}}
 </style>
 </head>
 <body>
@@ -415,32 +392,21 @@ tbody td:first-child { text-align: left; }
 <div class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <h3>Modo de Dashboard</h3>
-    <button class="close-sidebar" id="closeSidebar">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </button>
+    <button class="close-sidebar" id="closeSidebar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
   </div>
   <div class="sidebar-menu">
-    <button class="sidebar-item active" id="modeInterno">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-      Servicio Interno
-    </button>
-    <button class="sidebar-item" id="modeExterno">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-      Cliente Externo
-    </button>
+    <button class="sidebar-item active" id="modeInterno"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> Servicio Interno</button>
+    <button class="sidebar-item" id="modeExterno"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg> Cliente Externo</button>
   </div>
 </div>
 
 <header class="header">
   <div class="header-left">
-    <button class="hamburger-btn" id="btnHamburger">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-    </button>
+    <button class="hamburger-btn" id="btnHamburger"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
     <div class="header-logo-upload" id="logoLeftBox" title="Clic para subir tu propio Logo">
       <img id="logoLeftImg" class="custom-logo-img" style="display:none;" alt="Logo Izquierdo"> 
       <div id="defaultLogoLeft">IF</div>
     </div>
-    
     <div>
       <h1 id="dashTitle">Servicio Interno</h1>
       <p id="dashSubtitle"></p>
@@ -448,30 +414,11 @@ tbody td:first-child { text-align: left; }
   </div>
   <div class="header-right">
     <span class="badge">Admin</span>
-    
-    <button class="btn btn-import" id="btnNPS">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
-      Capturar NPS
-    </button>
-
-    <button class="btn btn-import" id="btnImport">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-      Importar Datos
-    </button>
-    <button class="btn btn-import" id="btnExportPDF">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-      PDF
-    </button>
-
-    <button class="btn btn-share" id="btnShare">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-      Generar modo lector
-    </button>
-    
-    <div class="header-logo-upload" id="logoRightBox" title="Clic para subir tu propio Logo" style="border: 1px dashed var(--if-gray-300); margin-left: 8px;">
-      <img id="logoRightImg" class="custom-logo-img" style="display:none;" alt="Logo Derecho"> 
-      <span id="defaultLogoRight">+ Logo</span>
-    </div>
+    <button class="btn btn-import" id="btnNPS"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg> Capturar NPS</button>
+    <button class="btn btn-import" id="btnImport"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg> Importar Datos</button>
+    <button class="btn btn-import" id="btnExportPDF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> PDF</button>
+    <button class="btn btn-share" id="btnShare"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg> Generar modo lector</button>
+    <div class="header-logo-upload" id="logoRightBox" title="Clic para subir tu propio Logo" style="border: 1px dashed var(--if-gray-300); margin-left: 8px;"><img id="logoRightImg" class="custom-logo-img" style="display:none;" alt="Logo Derecho"> <span id="defaultLogoRight">+ Logo</span></div>
   </div>
 </header>
 
@@ -494,7 +441,7 @@ tbody td:first-child { text-align: left; }
     <div class="import-hint">
       <strong><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:5px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg> Estructura esperada</strong><br>
       <b>Hoja 1 (Puntajes):</b> F1=Direcciones, F2=Departamentos, A3=Preguntas.<br>
-      <b>Hoja 2 (Comentarios):</b> F1=Direcciones, F2=Departamentos, F3+=Comentarios.<br>
+      <b>Hoja 2 (Comentarios):</b> F1=Dir, F2=Deptos, F3+=Comentarios.<br>
       <b>Hoja 3 (Participación):</b> F1=Dir, F2=Deptos, F3=Enviados, F4=Contestaron.
     </div>
     <div class="dropzone" id="dropzone">
@@ -567,7 +514,7 @@ tbody td:first-child { text-align: left; }
     <div class="chart-hdr" style="margin-bottom: 24px;">
       <div>
         <div class="chart-title">Net Promoter Score (NPS)</div>
-        <div class="chart-sub">¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)</div>
+        <div class="chart-sub" id="npsSub">¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)</div>
       </div>
     </div>
     <div id="npsGrid" class="nps-grid"></div>
@@ -588,9 +535,6 @@ tbody td:first-child { text-align: left; }
       </div>
       <div class="rank-list" id="rankList"></div>
     </div>
-  </div>
-
-  <div class="charts-row cols-2">
     <div class="chart-card">
       <div class="chart-hdr">
         <div>
@@ -601,7 +545,10 @@ tbody td:first-child { text-align: left; }
       <div class="chart-container"><canvas id="lineChart"></canvas></div>
       <div id="lineLegend"></div> 
     </div>
-    <div class="chart-card">
+  </div>
+
+  <div class="charts-row cols-2" style="display: block;">
+    <div class="chart-card" style="margin-bottom: 24px;">
       <div class="chart-hdr">
         <div>
           <div class="chart-title">Promedio General por Entidad</div>
@@ -620,11 +567,11 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
     <div class="table-wrapper">
-        <table id="detailTable" style="min-width: 800px;"><thead></thead><tbody></tbody></table>
+        <table id="detailTable"><thead></thead><tbody></tbody></table>
     </div>
   </div>
 
-  <div class="chart-card" style="margin-bottom:0">
+  <div class="chart-card" style="margin-bottom:24px">
     <div class="chart-hdr">
       <div>
         <div class="chart-title">Análisis de Comentarios</div>
@@ -633,12 +580,11 @@ tbody td:first-child { text-align: left; }
     </div>
     <div class="dept-tabs" id="deptTabs"></div>
     <div class="comment-categories" id="catChips"></div>
-    
     <div id="commentsChartContainer"><canvas id="commentsChart"></canvas></div>
     <div class="comment-list" id="commentList"><div class="no-comments">Selecciona un área para ver sus comentarios</div></div>
   </div>
 
-  <div class="chart-card" id="peticionesCard" style="display:none; margin-top:24px;">
+  <div class="chart-card" id="peticionesCard" style="display:none;">
     <div class="chart-hdr">
       <div>
         <div class="chart-title">Resolución de Solicitudes</div>
@@ -646,14 +592,14 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
     <div style="display:flex; gap:24px; flex-wrap:wrap; margin-top: 10px;">
-      <div style="flex:1; min-width:280px;">
+      <div class="pet-col" style="flex:1; min-width:280px;">
         <h4 style="color:var(--success); font-weight:800; font-size:.85rem; margin-bottom:12px; border-bottom:2px solid var(--success-bg); padding-bottom:6px; display:flex; align-items:flex-start; gap:8px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
           <span>¿Qué solicitudes o peticiones SÍ se resuelven?</span>
         </h4>
         <div id="petResList" class="comment-list" style="max-height:400px; padding-right:8px;"></div>
       </div>
-      <div style="flex:1; min-width:280px;">
+      <div class="pet-col" style="flex:1; min-width:280px;">
         <h4 style="color:var(--danger); font-weight:800; font-size:.85rem; margin-bottom:12px; border-bottom:2px solid var(--danger-bg); padding-bottom:6px; display:flex; align-items:flex-start; gap:8px;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
           <span>¿Qué solicitudes o peticiones NO se resuelven?</span>
@@ -666,129 +612,74 @@ tbody td:first-child { text-align: left; }
 
 <script>
 Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
-Chart.defaults.color = '#7A8D9E'; 
-Chart.defaults.scale.grid.color = 'rgba(184, 196, 206, 0.3)'; 
-
+Chart.defaults.color = '#7A8D9E'; Chart.defaults.scale.grid.color = 'rgba(184, 196, 206, 0.3)'; 
 let appMode = 'interno';
-
-// Almacén dual: guarda la información de ambos módulos de forma independiente
 let store = {
-  interno: { DIRS: [], DEPTS: [], DEPT_TO_DIR: {}, QUESTIONS: [], SCORES: [], AVERAGES: [], COMMENTS: {}, PARTICIPATION: {}, NPS_DATA: {}, REPORT_DATE: null, fileName: "Servicio Interno" },
-  externo: { DIRS: [], DEPTS: [], DEPT_TO_DIR: {}, QUESTIONS: [], SCORES: [], AVERAGES: [], COMMENTS: {}, PARTICIPATION: {}, NPS_DATA: {}, REPORT_DATE: null, fileName: "Evaluación a Cliente Externo" }
+  interno: { DIRS:[], DEPTS:[], DEPT_TO_DIR:{}, QUESTIONS:[], SCORES:[], AVERAGES:[], COMMENTS:{}, PARTICIPATION:{}, NPS_DATA:{}, REPORT_DATE:null, fileName:"Servicio Interno" },
+  externo: { DIRS:[], DEPTS:[], DEPT_TO_DIR:{}, QUESTIONS:[], SCORES:[], AVERAGES:[], COMMENTS:{}, PARTICIPATION:{}, NPS_DATA:{}, REPORT_DATE:null, fileName:"Evaluación a Cliente Externo" }
 };
-
-const PALETTE = ['#1E3347', '#E07010', '#2C4560', '#F4921E', '#3D5060', '#C86008', '#7A8D9E', '#D68940', '#152130', '#B8C4CE'];
+const PALETTE = ['#1E3347','#E07010','#2C4560','#F4921E','#3D5060','#C86008','#7A8D9E','#D68940','#152130','#B8C4CE'];
 const PROM_PALETTE = ['#152130']; 
-
-let REPORT_DATE = new Date();
-let DIRS = [];
-let DEPTS = [];
-let DEPT_TO_DIR = {};
-let QUESTIONS = [];
-let SCORES = [];
-let AVERAGES = [];
-let COMMENTS = {};
-let PARTICIPATION = {}; 
-let NPS_DATA = {}; 
-
-let CUSTOM_LOGO_LEFT = null;
-let CUSTOM_LOGO_RIGHT = null;
-
-let activeDirs = new Set(['Todas']);
-let activeDepts = new Set(['Todos']);
-let barChart, lineChart, commentsChart;
-window.selectedLineIdx = null;
-
-window.cachedAnalysisHTML = "";
-window.cachedFilterKey = "";
+let REPORT_DATE = new Date(), DIRS = [], DEPTS = [], DEPT_TO_DIR = {}, QUESTIONS = [], SCORES = [], AVERAGES = [], COMMENTS = {}, PARTICIPATION = {}, NPS_DATA = {}; 
+let CUSTOM_LOGO_LEFT = null, CUSTOM_LOGO_RIGHT = null, activeDirs = new Set(['Todas']), activeDepts = new Set(['Todos']), barChart, lineChart, commentsChart;
+window.selectedLineIdx = null; window.cachedAnalysisHTML = ""; window.cachedFilterKey = "";
 
 window.toggleDir = function(dirId) {
   const rows = document.querySelectorAll('.row-' + dirId);
   const arrow = document.getElementById('arrow-' + dirId);
-  const isOpen = arrow.classList.contains('open');
-  if(isOpen) {
-    arrow.classList.remove('open');
-    rows.forEach(r => r.classList.remove('open'));
-  } else {
-    arrow.classList.add('open');
-    rows.forEach(r => r.classList.add('open'));
-  }
+  if(arrow.classList.contains('open')) { arrow.classList.remove('open'); rows.forEach(r => r.classList.remove('open')); } 
+  else { arrow.classList.add('open'); rows.forEach(r => r.classList.add('open')); }
 };
 
 const TOAST_ICONS = {
   ok: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
-  err: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`,
-  warn: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
+  err: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`
 };
-
 function showToast(msg, type='') {
   const t = document.getElementById('toast');
-  const icon = TOAST_ICONS[type] || '';
-  t.innerHTML = `<span style="display:flex;align-items:center;gap:8px;">${icon}<span>${msg}</span></span>`;
-  t.className = 'toast show ' + type;
-  setTimeout(() => t.className = 'toast', 3500);
+  t.innerHTML = `<span style="display:flex;align-items:center;gap:8px;">${TOAST_ICONS[type]||''}<span>${msg}</span></span>`;
+  t.className = 'toast show ' + type; setTimeout(() => t.className = 'toast', 3500);
 }
 
-// Funciones para guardar y cargar desde el "store" dual
 function saveState() {
-  store[appMode] = {
-    DIRS: DIRS, DEPTS: DEPTS, DEPT_TO_DIR: DEPT_TO_DIR, QUESTIONS: QUESTIONS, 
-    SCORES: SCORES, AVERAGES: AVERAGES, COMMENTS: COMMENTS, 
-    PARTICIPATION: PARTICIPATION, NPS_DATA: NPS_DATA, REPORT_DATE: REPORT_DATE, 
-    fileName: document.getElementById('dashTitle').textContent
-  };
+  store[appMode] = { DIRS, DEPTS, DEPT_TO_DIR, QUESTIONS, SCORES, AVERAGES, COMMENTS, PARTICIPATION, NPS_DATA, REPORT_DATE, fileName: document.getElementById('dashTitle').textContent };
 }
 
 function loadState() {
   let s = store[appMode];
-  DIRS = s.DIRS || [];
-  DEPTS = s.DEPTS || [];
-  DEPT_TO_DIR = s.DEPT_TO_DIR || {};
-  QUESTIONS = s.QUESTIONS || [];
-  SCORES = s.SCORES || [];
-  AVERAGES = s.AVERAGES || [];
-  COMMENTS = s.COMMENTS || {};
-  PARTICIPATION = s.PARTICIPATION || {};
-  NPS_DATA = s.NPS_DATA || {};
+  DIRS = s.DIRS || []; DEPTS = s.DEPTS || []; DEPT_TO_DIR = s.DEPT_TO_DIR || {};
+  QUESTIONS = s.QUESTIONS || []; SCORES = s.SCORES || []; AVERAGES = s.AVERAGES || [];
+  COMMENTS = s.COMMENTS || {}; PARTICIPATION = s.PARTICIPATION || {}; NPS_DATA = s.NPS_DATA || {};
   REPORT_DATE = s.REPORT_DATE ? new Date(s.REPORT_DATE) : new Date();
-  
   document.getElementById('dashTitle').textContent = s.fileName || (appMode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno");
 }
 
 function setAppMode(mode) {
-  saveState(); 
-  appMode = mode;
+  saveState(); appMode = mode;
   document.getElementById('modeInterno').classList.toggle('active', mode === 'interno');
   document.getElementById('modeExterno').classList.toggle('active', mode === 'externo');
-
   loadState();
-
+  
   const partSub = document.getElementById('partSub');
   if(partSub) partSub.textContent = mode === 'externo' ? "Encuestados vs. respuestas recibidas" : "Colaboradores encuestados vs. respuestas recibidas";
   
   const comSub = document.getElementById('comSub');
   if(comSub) comSub.textContent = mode === 'externo' ? "Clasificados automáticamente · Selecciona a un cliente o vista general" : "Clasificados automáticamente · Selecciona un departamento o vista general";
   
-  activeDirs.clear(); activeDirs.add('Todas'); 
-  activeDepts.clear(); activeDepts.add('Todos');
+  const npsSub = document.getElementById('npsSub');
+  if(npsSub) npsSub.textContent = mode === 'externo' ? "¿Qué tan probable es que recomiendes el servicio recibido a alguien más? (Fórmula: % Promotores - % Detractores)" : "¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)";
   
-  updateSubtitle();
-  buildFilters(); 
-  updateAllViews();
+  activeDirs.clear(); activeDirs.add('Todas'); activeDepts.clear(); activeDepts.add('Todos');
+  updateSubtitle(); buildFilters(); updateAllViews();
 }
 
 function injectDirectionAverages() {
   if (DEPTS.length === 0) return; 
   DEPTS = DEPTS.filter(d => !d.startsWith('PROM. '));
   const dirs = Array.from(new Set(Object.values(DEPT_TO_DIR)));
-  
   dirs.forEach(dir => {
     const promName = "PROM. " + dir;
-    if (!DEPTS.includes(promName)) {
-      DEPTS.push(promName);
-      DEPT_TO_DIR[promName] = dir;
-      COMMENTS[promName] = []; 
-    }
+    if (!DEPTS.includes(promName)) { DEPTS.push(promName); DEPT_TO_DIR[promName] = dir; COMMENTS[promName] = []; }
     const dirDepts = DEPTS.filter(d => DEPT_TO_DIR[d] === dir && !d.startsWith('PROM. '));
     const diProm = DEPTS.indexOf(promName);
     SCORES.forEach((qScores) => {
@@ -797,7 +688,6 @@ function injectDirectionAverages() {
        qScores[diProm] = avg !== null ? +(avg.toFixed(2)) : null;
     });
   });
-
   AVERAGES = DEPTS.map((_, di) => {
     const vals = SCORES.map(q => q[di]).filter(v => v !== null && v !== undefined && !isNaN(v));
     return vals.length ? +(vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(2) : 0;
@@ -805,62 +695,34 @@ function injectDirectionAverages() {
 }
 
 function updateSubtitle(){
-  if (DEPTS.length === 0) {
-    document.getElementById('dashSubtitle').textContent = "Cargue un archivo Excel para comenzar.";
-    return;
-  }
+  if (DEPTS.length === 0) { document.getElementById('dashSubtitle').textContent = "Cargue un archivo Excel para comenzar."; return; }
   const opts = { month: 'long', year: 'numeric' };
   const dStr = REPORT_DATE.toLocaleDateString('es-ES', opts);
   const capDate = dStr.charAt(0).toUpperCase() + dStr.slice(1);
   const realDeptsCount = DEPTS.filter(d => !d.startsWith('PROM. ')).length;
-  
   let labelDir = appMode === 'externo' ? 'clientes' : 'direcciones';
   document.getElementById('dashSubtitle').textContent = realDeptsCount + " entidades · " + DIRS.length + " " + labelDir + " · " + capDate;
 }
 
 async function doLogin(){
-  const email = document.getElementById('loginEmail').value.trim();
-  const pwd = document.getElementById('loginPwd').value.trim();
-  const btn = document.getElementById('loginBtn');
-  const err = document.getElementById('loginErr');
-
-  if(!email || !pwd) {
-      err.textContent = "Ingresa tu correo y contraseña.";
-      err.style.display = 'block';
-      return;
-  }
-
+  const email = document.getElementById('loginEmail').value.trim(), pwd = document.getElementById('loginPwd').value.trim();
+  const btn = document.getElementById('loginBtn'), err = document.getElementById('loginErr');
+  if(!email || !pwd) { err.textContent = "Ingresa tu correo y contraseña."; err.style.display = 'block'; return; }
   try {
-    btn.textContent = "Iniciando sesión...";
-    btn.disabled = true;
-    err.style.display = 'none';
+    btn.textContent = "Iniciando sesión..."; btn.disabled = true; err.style.display = 'none';
     await firebase.auth().signInWithEmailAndPassword(email, pwd);
   } catch(error) {
-    err.textContent = "Correo o contraseña incorrectos.";
-    err.style.display = 'block';
-    btn.textContent = "Ingresar al Dashboard";
-    btn.disabled = false;
-    return; 
+    err.textContent = "Correo o contraseña incorrectos."; err.style.display = 'block';
+    btn.textContent = "Ingresar al Dashboard"; btn.disabled = false; return; 
   }
-
   const ls = document.getElementById('loginScreen');
   if(ls) { ls.remove(); document.documentElement.style.setProperty('--login-display', 'none'); }
-  
-  try {
-      initDashboard();
-  } catch(e) {
-      console.error(e);
-      showToast('Error al visualizar los datos', 'err');
-  }
+  try { initDashboard(); } catch(e) { console.error(e); showToast('Error al visualizar los datos', 'err'); }
 }
 
 let isInitialized = false;
 function initDashboard(){
-  if(!isInitialized) {
-      wireButtons();
-      applyCustomLogos();
-      isInitialized = true;
-  }
+  if(!isInitialized) { wireButtons(); applyCustomLogos(); isInitialized = true; }
   loadState(); 
   document.getElementById('modeInterno').classList.toggle('active', appMode === 'interno');
   document.getElementById('modeExterno').classList.toggle('active', appMode === 'externo');
@@ -871,24 +733,15 @@ function initDashboard(){
   const comSub = document.getElementById('comSub');
   if(comSub) comSub.textContent = appMode === 'externo' ? "Clasificados automáticamente · Selecciona a un cliente o vista general" : "Clasificados automáticamente · Selecciona un departamento o vista general";
   
-  updateSubtitle();
-  buildFilters();
-  updateAllViews();
+  const npsSub = document.getElementById('npsSub');
+  if(npsSub) npsSub.textContent = appMode === 'externo' ? "¿Qué tan probable es que recomiendes el servicio recibido a alguien más? (Fórmula: % Promotores - % Detractores)" : "¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)";
+  
+  updateSubtitle(); buildFilters(); updateAllViews();
 }
 
 function applyCustomLogos() {
-    if(CUSTOM_LOGO_LEFT) {
-        document.getElementById('defaultLogoLeft').style.display = 'none';
-        document.getElementById('logoLeftImg').src = CUSTOM_LOGO_LEFT;
-        document.getElementById('logoLeftImg').style.display = 'block';
-        document.getElementById('logoLeftBox').style.background = 'transparent';
-    }
-    if(CUSTOM_LOGO_RIGHT) {
-        document.getElementById('defaultLogoRight').style.display = 'none';
-        document.getElementById('logoRightImg').src = CUSTOM_LOGO_RIGHT;
-        document.getElementById('logoRightImg').style.display = 'block';
-        document.getElementById('logoRightBox').style.border = 'none';
-    }
+    if(CUSTOM_LOGO_LEFT) { document.getElementById('defaultLogoLeft').style.display = 'none'; document.getElementById('logoLeftImg').src = CUSTOM_LOGO_LEFT; document.getElementById('logoLeftImg').style.display = 'block'; document.getElementById('logoLeftBox').style.background = 'transparent'; }
+    if(CUSTOM_LOGO_RIGHT) { document.getElementById('defaultLogoRight').style.display = 'none'; document.getElementById('logoRightImg').src = CUSTOM_LOGO_RIGHT; document.getElementById('logoRightImg').style.display = 'block'; document.getElementById('logoRightBox').style.border = 'none'; }
 }
 
 function wireButtons(){
@@ -899,78 +752,37 @@ function wireButtons(){
   document.getElementById('btnCloseShare').onclick = () => document.getElementById('shareModal').classList.remove('open');
   document.getElementById('btnOpenReader').onclick = generateReaderLink;
   document.getElementById('btnCopyLink').onclick = copyLink;
-
   document.getElementById('btnNPS').onclick = openNPSModal;
   document.getElementById('btnCloseNPS').onclick = () => document.getElementById('npsModal').classList.remove('open');
   document.getElementById('btnSaveNPS').onclick = saveNPSModal;
-
   document.getElementById('logoLeftBox').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoLeftInput').click(); };
   document.getElementById('logoLeftImg').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoLeftInput').click(); };
-  document.getElementById('logoLeftInput').onchange = (e) => {
-      const file = e.target.files[0];
-      if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_LEFT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
-  };
-
+  document.getElementById('logoLeftInput').onchange = (e) => { const file = e.target.files[0]; if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_LEFT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); } };
   document.getElementById('logoRightBox').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoRightInput').click(); };
-  document.getElementById('logoRightInput').onchange = (e) => {
-      const file = e.target.files[0];
-      if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_RIGHT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
-  };
-
-  // Menú Hamburguesa
-  document.getElementById('btnHamburger').onclick = () => {
-    document.getElementById('sidebarOverlay').classList.add('show');
-    document.getElementById('sidebar').classList.add('open');
-  };
-  const closeSidebar = () => {
-    document.getElementById('sidebarOverlay').classList.remove('show');
-    document.getElementById('sidebar').classList.remove('open');
-  };
-  document.getElementById('closeSidebar').onclick = closeSidebar;
-  document.getElementById('sidebarOverlay').onclick = closeSidebar;
-
+  document.getElementById('logoRightInput').onchange = (e) => { const file = e.target.files[0]; if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_RIGHT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); } };
+  document.getElementById('btnHamburger').onclick = () => { document.getElementById('sidebarOverlay').classList.add('show'); document.getElementById('sidebar').classList.add('open'); };
+  const closeSidebar = () => { document.getElementById('sidebarOverlay').classList.remove('show'); document.getElementById('sidebar').classList.remove('open'); };
+  document.getElementById('closeSidebar').onclick = closeSidebar; document.getElementById('sidebarOverlay').onclick = closeSidebar;
   document.getElementById('modeInterno').onclick = () => { setAppMode('interno'); closeSidebar(); };
   document.getElementById('modeExterno').onclick = () => { setAppMode('externo'); closeSidebar(); };
-
   const dropzone = document.getElementById('dropzone');
   dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('over'); };
   dropzone.ondragleave = () => dropzone.classList.remove('over');
   dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
   document.getElementById('fileInput').onchange = (e) => { if(e.target.files[0]) handleFile(e.target.files[0]); };
-  
-  const lp = document.getElementById('loginPwd'); 
-  if(lp) { lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
-  const btn = document.getElementById('loginBtn'); 
-  if(btn) btn.onclick = doLogin;
-
+  const lp = document.getElementById('loginPwd'); if(lp) { lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
+  const btn = document.getElementById('loginBtn'); if(btn) btn.onclick = doLogin;
   document.getElementById('participationTable').addEventListener('change', (e) => {
       if(e.target.classList.contains('part-input')) {
-          const dept = e.target.getAttribute('data-dept');
-          const type = e.target.getAttribute('data-type');
-          let valStr = e.target.value.trim();
-          
-          if (valStr === '') {
-              if (PARTICIPATION[dept]) {
-                  delete PARTICIPATION[dept][type];
-                  if(Object.keys(PARTICIPATION[dept]).length === 0) delete PARTICIPATION[dept];
-              }
-          } else {
-              let val = parseInt(valStr, 10);
-              if (isNaN(val) || val < 0) val = 0;
-              if (!PARTICIPATION[dept]) PARTICIPATION[dept] = {};
-              PARTICIPATION[dept][type] = val;
-          }
-          
+          const dept = e.target.getAttribute('data-dept'), type = e.target.getAttribute('data-type'); let valStr = e.target.value.trim();
+          if (valStr === '') { if (PARTICIPATION[dept]) { delete PARTICIPATION[dept][type]; if(Object.keys(PARTICIPATION[dept]).length === 0) delete PARTICIPATION[dept]; } } 
+          else { let val = parseInt(valStr, 10); if (isNaN(val) || val < 0) val = 0; if (!PARTICIPATION[dept]) PARTICIPATION[dept] = {}; PARTICIPATION[dept][type] = val; }
           const openDirs = Array.from(document.querySelectorAll('.toggle-arrow.open')).map(el => el.id);
           const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
           const filteredDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
           const orderedDepts = activeDepts.has('Todos') ? filteredDepts.filter(d => !d.startsWith('PROM. ')) : filteredDepts.filter(d => activeDepts.has(d));
           renderParticipation(orderedDepts);
-          
-          openDirs.forEach(id => {
-              const arrow = document.getElementById(id);
-              if(arrow && !arrow.classList.contains('open')) toggleDir(id.replace('arrow-', ''));
-          });
+          openDirs.forEach(id => { const arrow = document.getElementById(id); if(arrow && !arrow.classList.contains('open')) toggleDir(id.replace('arrow-', '')); });
           showToast('Participación actualizada', 'ok');
       }
   });
@@ -979,73 +791,38 @@ function wireButtons(){
 function copyLink(){
   const inp = document.getElementById('linkInput');
   if(!inp.value || inp.value.startsWith('Haz clic')) return;
-  navigator.clipboard.writeText(inp.value).then(()=>{
-    const btn = document.getElementById('btnCopyLink');
-    btn.textContent='¡Copiado!'; setTimeout(()=>btn.textContent='Copiar', 2000);
-  });
+  navigator.clipboard.writeText(inp.value).then(()=>{ const btn = document.getElementById('btnCopyLink'); btn.textContent='¡Copiado!'; setTimeout(()=>btn.textContent='Copiar', 2000); });
 }
 
 function openNPSModal() {
-  const list = document.getElementById('npsInputList');
-  list.innerHTML = '';
-  const realDepts = DEPTS.filter(d => !d.startsWith('PROM. '));
-  
-  if (realDepts.length === 0) {
-     list.innerHTML = '<p style="color:var(--muted); text-align:center; padding: 20px;">Primero importa un archivo Excel con departamentos.</p>';
-  } else {
+  const list = document.getElementById('npsInputList'); list.innerHTML = ''; const realDepts = DEPTS.filter(d => !d.startsWith('PROM. '));
+  if (realDepts.length === 0) { list.innerHTML = '<p style="color:var(--muted); text-align:center; padding: 20px;">Primero importa un archivo Excel con departamentos.</p>'; } 
+  else {
      realDepts.forEach(d => {
-       let data = NPS_DATA[d] || {det: '', pas: '', pro: ''};
-       if (typeof data === 'number') data = {det: '', pas: '', pro: ''};
-       list.innerHTML += `
-         <div class="nps-row" style="flex-direction: column; align-items: flex-start; border-bottom: 1px solid var(--border); padding: 16px 0;">
-           <label style="font-weight: 800; color: var(--if-navy); font-size: .95rem;">${d}</label>
-           <div style="display:flex; gap:16px; width:100%; margin-top:10px;">
-             <div style="flex:1; text-align:center;">
-               <div style="font-size:0.7rem; color:var(--danger); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Detractores (0-6)</div>
-               <input type="number" min="0" data-type="det" data-dept="${d}" value="${data.det}" style="width:100%; border-color:var(--danger); background:var(--danger-bg); color:var(--danger); padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;">
-             </div>
-             <div style="flex:1; text-align:center;">
-               <div style="font-size:0.7rem; color:#D97706; font-weight:700; margin-bottom:6px; text-transform:uppercase;">Pasivos (7-8)</div>
-               <input type="number" min="0" data-type="pas" data-dept="${d}" value="${data.pas}" style="width:100%; border-color:#F59E0B; background:var(--warning-bg); color:#D97706; padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;">
-             </div>
-             <div style="flex:1; text-align:center;">
-               <div style="font-size:0.7rem; color:var(--success); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Promotores (9-10)</div>
-               <input type="number" min="0" data-type="pro" data-dept="${d}" value="${data.pro}" style="width:100%; border-color:var(--success); background:var(--success-bg); color:var(--success); padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;">
-             </div>
-           </div>
-         </div>
-       `;
+       let data = NPS_DATA[d] || {det: '', pas: '', pro: ''}; if (typeof data === 'number') data = {det: '', pas: '', pro: ''};
+       list.innerHTML += `<div class="nps-row" style="flex-direction: column; align-items: flex-start; border-bottom: 1px solid var(--border); padding: 16px 0;"><label style="font-weight: 800; color: var(--if-navy); font-size: .95rem;">${d}</label><div style="display:flex; gap:16px; width:100%; margin-top:10px;"><div style="flex:1; text-align:center;"><div style="font-size:0.7rem; color:var(--danger); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Detractores (0-6)</div><input type="number" min="0" data-type="det" data-dept="${d}" value="${data.det}" style="width:100%; border-color:var(--danger); background:var(--danger-bg); color:var(--danger); padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;"></div><div style="flex:1; text-align:center;"><div style="font-size:0.7rem; color:#D97706; font-weight:700; margin-bottom:6px; text-transform:uppercase;">Pasivos (7-8)</div><input type="number" min="0" data-type="pas" data-dept="${d}" value="${data.pas}" style="width:100%; border-color:#F59E0B; background:var(--warning-bg); color:#D97706; padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;"></div><div style="flex:1; text-align:center;"><div style="font-size:0.7rem; color:var(--success); font-weight:700; margin-bottom:6px; text-transform:uppercase;">Promotores (9-10)</div><input type="number" min="0" data-type="pro" data-dept="${d}" value="${data.pro}" style="width:100%; border-color:var(--success); background:var(--success-bg); color:var(--success); padding:8px; border-radius:6px; border-style:solid; border-width:1px; outline:none;"></div></div></div>`;
      });
   }
   document.getElementById('npsModal').classList.add('open');
 }
 
 function saveNPSModal() {
-  const rows = document.querySelectorAll('#npsInputList .nps-row');
-  rows.forEach(row => {
-    const detInp = row.querySelector('input[data-type="det"]');
-    const pasInp = row.querySelector('input[data-type="pas"]');
-    const proInp = row.querySelector('input[data-type="pro"]');
-    const d = detInp.getAttribute('data-dept');
-    const det = detInp.value.trim();
-    const pas = pasInp.value.trim();
-    const pro = proInp.value.trim();
-
+  document.querySelectorAll('#npsInputList .nps-row').forEach(row => {
+    const d = row.querySelector('input[data-type="det"]').getAttribute('data-dept');
+    const det = row.querySelector('input[data-type="det"]').value.trim();
+    const pas = row.querySelector('input[data-type="pas"]').value.trim();
+    const pro = row.querySelector('input[data-type="pro"]').value.trim();
     if (det === '' && pas === '' && pro === '') { delete NPS_DATA[d]; } 
     else { NPS_DATA[d] = { det: parseInt(det || 0, 10), pas: parseInt(pas || 0, 10), pro: parseInt(pro || 0, 10) }; }
   });
-  document.getElementById('npsModal').classList.remove('open');
-  updateAllViews();
-  showToast('NPS calculado y actualizado', 'ok');
+  document.getElementById('npsModal').classList.remove('open'); updateAllViews(); showToast('NPS calculado y actualizado', 'ok');
 }
 
 function buildFilters() {
   const fbDir = document.getElementById('filterBarDir');
   const dirLabel = appMode === 'externo' ? 'FILTRAR POR CLIENTE:' : 'FILTRAR POR DIRECCIÓN:';
   fbDir.innerHTML = `<span class='filter-label'>${dirLabel}</span>`;
-  
   if (DIRS.length === 0) return; 
-
   ['Todas'].concat(DIRS).forEach(dir => {
     const btn = document.createElement('button');
     btn.className = 'filter-chip filter-chip-dir truncated' + (activeDirs.has(dir) ? ' active' : '');
@@ -1053,14 +830,13 @@ function buildFilters() {
     btn.onclick = () => {
       if(dir==='Todas'){ activeDirs.clear(); activeDirs.add('Todas'); }
       else { activeDirs.delete('Todas'); if(activeDirs.has(dir)) activeDirs.delete(dir); else activeDirs.add(dir); if(activeDirs.size===0) activeDirs.add('Todas'); }
-      activeDepts.clear(); activeDepts.add('Todos');
-      buildFilters(); updateAllViews();
+      activeDepts.clear(); activeDepts.add('Todos'); buildFilters(); updateAllViews();
     };
     fbDir.appendChild(btn);
   });
 
   const fbDept = document.getElementById('filterBarDept');
-  fbDept.innerHTML = `<div style='display:flex; width:100%; align-items:center; gap:10px; margin-bottom:12px;'><span class='filter-label' style='margin:0;'>FILTRAR POR ENTIDAD:</span><button class='filter-chip ${activeDepts.has('Todos') ? 'active' : ''}' id='btnDeptTodos'>Todos los Deptos</button></div>`;
+  fbDept.innerHTML = `<div style='display:flex; width:100%; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;'><span class='filter-label' style='margin:0;'>FILTRAR POR ENTIDAD:</span><button class='filter-chip ${activeDepts.has('Todos') ? 'active' : ''}' id='btnDeptTodos'>Todos los Deptos</button></div>`;
   document.getElementById('btnDeptTodos').onclick = () => { activeDepts.clear(); activeDepts.add('Todos'); buildFilters(); updateAllViews(); };
 
   const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
@@ -1070,7 +846,6 @@ function buildFilters() {
     const groupDiv = document.createElement('div');
     groupDiv.className = 'filter-dir-group';
     groupDiv.innerHTML = "<span class='filter-dir-group-title truncated'>" + dir + "</span>";
-    
     const promName = "PROM. " + dir;
     if (DEPTS.includes(promName)) {
       const btnProm = document.createElement('button');
@@ -1085,7 +860,6 @@ function buildFilters() {
       };
       groupDiv.appendChild(btnProm);
     }
-
     dList.forEach(d => {
       if (d.startsWith('PROM. ')) return;
       const btn = document.createElement('button');
@@ -1104,10 +878,7 @@ function buildFilters() {
 }
 
 function deptColor(d) { 
-  if (d.startsWith('PROM. ')) {
-    const dirName = d.replace('PROM. ', '');
-    return PROM_PALETTE[DIRS.indexOf(dirName) % PROM_PALETTE.length] || '#152130'; 
-  }
+  if (d.startsWith('PROM. ')) { const dirName = d.replace('PROM. ', ''); return PROM_PALETTE[DIRS.indexOf(dirName) % PROM_PALETTE.length] || '#152130'; }
   return PALETTE[DEPTS.indexOf(d) % PALETTE.length] || PALETTE[0]; 
 }
 
@@ -1118,46 +889,24 @@ function updateAllViews() {
 
   const activeQIndices = [];
   QUESTIONS.forEach((q, qi) => {
-    const hasData = orderedDepts.some(d => {
-      const val = SCORES[qi][DEPTS.indexOf(d)];
-      return val !== null && val !== undefined && !isNaN(val);
-    });
-    if(hasData) activeQIndices.push(qi);
+    if(orderedDepts.some(d => { const val = SCORES[qi][DEPTS.indexOf(d)]; return val !== null && val !== undefined && !isNaN(val); })) activeQIndices.push(qi);
   });
 
-  renderParticipation(orderedDepts);
-  renderNPS(orderedDepts);
-  renderKPIs(orderedDepts);
-  renderBarChart(orderedDepts);
-  renderLineChart(orderedDepts, activeQIndices);
-  renderRankingList(orderedDepts, activeQIndices);
-  renderDetailTable(orderedDepts, activeQIndices);
-  renderDeptTabs(orderedDepts);
+  renderParticipation(orderedDepts); renderNPS(orderedDepts); renderKPIs(orderedDepts); renderBarChart(orderedDepts);
+  renderLineChart(orderedDepts, activeQIndices); renderRankingList(orderedDepts, activeQIndices); renderDetailTable(orderedDepts, activeQIndices); renderDeptTabs(orderedDepts);
 
   if(activeDepts.size === 1 && !activeDepts.has('Todos')) {
       const single = Array.from(activeDepts)[0];
-      if(!single.startsWith('PROM.')) {
-          setTimeout(() => {
-              const tabs = document.querySelectorAll('.dept-tab');
-              for(let t of tabs) { if(t.textContent.includes(single)) { t.click(); break; } }
-          }, 100);
-      }
+      if(!single.startsWith('PROM.')) { setTimeout(() => { const tabs = document.querySelectorAll('.dept-tab'); for(let t of tabs) { if(t.textContent.includes(single)) { t.click(); break; } } }, 100); }
   }
 }
 
 function renderNPS(orderedDepts) {
-  const card = document.getElementById('npsCard');
-  const grid = document.getElementById('npsGrid');
-  grid.innerHTML = '';
-  let hasData = false;
-  
+  const card = document.getElementById('npsCard'); const grid = document.getElementById('npsGrid'); grid.innerHTML = ''; let hasData = false;
   orderedDepts.forEach(d => {
-    let val = null;
-    let breakdown = null;
-
+    let val = null, breakdown = null;
     if(d.startsWith('PROM. ')) {
-       const dir = d.replace('PROM. ', '');
-       const subDepts = DEPTS.filter(x => DEPT_TO_DIR[x] === dir && !x.startsWith('PROM. '));
+       const dir = d.replace('PROM. ', ''); const subDepts = DEPTS.filter(x => DEPT_TO_DIR[x] === dir && !x.startsWith('PROM. '));
        const validSubDepts = subDepts.filter(x => NPS_DATA[x] !== undefined && typeof NPS_DATA[x] === 'object');
        if(validSubDepts.length > 0) {
          let tDet = 0, tPas = 0, tPro = 0;
@@ -1167,46 +916,16 @@ function renderNPS(orderedDepts) {
        }
     } else {
        if(NPS_DATA[d] !== undefined && typeof NPS_DATA[d] === 'object') {
-         const data = NPS_DATA[d];
-         const total = data.det + data.pas + data.pro;
+         const data = NPS_DATA[d]; const total = data.det + data.pas + data.pro;
          if (total > 0) { val = Math.round(((data.pro - data.det) / total) * 100); breakdown = { det: data.det, pas: data.pas, pro: data.pro, total }; }
        }
     }
     
     if(val !== null && breakdown !== null) {
        hasData = true;
-       const clampedVal = Math.max(-100, Math.min(100, val));
-       const p = (clampedVal + 100) / 200; 
-       const arcLength = Math.PI * 80; 
-       const fillLength = p * arcLength;
-       const rotation = (p * 180) - 90;
+       const clampedVal = Math.max(-100, Math.min(100, val)), p = (clampedVal + 100) / 200, arcLength = Math.PI * 80, fillLength = p * arcLength, rotation = (p * 180) - 90;
        let color = '#EF4444'; if (val >= 0) color = '#F59E0B'; if (val >= 50) color = '#10B981'; 
-       const html = `
-       <div class="nps-gauge-card">
-           <div class="nps-gauge-title">${d}</div>
-           <div class="nps-gauge-wrapper">
-               <svg viewBox="0 0 200 120" style="width:100%; height:auto; overflow:visible;">
-                   <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#EDF1F5" stroke-width="16" stroke-linecap="round"/>
-                   <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="${color}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${fillLength} ${arcLength}" stroke-dashoffset="0" style="transition: stroke-dasharray 1s ease-out;"/>
-                   <g transform="rotate(${rotation} 100 100)" style="transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);">
-                      <path d="M 96 45 L 104 45 L 100 12 Z" fill="#152130" />
-                      <circle cx="100" cy="45" r="4" fill="#152130"/>
-                   </g>
-               </svg>
-               <div class="nps-value-container">
-                   <div class="nps-val">${val}</div>
-                   <div class="nps-lbl">NPS</div>
-               </div>
-           </div>
-           <div style="display:flex; gap:10px; width:100%; margin-top:20px; background:var(--surface2); border-radius:10px; padding:12px; justify-content:space-around;">
-              <div style="text-align:center;"><div style="font-size:1.2rem; font-weight:900; color:var(--danger); line-height:1;">${breakdown.det}</div><div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Detract</div></div>
-              <div style="text-align:center; border-left:1.5px solid var(--border); border-right:1.5px solid var(--border); padding:0 14px;"><div style="font-size:1.2rem; font-weight:900; color:#D97706; line-height:1;">${breakdown.pas}</div><div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Pasivos</div></div>
-              <div style="text-align:center;"><div style="font-size:1.2rem; font-weight:900; color:var(--success); line-height:1;">${breakdown.pro}</div><div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Promot</div></div>
-           </div>
-           <div class="nps-sub" style="margin-top:10px;">${breakdown.total} respuestas en total</div>
-       </div>
-       `;
-       grid.innerHTML += html;
+       grid.innerHTML += `<div class="nps-gauge-card"><div class="nps-gauge-title">${d}</div><div class="nps-gauge-wrapper"><svg viewBox="0 0 200 120" style="width:100%; height:auto; overflow:visible;"><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#EDF1F5" stroke-width="16" stroke-linecap="round"/><path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="${color}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${fillLength} ${arcLength}" stroke-dashoffset="0" style="transition: stroke-dasharray 1s ease-out;"/><g transform="rotate(${rotation} 100 100)" style="transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);"><path d="M 96 45 L 104 45 L 100 12 Z" fill="#152130" /><circle cx="100" cy="45" r="4" fill="#152130"/></g></svg><div class="nps-value-container"><div class="nps-val">${val}</div><div class="nps-lbl">NPS</div></div></div><div style="display:flex; gap:10px; width:100%; margin-top:20px; background:var(--surface2); border-radius:10px; padding:12px; justify-content:space-around;"><div style="text-align:center;"><div style="font-size:1.2rem; font-weight:900; color:var(--danger); line-height:1;">${breakdown.det}</div><div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Detract</div></div><div style="text-align:center; border-left:1.5px solid var(--border); border-right:1.5px solid var(--border); padding:0 14px;"><div style="font-size:1.2rem; font-weight:900; color:#D97706; line-height:1;">${breakdown.pas}</div><div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Pasivos</div></div><div style="text-align:center;"><div style="font-size:1.2rem; font-weight:900; color:var(--success); line-height:1;">${breakdown.pro}</div><div style="font-size:0.65rem; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:4px;">Promot</div></div></div><div class="nps-sub" style="margin-top:10px;">${breakdown.total} respuestas en total</div></div>`;
     }
   });
   if(!hasData) { card.style.display = 'none'; } else { card.style.display = 'block'; }
@@ -1226,13 +945,8 @@ function renderKPIs(orderedDepts){
     const realDepts = dList.filter(d => !d.startsWith('PROM. ')).sort((a,b) => AVERAGES[DEPTS.indexOf(b)] - AVERAGES[DEPTS.indexOf(a)]);
 
     promDepts.concat(realDepts).forEach(d => {
-      const di = DEPTS.indexOf(d), avg = AVERAGES[di], col = deptColor(d);
-      const isProm = d.startsWith('PROM. ');
-      sectionHTML += "<div class='kpi-card' style='--ca:" + col + "'>" +
-        "<div class='kpi-header-row'><div class='kpi-dept'><span class='kpi-dept-inner'>" + (isProm ? '⭐ Promedio '+dir : d) + "</span></div>" + (!isProm ? "<div class='kpi-rank'>#" + (sortedGlobal.indexOf(d)+1) + " de " + sortedGlobal.length + "</div>" : "") + "</div>" +
-        "<div class='kpi-score'>" + avg.toFixed(1) + "<sup>/10</sup></div>" +
-        "<div class='kpi-bar'><div class='kpi-bar-fill' style='width:" + (avg*10) + "%'></div></div>" +
-      "</div>";
+      const di = DEPTS.indexOf(d), avg = AVERAGES[di], col = deptColor(d), isProm = d.startsWith('PROM. ');
+      sectionHTML += `<div class='kpi-card' style='--ca:${col}'><div class='kpi-header-row'><div class='kpi-dept'><span class='kpi-dept-inner'>${isProm ? '⭐ Promedio '+dir : d}</span></div>${!isProm ? "<div class='kpi-rank'>#" + (sortedGlobal.indexOf(d)+1) + " de " + sortedGlobal.length + "</div>" : ""}</div><div class='kpi-score'>${avg.toFixed(1)}<sup>/10</sup></div><div class='kpi-bar'><div class='kpi-bar-fill' style='width:${avg*10}%'></div></div></div>`;
     });
     container.innerHTML += sectionHTML + "</div></div>";
   }
@@ -1480,7 +1194,7 @@ function renderLineChart(orderedDepts, activeQIndices){
     const chip = document.createElement('span');
     chip.className = 'rl-chip';
     chip.style.cursor = 'pointer';
-    chip.innerHTML = "<span class='rl-dot' style='background:" + deptColor(d) + "'></span><span class='chip-text'>" + d + "</span>";
+    chip.innerHTML = `<span class='rl-dot' style='background:${deptColor(d)}'></span><span class='chip-text'>${d}</span>`;
 
     const updateLineChartStyles = () => {
       lineChart.data.datasets.forEach((ds, dsIndex) => {
@@ -1509,7 +1223,7 @@ function renderRankingList(orderedDepts, activeQIndices){
     const vals = orderedDepts.map(d => ({d, v: SCORES[qi][DEPTS.indexOf(d)]})).filter(x=>x.v!==null && x.v!==undefined && !isNaN(x.v)).sort((a,b)=>b.v-a.v);
     if(!vals.length) return '';
     const best = vals[0], worst = vals[vals.length-1];
-    return "<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>" + q + "</span></div><div class='rank-badges'><div class='rank-badge badge-best'><span>↑</span><div class='rb-name-wrap'><span class='rb-name-inner'>" + best.d + "</span></div><span>" + best.v.toFixed(1) + "</span></div><div class='rank-badge badge-worst'><span>↓</span><div class='rb-name-wrap'><span class='rb-name-inner'>" + worst.d + "</span></div><span>" + worst.v.toFixed(1) + "</span></div></div></div>";
+    return `<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>${q}</span></div><div class='rank-badges'><div class='rank-badge badge-best'><span>↑</span><div class='rb-name-wrap'><span class='rb-name-inner'>${best.d}</span></div><span>${best.v.toFixed(1)}</span></div><div class='rank-badge badge-worst'><span>↓</span><div class='rb-name-wrap'><span class='rb-name-inner'>${worst.d}</span></div><span>${worst.v.toFixed(1)}</span></div></div></div>`;
   }).join('');
 }
 
@@ -1525,12 +1239,12 @@ function renderDetailTable(orderedDepts, activeQIndices){
   let currentIndex = 0;
 
   for(const [dir, dList] of Object.entries(groups)){
-    h1 += "<th colspan='" + dList.length + "' class='border-right-bold'>" + dir + "</th>";
+    h1 += `<th colspan='${dList.length}' class='border-right-bold'>${dir}</th>`;
     dList.forEach((d, index) => {
       flat.push(d);
       let isLast = index === (dList.length - 1);
       if(isLast) dirEndIndices.add(currentIndex);
-      h2 += "<th class='" + (isLast ? "border-right-bold" : "") + "'>" + (d.startsWith('PROM.')?'PROM.':d) + "</th>";
+      h2 += `<th class='${isLast ? "border-right-bold" : ""}'>${d.startsWith('PROM.')?'PROM.':d}</th>`;
       currentIndex++;
     });
   }
@@ -1542,15 +1256,15 @@ function renderDetailTable(orderedDepts, activeQIndices){
     const avgVals = rowVals.filter(v=>v!==null && v!==undefined && !isNaN(v));
     const avg = avgVals.length ? avgVals.reduce((a,b)=>a+b,0)/avgVals.length : 0;
     
-    let rowStr = "<tr><td class='q-cell border-right-bold fixed-col'>" + q + "</td>";
-    rowVals.forEach((v, idx) => { let isLast = dirEndIndices.has(idx); rowStr += "<td class='" + (isLast ? "border-right-bold" : "") + "'><span class='score-pill " + (v>=9?'score-high':v>=8?'score-mid':'score-low') + "'>" + (v?v.toFixed(1):'—') + "</span></td>"; });
-    rowStr += "<td><b>" + (avg?avg.toFixed(2):'—') + "</b></td></tr>";
+    let rowStr = `<tr><td class='q-cell border-right-bold fixed-col'>${q}</td>`;
+    rowVals.forEach((v, idx) => { let isLast = dirEndIndices.has(idx); rowStr += `<td class='${isLast ? "border-right-bold" : ""}'><span class='score-pill ${v>=9?'score-high':v>=8?'score-mid':'score-low'}'>${v?v.toFixed(1):'—'}</span></td>`; });
+    rowStr += `<td><b>${avg?avg.toFixed(2):'—'}</b></td></tr>`;
     return rowStr;
   }).join('');
 
   bodyHTML += `<tr style='background:var(--surface2);font-weight:700'><td style='text-align:left;' class='border-right-bold fixed-col'>Promedio General</td>`;
-  flat.forEach((d, idx) => { let isLast = dirEndIndices.has(idx); const avg = AVERAGES[DEPTS.indexOf(d)]; bodyHTML += "<td class='" + (isLast ? "border-right-bold" : "") + "'><span class='score-pill " + (avg>=9?'score-high':avg>=8?'score-mid':'score-low') + "'>" + (avg?avg.toFixed(2):'—') + "</span></td>"; });
-  bodyHTML += "<td><span style='color:var(--primary); font-weight:800; font-size:1.1em;'>" + (flat.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/flat.length).toFixed(2) + "</span></td></tr>";
+  flat.forEach((d, idx) => { let isLast = dirEndIndices.has(idx); const avg = AVERAGES[DEPTS.indexOf(d)]; bodyHTML += `<td class='${isLast ? "border-right-bold" : ""}'><span class='score-pill ${avg>=9?'score-high':avg>=8?'score-mid':'score-low'}'>${avg?avg.toFixed(2):'—'}</span></td>`; });
+  bodyHTML += `<td><span style='color:var(--primary); font-weight:800; font-size:1.1em;'>${(flat.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/flat.length).toFixed(2)}</span></td></tr>`;
   tbl.querySelector('tbody').innerHTML = bodyHTML;
 }
 
@@ -1592,10 +1306,7 @@ function renderParticipation(orderedDepts) {
        const ansCell = isReader ? ansVal : `<input type="number" class="part-input" data-dept="${escD}" data-type="ans" value="${ansVal}" min="0" onclick="event.stopPropagation()">`;
 
        const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, '-');
-       deptRowsHtml += "<tr class='dept-row row-" + safeDirId + "'>" +
-         "<td class='truncated' style='text-align:left; padding-left:32px; color:var(--muted); font-family:var(--font); font-weight:500;'>↳ <span class='part-text'>" + d + "</span></td>" +
-         "<td style='text-align:center; font-family:var(--font); font-weight:500;'>" + sentCell + "</td><td style='text-align:center; font-family:var(--font); font-weight:500;'>" + ansCell + "</td>" +
-         "<td><div style='display:flex; align-items:center; gap:10px; font-family:var(--font); font-weight:500;'><span style='min-width:38px; text-align:right; font-size:.7rem;'>" + pct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:6px;'><div class='kpi-bar-fill' style='width:" + pct + "%; background:" + deptColor(d) + "'></div></div></div></td></tr>";
+       deptRowsHtml += `<tr class='dept-row row-${safeDirId}'><td class='truncated' style='text-align:left; padding-left:32px; color:var(--muted); font-family:var(--font); font-weight:500;'>↳ <span class='part-text'>${d}</span></td><td style='text-align:center; font-family:var(--font); font-weight:500;'>${sentCell}</td><td style='text-align:center; font-family:var(--font); font-weight:500;'>${ansCell}</td><td><div style='display:flex; align-items:center; gap:10px; font-family:var(--font); font-weight:500;'><span style='min-width:38px; text-align:right; font-size:.7rem;'>${pct}%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:6px;'><div class='kpi-bar-fill' style='width:${pct}%; background:${deptColor(d)}'></div></div></div></td></tr>`;
     });
 
     calcGlobalSent += sumDirSent;
@@ -1612,11 +1323,7 @@ function renderParticipation(orderedDepts) {
     const dirSentCell = isReader ? dirSent : `<input type="number" class="part-input" style="background:var(--surface2); border-color:var(--border);" data-dept="${escDirKey}" data-type="sent" value="${dirSent}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
     const dirAnsCell = isReader ? dirAns : `<input type="number" class="part-input" style="background:var(--surface2); border-color:var(--border);" data-dept="${escDirKey}" data-type="ans" value="${dirAns}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
 
-    body += "<tr class='dir-row' onclick=\"toggleDir('" + safeDirId + "')\" style='background:var(--surface2);'>" +
-      "<td class='truncated' style='text-align:left;'><span class='toggle-arrow' id='arrow-" + safeDirId + "'>▶</span> <svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:3px'><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path></svg> <span class='part-text'>" + dir + "</span></td>" +
-      "<td style='text-align:center'>" + dirSentCell + "</td><td style='text-align:center'>" + dirAnsCell + "</td>" +
-      "<td><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-weight:700;'>" + dirPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px;'><div class='kpi-bar-fill' style='width:" + dirPct + "%; background:linear-gradient(90deg, var(--if-orange), var(--if-orange-light))'></div></div></div></td></tr>";
-
+    body += `<tr class='dir-row' onclick="toggleDir('${safeDirId}')" style='background:var(--surface2);'><td class='truncated' style='text-align:left;'><span class='toggle-arrow' id='arrow-${safeDirId}'>▶</span> <svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:3px'><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path></svg> <span class='part-text'>${dir}</span></td><td style='text-align:center'>${dirSentCell}</td><td style='text-align:center'>${dirAnsCell}</td><td><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-weight:700;'>${dirPct}%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px;'><div class='kpi-bar-fill' style='width:${dirPct}%; background:linear-gradient(90deg, var(--if-orange), var(--if-orange-light))'></div></div></div></td></tr>`;
     body += deptRowsHtml;
   }
 
@@ -1630,11 +1337,7 @@ function renderParticipation(orderedDepts) {
   const globSentCell = isReader ? globalSent : `<input type="number" class="part-input" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);" data-dept="${globKey}" data-type="sent" value="${globalSent}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
   const globAnsCell = isReader ? globalAns : `<input type="number" class="part-input" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);" data-dept="${globKey}" data-type="ans" value="${globalAns}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
 
-  body += "<tr style='background:#152130; font-family:var(--font-bold);'>" +
-      `<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path></svg> Total General</span></td>` +
-      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globSentCell + "</td>" +
-      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globAnsCell + "</td>" +
-      "<td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em; font-weight: 700;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td></tr></tbody>";
+  body += `<tr style='background:#152130; font-family:var(--font-bold);'><td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path></svg> Total General</span></td><td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>${globSentCell}</td><td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>${globAnsCell}</td><td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em; font-weight: 700;'>${globalPct}%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:${globalPct}%; background:#E07010'></div></div></div></td></tr></tbody>`;
   tbl.innerHTML = head + body;
 }
 
@@ -1710,13 +1413,13 @@ window.openInsights = async function() {
     } return null;
   }).filter(Boolean).join("\n");
 
-  var prompt = `Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.
+  var prompt = `Eres un analista experto de Servicio Interno y Externo y Clima Organizacional. Tu especialidad es interpretar evaluaciones donde departamentos/clientes califican el servicio que reciben de otras áreas de la misma empresa.
 
 CONTEXTO CLAVE:
-- Esto NO es una autoevaluación. Cada departamento fue calificado por las áreas con las que interactúa.
-- Un puntaje bajo significa que los clientes internos de ese departamento están frustrados.
-- Un puntaje alto significa que sus clientes internos lo reconocen como un facilitador.
-- Los comentarios son opiniones reales de otros departamentos hacia el evaluado.
+- Esto NO es una autoevaluación. Cada departamento fue calificado por las áreas/clientes con las que interactúa.
+- Un puntaje bajo significa frustración e insatisfacción.
+- Un puntaje alto significa que son reconocidos como facilitadores.
+- Los comentarios son opiniones reales de usuarios hacia el evaluado.
 - Una falla sistémica indica un proceso roto a nivel general.
 - Una polarización sugiere servicio inconsistente.
 
@@ -1729,7 +1432,7 @@ REGLAS DE ESCRITURA:
 
 ═══ DATOS DE LA EVALUACIÓN ═══
 PARTICIPACIÓN: ${partGlobal}
-NPS POR DEPARTAMENTO:
+NPS POR ÁREA:
 ${npsLines || "Sin datos."}
 
 RANKING DE SERVICIO:
@@ -1767,292 +1470,6 @@ Formato: SOLO HTML con <div class='insight-section-title'>, <div class='insight-
     content.style.display = 'block'; actions.style.display = 'flex';
   }
 };
-
-function handleFile(file){
-  showToast('⏳ Procesando...'); window.cachedAnalysisHTML = ""; window.cachedFilterKey = "";
-  const reader = new FileReader();
-  reader.onload = e => {
-    try{
-      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-      const s1 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, raw:true});
-      const hDir = s1[0] || [], hDept = s1[1] || [], newDepts = [], newDirs = new Set(), newMap = {}, vCols = [];
-      let curDir = "General";
-      
-      for(let c=1; c<hDept.length; c++){
-        if(hDir[c]) curDir = String(hDir[c]).trim();
-        if(hDept[c]){ const d = String(hDept[c]).trim(); newDepts.push(d); newMap[d] = curDir; newDirs.add(curDir); vCols.push({c, d}); }
-      }
-      
-      const nQ = [], nSc = [];
-      for(let r=2; r<s1.length; r++){
-        const row = s1[r]; if(!row || !row[0]) continue;
-        const vals = vCols.map(vc => {
-          const raw = row[vc.c];
-          if(raw === undefined || raw === null) return null;
-          const strVal = String(raw).trim().toUpperCase();
-          if(strVal === 'NA' || strVal === 'N/A' || strVal === '') return null;
-          const n = parseFloat(strVal.replace(',', '.'));
-          return isNaN(n) ? null : (n <= 1 ? n * 10 : n);
-        });
-        if(vals.some(v=>v!==null)){ nQ.push(String(row[0])); nSc.push(vals); }
-      }
-      
-      const nComm = {}; newDepts.forEach(d => nComm[d] = []);
-      if(wb.SheetNames.length > 1){
-        const s2 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]], {header:1});
-        const h2 = s2[1]||[];
-        for(let r=2; r<s2.length; r++){
-          const row = s2[r]; if(!row) continue;
-          for(let c=0; c<h2.length; c++){
-            if(row[c] && h2[c]){ const d = String(h2[c]).trim(); const target=newDepts.find(x=>x.toLowerCase()===d.toLowerCase()); if(target) nComm[target].push(String(row[c])); }
-          }
-        }
-      }
-
-      const nPart = {};
-      if(wb.SheetNames.length > 2){
-        const s3 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]], {header:1, defval:null});
-        const hDept3 = s3[1] || [], rowSent = s3[2] || [], rowAns = s3[3] || [];
-        for(let c=1; c<hDept3.length; c++){
-          if(hDept3[c]){
-            const dName = String(hDept3[c]).trim();
-            const target = newDepts.find(x=>x.toLowerCase()===dName.toLowerCase());
-            if(target) nPart[target] = { sent: parseInt(rowSent[c]) || 0, ans: parseInt(rowAns[c]) || 0 };
-          }
-        }
-      }
-
-      wb.SheetNames.forEach(sheetName => {
-        const snLower = sheetName.toLowerCase().trim();
-        let prefix = null;
-        if (snLower === 'peticiones resultas' || snLower === 'peticiones resueltas') prefix = '[PET_RES] ';
-        else if (snLower === 'peticiones no resultas' || snLower === 'peticiones no resueltas') prefix = '[PET_NO_RES] ';
-        if (prefix) {
-          const sPet = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1});
-          const hDeptPet = sPet[1] || [];
-          for(let r=2; r<sPet.length; r++){
-            const row = sPet[r]; if(!row) continue;
-            for(let c=0; c<hDeptPet.length; c++){
-              if(row[c] && hDeptPet[c]){
-                const dName = String(hDeptPet[c]).trim();
-                const target = newDepts.find(x => x.toLowerCase() === dName.toLowerCase());
-                if(target) nComm[target].push(prefix + String(row[c]));
-              }
-            }
-          }
-        }
-      });
-
-      document.getElementById('importModal').classList.remove('open');
-      rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name);
-      showToast('Datos cargados con éxito','ok');
-    } catch(err){ console.error(err); showToast('Error al leer el Excel', 'err'); }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
-  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
-  REPORT_DATE = new Date();
-  injectDirectionAverages(); 
-  document.getElementById('dashTitle').textContent = appMode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno";
-  activeDirs.clear(); activeDirs.add('Todas'); activeDepts.clear(); activeDepts.add('Todos');
-  saveState();
-  initDashboard(); 
-}
-
-async function generateReaderLink(){
-  const rawId = document.getElementById('customIdInput').value.trim();
-  if(!rawId) { showToast('Escribe un nombre para el enlace', 'err'); return; }
-  
-  const customId = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
-  if(!customId) { showToast('Usa letras o números válidos', 'err'); return; }
-
-  if (!firebase.auth().currentUser) {
-      showToast('Tu sesión expiró. Recarga la página e ingresa de nuevo.', 'err');
-      return;
-  }
-
-  const btn = document.getElementById('btnOpenReader');
-  btn.textContent='Subiendo a la nube…'; btn.disabled=true;
-
-  try {
-    saveState();
-    const payload = {
-      store: JSON.stringify(store),
-      logoLeft: CUSTOM_LOGO_LEFT || "", 
-      logoRight: CUSTOM_LOGO_RIGHT || "",
-      appMode: appMode
-    };
-    
-    await window.db.collection("reportes").doc(customId).set(payload);
-    
-    const baseURL = window.location.href.split('?')[0];
-    const link = baseURL + '?mode=reader&id=' + customId;
-    
-    document.getElementById('linkInput').value = link;
-    btn.textContent='Abrir →'; btn.disabled=false; btn.onclick=()=>window.open(link,'_blank');
-    navigator.clipboard.writeText(link).catch(()=>{});
-    showToast('Actualizado en la nube y copiado','ok');
-  } catch(err){ 
-    console.error("Error detallado de Firebase:", err);
-    btn.textContent='Guardar en la nube →'; btn.disabled=false; 
-    alert("DETALLE DEL ERROR DE FIREBASE:\n\n" + err.message + "\n\nSi el problema persiste, toma captura de esta ventana.");
-    showToast('Revisa la alerta con el error', 'err'); 
-  }
-}
-
-async function tryLoadFromURL(){
-  const params = new URLSearchParams(window.location.search);
-  if(params.get('mode') !== 'reader') return false;
-  const reportId = params.get('id');
-  if(!reportId) return false;
-
-  document.body.classList.add('reader-mode');
-  const loader = document.createElement('div');
-  loader.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;';
-  loader.innerHTML = '<div class="share-spinner"></div><p style="font-family:var(--font);font-weight:500;font-size:.85rem;color:var(--muted);">Descargando reporte seguro…</p>';
-  document.body.appendChild(loader);
-
-  try {
-    const docSnap = await window.db.collection("reportes").doc(reportId).get();
-    if(docSnap.exists){
-      const raw = docSnap.data();
-      
-      if(raw.store) {
-          store = JSON.parse(raw.store);
-          if(store.interno.REPORT_DATE) store.interno.REPORT_DATE = new Date(store.interno.REPORT_DATE);
-          if(store.externo.REPORT_DATE) store.externo.REPORT_DATE = new Date(store.externo.REPORT_DATE);
-      } else {
-          let oldDirs = ['General'];
-          let oldDeptMap = {};
-          let oldDepts = typeof raw.depts === 'string' ? JSON.parse(raw.depts) : raw.depts;
-          
-          if(raw.dirs && raw.deptMap) {
-              oldDirs = typeof raw.dirs === 'string' ? JSON.parse(raw.dirs) : raw.dirs;
-              oldDeptMap = typeof raw.deptMap === 'string' ? JSON.parse(raw.deptMap) : raw.deptMap;
-          } else {
-              if(oldDepts) oldDepts.forEach(d => oldDeptMap[d] = 'General');
-          }
-          
-          store.interno = {
-              DIRS: oldDirs,
-              DEPTS: oldDepts || [],
-              DEPT_TO_DIR: oldDeptMap,
-              QUESTIONS: typeof raw.qs === 'string' ? JSON.parse(raw.qs) : (raw.qs || []),
-              SCORES: typeof raw.scores === 'string' ? JSON.parse(raw.scores) : (raw.scores || []),
-              AVERAGES: [], 
-              COMMENTS: typeof raw.comments === 'string' ? JSON.parse(raw.comments) : (raw.comments || {}),
-              PARTICIPATION: typeof raw.participation === 'string' ? JSON.parse(raw.participation) : (raw.participation || {}),
-              NPS_DATA: typeof raw.nps === 'string' ? JSON.parse(raw.nps) : (raw.nps || {}),
-              REPORT_DATE: raw.timestamp ? new Date(raw.timestamp) : new Date(),
-              fileName: raw.title || "Servicio Interno"
-          };
-          
-          DIRS = store.interno.DIRS;
-          DEPTS = store.interno.DEPTS;
-          DEPT_TO_DIR = store.interno.DEPT_TO_DIR;
-          SCORES = store.interno.SCORES;
-          injectDirectionAverages();
-          store.interno.DEPTS = DEPTS;
-          store.interno.SCORES = SCORES;
-          store.interno.AVERAGES = AVERAGES;
-      }
-      
-      if(raw.logoLeft) CUSTOM_LOGO_LEFT = raw.logoLeft; 
-      if(raw.logoRight) CUSTOM_LOGO_RIGHT = raw.logoRight;
-      if(raw.appMode) appMode = raw.appMode;
-
-      loader.remove(); 
-      initDashboard(); 
-      return true;
-    } else { throw new Error("No existe"); }
-  } catch(err){ 
-      loader.innerHTML = '<p style="font-family:var(--font);font-weight:600;color:var(--danger);font-size:.9rem;padding:20px;text-align:center;">No se pudo cargar el dashboard. El enlace puede estar roto o expirado.</p>'; 
-      return true; 
-  }
-}
-
-function renderPeticiones(depts) {
-  const deptArr = Array.isArray(depts) ? depts : [depts];
-  let resueltas = [];
-  let noResueltas = [];
-  
-  const isMeaningful = (text) => {
-      const t = text.toLowerCase()
-          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
-          .replace(/[^a-z0-9\s]/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim();
-
-      if (t.length <= 1) return false; 
-      
-      const junk = [
-          'na', 'n a', 'no aplica', 'sin comentario', 'sin comentarios', 
-          'sin observacion', 'sin observaciones', 'desconozco', 'ignoro', 
-          'ningun comentario', 'no tengo comentarios'
-      ];
-      
-      if (junk.includes(t)) return false;
-      return true;
-  };
-
-  deptArr.forEach(d => {
-      (COMMENTS[d]||[]).forEach(c => {
-          if (c.startsWith('[PET_RES]')) {
-              const text = c.replace(/^\[PET_RES\]\s*/, '');
-              if (isMeaningful(text)) resueltas.push({text, dept: d});
-          }
-          else if (c.startsWith('[PET_NO_RES]')) {
-              const text = c.replace(/^\[PET_NO_RES\]\s*/, '');
-              if (isMeaningful(text)) noResueltas.push({text, dept: d});
-          }
-      });
-  });
-
-  const card = document.getElementById('peticionesCard');
-  if (resueltas.length === 0 && noResueltas.length === 0) {
-      card.style.display = 'none';
-      return;
-  }
-  card.style.display = 'flex';
-
-  const isPositive = (text) => {
-      const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
-      
-      if (t.includes('todo bien') || t.includes('todo en orden') || t.includes('todo super') || t.includes('todo al 100') || t.includes('todo perfecto') || t.includes('excelente') || t.includes('todo excelente') || t.includes('bien')) return true;
-      if (t.includes('todas resueltas') || t.includes('han sido resueltas') || t.includes('todo se resuelve') || t.includes('siempre resuelven') || t.includes('siempre se resuelven') || t.includes('todo lo resuelven') || t.includes('siempre atienden') || t.includes('mayoria')) return true;
-      if (t.includes('sin problema') || t.includes('ningun problema') || t.includes('ninguna queja') || t.includes('sin inconveniente') || t.includes('ningun inconveniente')) return true;
-      if (t.match(/^(ninguna|ninguno|nada)( por el momento| hasta el momento| hasta ahorita| al momento)?$/)) return true;
-      if (t === 'ninguna' || t === 'ninguno' || t === 'nada') return true;
-      if (t.includes('hasta ahorita ninguna') || t.includes('al momento se han atendido') || t.includes('se le ha dado seguimiento') || t.includes('se le a dado seguimiento')) return true;
-
-      return false;
-  };
-  
-  const total = resueltas.length + noResueltas.length;
-  let favorables = resueltas.length; 
-  
-  noResueltas.forEach(c => {
-      if (isPositive(c.text)) favorables++;
-  });
-  
-  const pct = total > 0 ? Math.round((favorables / total) * 100) : 0;
-  
-  const subtitle = document.getElementById('petSubtitle');
-  if (subtitle) {
-      let clientText = appMode === 'externo' ? 'clientes' : 'clientes internos';
-      subtitle.innerHTML = `De <b>${total}</b> respuestas de ${clientText}, <b>${favorables}</b> son favorables (indican qué resuelven o que no hay quejas), logrando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron N/A o sin comentarios)</span>`;
-  }
-  
-  const renderList = (arr) => {
-      if (arr.length === 0) return '<div class="no-comments" style="padding:24px;">Ninguna respuesta registrada.</div>';
-      return arr.map(c => "<div class='comment-item' style='--al:" + deptColor(c.dept) + "; margin-bottom:12px;'>" + (deptArr.length > 1 ? "<strong style='display:block; margin-bottom:4px; font-size:0.75rem; text-transform:uppercase; color:var(--muted);'>" + c.dept + "</strong>" : "") + c.text + "</div>").join('');
-  };
-
-  document.getElementById('petResList').innerHTML = renderList(resueltas);
-  document.getElementById('petNoResList').innerHTML = renderList(noResueltas);
-}
 
 (async ()=>{
   while(!window.db) { await new Promise(r => setTimeout(r, 50)); }
