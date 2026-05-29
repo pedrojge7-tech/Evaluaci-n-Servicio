@@ -858,12 +858,31 @@ async function doLogin(){
 }
 
 let isInitialized = false;
+function updateHamburgerVisibility() {
+  const hasInterno = store.interno.DEPTS.length > 0;
+  const hasExterno = store.externo.DEPTS.length > 0;
+  const hamburger = document.getElementById('btnHamburger');
+  if (hasInterno && hasExterno) {
+    // Ambos módulos tienen datos: mostrar hamburguesa normalmente
+    hamburger.style.display = '';
+  } else {
+    // Solo un módulo tiene datos: ocultar hamburguesa y forzar ese modo
+    hamburger.style.display = 'none';
+    if (hasExterno && !hasInterno && appMode !== 'externo') {
+      appMode = 'externo';
+    } else if (hasInterno && !hasExterno && appMode !== 'interno') {
+      appMode = 'interno';
+    }
+  }
+}
+
 function initDashboard(){
   if(!isInitialized) {
       wireButtons();
       applyCustomLogos();
       isInitialized = true;
   }
+  updateHamburgerVisibility();
   loadState(); 
   document.getElementById('modeInterno').classList.toggle('active', appMode === 'interno');
   document.getElementById('modeExterno').classList.toggle('active', appMode === 'externo');
@@ -1509,13 +1528,36 @@ function renderLineChart(orderedDepts, activeQIndices){
 function renderRankingList(orderedDepts, activeQIndices){
   const list = document.getElementById('rankList');
   if(!orderedDepts.length || !activeQIndices.length) { list.innerHTML=''; return; }
-  
+
+  // Para modo externo con un solo cliente: mostrar resultado único sin comparación mejor/peor
+  const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
+  const isSingleExternoClient = appMode === 'externo' && realDepts.length === 1;
+
+  // Actualizar subtítulo según el caso
+  const rankCard = list.closest('.chart-card');
+  const rankSub = rankCard ? rankCard.querySelector('.chart-sub') : null;
+  if (rankSub) {
+    rankSub.textContent = isSingleExternoClient
+      ? 'Resultado de ' + realDepts[0] + ' en cada pregunta'
+      : 'Mejor \u2191 y peor \u2193 evaluado en cada pregunta';
+  }
+
   list.innerHTML = activeQIndices.map(qi => {
     const q = QUESTIONS[qi];
     const vals = orderedDepts.map(d => ({d, v: SCORES[qi][DEPTS.indexOf(d)]})).filter(x=>x.v!==null && x.v!==undefined && !isNaN(x.v)).sort((a,b)=>b.v-a.v);
     if(!vals.length) return '';
+
+    if (isSingleExternoClient) {
+      const sole = vals[0];
+      const scoreColor = sole.v >= 9 ? 'var(--success)' : sole.v >= 7 ? 'var(--if-orange)' : 'var(--danger)';
+      return "<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>" + q + "</span></div>" +
+        "<div class='rank-badges'><div class='rank-badge' style='background:rgba(0,0,0,0.03); border:1.5px solid var(--border); flex:1; justify-content:space-between;'>" +
+        "<div class='rb-name-wrap'><span class='rb-name-inner' style='color:var(--if-navy); font-weight:700;'>" + sole.d + "</span></div>" +
+        "<span style='font-weight:900; font-size:1.05rem; color:" + scoreColor + ";'>" + sole.v.toFixed(1) + "</span></div></div></div>";
+    }
+
     const best = vals[0], worst = vals[vals.length-1];
-    return "<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>" + q + "</span></div><div class='rank-badges'><div class='rank-badge badge-best'><span>↑</span><div class='rb-name-wrap'><span class='rb-name-inner'>" + best.d + "</span></div><span>" + best.v.toFixed(1) + "</span></div><div class='rank-badge badge-worst'><span>↓</span><div class='rb-name-wrap'><span class='rb-name-inner'>" + worst.d + "</span></div><span>" + worst.v.toFixed(1) + "</span></div></div></div>";
+    return "<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>" + q + "</span></div><div class='rank-badges'><div class='rank-badge badge-best'><span>\u2191</span><div class='rb-name-wrap'><span class='rb-name-inner'>" + best.d + "</span></div><span>" + best.v.toFixed(1) + "</span></div><div class='rank-badge badge-worst'><span>\u2193</span><div class='rb-name-wrap'><span class='rb-name-inner'>" + worst.d + "</span></div><span>" + worst.v.toFixed(1) + "</span></div></div></div>";
   }).join('');
 }
 
