@@ -862,11 +862,18 @@ function updateHamburgerVisibility() {
   const hasInterno = store.interno.DEPTS.length > 0;
   const hasExterno = store.externo.DEPTS.length > 0;
   const hamburger = document.getElementById('btnHamburger');
+  const isReader = document.body.classList.contains('reader-mode');
+
+  if (!isReader) {
+    // Modo admin: hamburguesa siempre visible
+    hamburger.style.display = '';
+    return;
+  }
+
+  // Modo lector: ocultar si solo un módulo tiene datos y forzar ese modo
   if (hasInterno && hasExterno) {
-    // Ambos módulos tienen datos: mostrar hamburguesa normalmente
     hamburger.style.display = '';
   } else {
-    // Solo un módulo tiene datos: ocultar hamburguesa y forzar ese modo
     hamburger.style.display = 'none';
     if (hasExterno && !hasInterno && appMode !== 'externo') {
       appMode = 'externo';
