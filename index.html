@@ -507,9 +507,10 @@ tbody td:first-child { text-align: left; }
     <p>Sube tu archivo Excel. El dashboard se regenerará automáticamente.</p>
     <div class="import-hint">
       <strong><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:5px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg> Estructura esperada</strong><br>
-      <b>Hoja 1 (Puntajes):</b> F1=Direcciones, F2=Departamentos, A3=Preguntas.<br>
-      <b>Hoja 2 (Comentarios):</b> F1=Direcciones, F2=Departamentos, F3+=Comentarios.<br>
-      <b>Hoja 3 (Participación):</b> F1=Dir, F2=Deptos, F3=Enviados, F4=Contestaron.
+      <b>"Pregunta porcentaje":</b> F1=Direcciones, F2=Departamentos, A3+=Preguntas numéricas.<br>
+      <b>"Comentarios":</b> F1=Direcciones, F2=Departamentos, F3+=Comentarios.<br>
+      <b>"respuestas":</b> F1=Dir, F2=Deptos, F3=Enviados, F4=Contestaron.<br>
+      <b>"preguntas abiertas":</b> F2=Departamentos, A3+=Texto pregunta, resto=Respuestas.
     </div>
     <div class="dropzone" id="dropzone">
       <input type="file" accept=".xlsx,.xls" id="fileInput">
@@ -683,10 +684,24 @@ tbody td:first-child { text-align: left; }
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
           Preguntas Abiertas
         </div>
-        <div class="chart-sub">Respuestas cualitativas de la Hoja 1 · No cuantificables pero igualmente valiosas</div>
+        <div class="chart-sub">Respuestas de la hoja "preguntas abiertas" · Clasificadas automáticamente con tabla y gráfica</div>
       </div>
     </div>
     <div id="openQTabs" class="open-q-tabs"></div>
+    <div id="openQChartArea" style="display:none; margin-bottom:28px;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;">
+        <div>
+          <div style="font-weight:800; font-size:.85rem; color:var(--if-navy); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px;">Distribución de Clasificaciones</div>
+          <div style="position:relative; max-width:320px; margin:0 auto;"><canvas id="openQDonutChart"></canvas></div>
+        </div>
+        <div>
+          <div style="font-weight:800; font-size:.85rem; color:var(--if-navy); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px;">Tabla de Clasificaciones</div>
+          <div class="table-wrapper" style="max-height:320px; overflow-y:auto;">
+            <table id="openQClassTable" style="width:100%; font-size:.8rem;"><thead></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="openQContent" class="open-q-content"></div>
   </div>
 </main>
@@ -724,7 +739,7 @@ let CUSTOM_LOGO_RIGHT = null;
 
 let activeDirs = new Set(['Todas']);
 let activeDepts = new Set(['Todos']);
-let barChart, lineChart, commentsChart;
+let barChart, lineChart, commentsChart, openQDonutChart;
 window.selectedLineIdx = null;
 
 window.cachedAnalysisHTML = "";
@@ -1854,20 +1869,68 @@ Formato: SOLO HTML con <div class='insight-section-title'>, <div class='insight-
   }
 };
 
+// ── Clasificador de 40 categorías para preguntas abiertas ──────────────────
+function classifyOpenResponse(text) {
+  if(!text || text.trim() === '') return 'Sin clasificar';
+  const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+  const r = text.toLowerCase();
+
+  if(r.match(/precio|caro|barato|costo|tarifa|cobro|factura|pago|descuento|oferta|promocion|promo/)) return 'Precio y Costos';
+  if(r.match(/calidad|malo|defecto|daño|roto|falla|producto|durabilidad|material/)) return 'Calidad del Producto/Servicio';
+  if(r.match(/tiempo|tard|rapido|lento|espera|demora|urgente|agilidad|pronto/)) return 'Tiempos de Respuesta';
+  if(r.match(/atencion|trato|amable|grosero|groser|empatia|actitud|disposicion|cordial|servicio al cliente/)) return 'Atención al Cliente';
+  if(r.match(/entrega|envio|transporte|logistica|ruta|chofer|paquete|pedido|llego|llegada/)) return 'Entrega y Logística';
+  if(r.match(/sistema|plataforma|portal|app|aplicacion|pagina|web|software|tecnologia|internet|falla tecnica/)) return 'Plataforma y Tecnología';
+  if(r.match(/comunicacion|informacion|aviso|notificacion|correo|llamada|contacto|respuesta|seguimiento/)) return 'Comunicación e Información';
+  if(r.match(/surtido|variedad|opciones|seleccion|catalogo|producto disponible|inventario|existencias/)) return 'Variedad y Disponibilidad';
+  if(r.match(/instalacion|sucursal|tienda|local|ubicacion|acceso|estacionamiento|ambiente|limpieza|espacio/)) return 'Instalaciones y Ubicación';
+  if(r.match(/facilidad|proceso|tramite|complicado|sencillo|rapido de hacer|paso|burocracia/)) return 'Facilidad del Proceso';
+  if(r.match(/garantia|devolucion|cambio|reembolso|reclamacion|queja|reclamo/)) return 'Garantías y Devoluciones';
+  if(r.match(/personal|staff|empleado|vendedor|cajero|asesor|agente|trabajador/)) return 'Personal y Colaboradores';
+  if(r.match(/confianza|seguro|seguridad|privacidad|datos|fraude|robo/)) return 'Confianza y Seguridad';
+  if(r.match(/horario|horarios|abierto|cerrado|disponibilidad|hora/)) return 'Horarios y Disponibilidad';
+  if(r.match(/experiencia|visita|compra|servicio|uso|utilizar|recibir/)) return 'Experiencia General';
+  if(r.match(/recomendaria|recomendar|volveria|volver|regresaria|regresar|lealtad|fidelidad/)) return 'Fidelización y Recomendación';
+  if(r.match(/mejora|mejorar|sugerencia|propuesta|cambiar|oportunidad|deberian/)) return 'Sugerencias de Mejora';
+  if(r.match(/promocion|marketing|publicidad|anuncio|campaña|redes sociales/)) return 'Promoción y Marketing';
+  if(r.match(/innovacion|nuevo|tecnologia nueva|moderno|actualizar|renovar/)) return 'Innovación y Modernización';
+  if(r.match(/capacitacion|conocimiento|experto|preparado|entrenamiento|saber/)) return 'Capacitación y Expertise';
+  if(r.match(/competencia|competidor|otra empresa|comparar|mejor que|peor que/)) return 'Comparativa con Competencia';
+  if(r.match(/accesibilidad|discapacidad|especial|necesidad especial|rampas|inclusiv/)) return 'Accesibilidad e Inclusión';
+  if(r.match(/sostenibilidad|ecologico|ambiente|reciclaje|sustentable|verde|medio ambiente/)) return 'Sostenibilidad y Medio Ambiente';
+  if(r.match(/empaque|embalaje|presentacion|envoltorio|bolsa|caja/)) return 'Empaque y Presentación';
+  if(r.match(/postventa|soporte|asistencia|ayuda|apoyo|atencion post/)) return 'Servicio Postventa y Soporte';
+  if(r.match(/digital|en linea|online|virtual|electronico|movil|celular/)) return 'Canales Digitales';
+  if(r.match(/descuento|precio especial|beneficio|recompensa|puntos|programa de lealtad/)) return 'Beneficios y Fidelización';
+  if(r.match(/espera en caja|fila|cola|turno|numero/)) return 'Filas y Tiempos de Espera';
+  if(r.match(/sabor|olor|aroma|textura|apariencia|presentacion del producto/)) return 'Características Sensoriales';
+  if(r.match(/cumplimiento|promesa|palabra|acuerdo|contrato|compromiso/)) return 'Cumplimiento de Promesas';
+  if(r.match(/facturacion|comprobante|recibo|ticket|nota|fiscalmente/)) return 'Facturación y Comprobantes';
+  if(r.match(/flexibilidad|adaptacion|personalizado|a medida|especifico/)) return 'Flexibilidad y Personalización';
+  if(r.match(/relacion|vinculo|trato personal|cercanía|calidez|humanizado/)) return 'Relación y Calidez';
+  if(r.match(/nada|ninguno|ninguna|sin comentarios|todo bien|ok|bien|excelente|muy bien|todo correcto/)) return 'Satisfacción General';
+  if(r.match(/capacidad|volumen|cantidad|carga|mas producto|mas opciones/)) return 'Capacidad y Volumen';
+  if(r.match(/coordinacion|organizacion|planeacion|orden|estructura/)) return 'Coordinación y Organización';
+  if(r.match(/retraso|cancelacion|cancelar|no llego|no vino|no cumplió/)) return 'Retrasos y Cancelaciones';
+  if(r.match(/novedad|estreno|lanzamiento|nuevo producto|nuevo servicio/)) return 'Novedades y Lanzamientos';
+  if(r.match(/precio justo|valor|relacion calidad precio|vale la pena/)) return 'Relación Calidad-Precio';
+  if(t.length > 3) return 'Otras Observaciones';
+  return 'Sin clasificar';
+}
+
 function renderOpenQuestions(orderedDepts) {
   const card = document.getElementById('openQuestionsCard');
   const tabsEl = document.getElementById('openQTabs');
   const contentEl = document.getElementById('openQContent');
+  const chartArea = document.getElementById('openQChartArea');
 
-  // Solo aplica en modo externo y si hay preguntas abiertas
-  if (appMode !== 'externo' || !OPEN_QUESTIONS || Object.keys(OPEN_QUESTIONS).length === 0) {
+  if (!OPEN_QUESTIONS || Object.keys(OPEN_QUESTIONS).length === 0) {
     card.style.display = 'none';
     return;
   }
 
   const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
 
-  // Filtrar solo preguntas que tengan al menos una respuesta en los deptos activos
   const activeQuestions = Object.keys(OPEN_QUESTIONS).filter(q =>
     realDepts.some(d => OPEN_QUESTIONS[q][d] && OPEN_QUESTIONS[q][d].length > 0)
   );
@@ -1882,43 +1945,140 @@ function renderOpenQuestions(orderedDepts) {
 
   const showQuestion = (qLabel) => {
     document.querySelectorAll('.open-q-tab').forEach(t => t.classList.remove('active'));
-    const activeTab = tabsEl.querySelector('[data-q="' + CSS.escape(qLabel) + '"]');
-    if (activeTab) activeTab.classList.add('active');
+    const activeTab = tabsEl.querySelector('[data-oq]');
+    document.querySelectorAll('.open-q-tab').forEach(t => { if(t.dataset.oq === qLabel) t.classList.add('active'); });
 
     const deptData = OPEN_QUESTIONS[qLabel] || {};
-    let html = '';
 
+    // Recopilar todas las respuestas del filtro activo
+    const allResponses = []; // { text, dept }
     realDepts.forEach(d => {
-      const responses = deptData[d];
-      if (!responses || responses.length === 0) return;
-      const col = deptColor(d);
-      html += `<div class="open-q-dept-block">
-        <div class="open-q-dept-header">
-          <div class="open-q-dept-dot" style="background:${col};"></div>
-          <span class="open-q-dept-name">${d}</span>
-          <span class="open-q-dept-count">${responses.length} respuesta${responses.length !== 1 ? 's' : ''}</span>
-        </div>
-        <div class="open-q-responses">
-          ${responses.map(r => `<div class="open-q-response-item" style="--oq-col:${col};">${r}</div>`).join('')}
-        </div>
-      </div>`;
+      (deptData[d] || []).forEach(txt => allResponses.push({ text: txt, dept: d }));
     });
 
-    if (!html) html = '<div class="no-comments">Sin respuestas para la selección actual.</div>';
-    contentEl.innerHTML = html;
+    if(allResponses.length === 0) {
+      chartArea.style.display = 'none';
+      contentEl.innerHTML = '<div class="no-comments">Sin respuestas para la selección actual.</div>';
+      return;
+    }
+
+    // ── Clasificar ─────────────────────────────────────────────────────
+    const catCounts = {};
+    allResponses.forEach(r => {
+      const cat = classifyOpenResponse(r.text);
+      catCounts[cat] = (catCounts[cat] || 0) + 1;
+    });
+    const sortedCats = Object.keys(catCounts).sort((a,b) => catCounts[b] - catCounts[a]);
+
+    // ── Gráfica de Dona ────────────────────────────────────────────────
+    chartArea.style.display = 'block';
+    if(openQDonutChart) openQDonutChart.destroy();
+    const donutPalette = ['#E07010','#1E3347','#10B981','#F59E0B','#3B82F6','#8B5CF6','#EF4444','#06B6D4','#84CC16','#F97316','#2C4560','#D68940','#7A8D9E','#152130','#B8C4CE'];
+    const donutCtx = document.getElementById('openQDonutChart').getContext('2d');
+    openQDonutChart = new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: sortedCats,
+        datasets: [{
+          data: sortedCats.map(c => catCounts[c]),
+          backgroundColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length] + 'CC'),
+          borderColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length]),
+          borderWidth: 2,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '62%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.label}: ${ctx.parsed} respuesta${ctx.parsed !== 1 ? 's' : ''}`
+            }
+          }
+        }
+      }
+    });
+
+    // ── Tabla de clasificaciones ───────────────────────────────────────
+    const tbl = document.getElementById('openQClassTable');
+    let tHead = `<thead><tr>
+      <th style="text-align:left; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border);">Clasificación</th>
+      <th style="text-align:center; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border);">Respuestas</th>
+      <th style="text-align:left; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border); width:40%;">Distribución</th>
+    </tr></thead>`;
+    const maxCount = catCounts[sortedCats[0]] || 1;
+    let tBody = '<tbody>';
+    sortedCats.forEach((cat, i) => {
+      const cnt = catCounts[cat];
+      const pct = Math.round((cnt / allResponses.length) * 100);
+      const barColor = donutPalette[i % donutPalette.length];
+      tBody += `<tr>
+        <td style="padding:10px 14px; font-weight:600; font-size:.8rem; color:var(--if-navy); border-bottom:1px solid var(--surface2); text-align:left;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${barColor}; margin-right:8px; flex-shrink:0;"></span>${cat}
+        </td>
+        <td style="padding:10px 14px; font-weight:700; text-align:center; border-bottom:1px solid var(--surface2); color:var(--if-navy);">${cnt}</td>
+        <td style="padding:10px 14px; border-bottom:1px solid var(--surface2);">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="flex-grow:1; height:6px; background:var(--surface2); border-radius:10px; overflow:hidden;">
+              <div style="width:${pct}%; height:100%; background:${barColor}; border-radius:10px;"></div>
+            </div>
+            <span style="font-size:.7rem; font-weight:700; color:var(--muted); min-width:30px;">${pct}%</span>
+          </div>
+        </td>
+      </tr>`;
+    });
+    tBody += '</tbody>';
+    tbl.innerHTML = tHead + tBody;
+
+    // ── Lista de respuestas agrupadas por departamento ─────────────────
+    let listHtml = '';
+    if(realDepts.length > 1) {
+      realDepts.forEach(d => {
+        const resps = deptData[d];
+        if(!resps || resps.length === 0) return;
+        const col = deptColor(d);
+        listHtml += `<div style="font-weight:900; font-size:1rem; color:var(--if-orange); margin-top:20px; margin-bottom:8px; border-bottom:2px solid var(--if-orange); padding-bottom:4px; text-transform:uppercase;">${d}</div>`;
+        resps.forEach(txt => {
+          const cat = classifyOpenResponse(txt);
+          listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">
+            <span style="display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:2px 8px; font-size:.68rem; font-weight:700; color:var(--muted); margin-bottom:6px;">${cat}</span>
+            <div>${txt}</div>
+          </div>`;
+        });
+      });
+    } else {
+      const d = realDepts[0];
+      const resps = deptData[d] || [];
+      // Agrupar por categoría
+      const grouped = {};
+      resps.forEach(txt => {
+        const cat = classifyOpenResponse(txt);
+        if(!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(txt);
+      });
+      const col = deptColor(d);
+      Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length).forEach(cat => {
+        listHtml += `<div style="font-weight:800; font-size:.82rem; color:var(--if-navy); text-transform:uppercase; letter-spacing:.05em; margin-top:16px; border-bottom:2px solid var(--surface2); padding-bottom:4px; margin-bottom:8px;">${cat} (${grouped[cat].length})</div>`;
+        grouped[cat].forEach(txt => {
+          listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">${txt}</div>`;
+        });
+      });
+    }
+    contentEl.innerHTML = listHtml || '<div class="no-comments">Sin respuestas para la selección actual.</div>';
   };
 
-  // Crear tabs por cada pregunta
+  // Crear tabs por cada pregunta activa
   activeQuestions.forEach((qLabel, i) => {
     const btn = document.createElement('button');
     btn.className = 'open-q-tab' + (i === 0 ? ' active' : '');
-    btn.setAttribute('data-q', qLabel);
+    btn.dataset.oq = qLabel;
     btn.textContent = qLabel;
     btn.onclick = () => showQuestion(qLabel);
     tabsEl.appendChild(btn);
   });
 
-  // Mostrar la primera por defecto
   showQuestion(activeQuestions[0]);
 }
 
@@ -1928,49 +2088,43 @@ function handleFile(file){
   reader.onload = e => {
     try{
       const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-      const s1 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, raw:true});
+
+      // Buscar hojas por nombre (insensible a mayúsculas y espacios)
+      const findSheet = (name) => {
+        const norm = n => n.toLowerCase().trim();
+        const match = wb.SheetNames.find(sn => norm(sn) === norm(name));
+        return match ? wb.Sheets[match] : null;
+      };
+
+      // ── HOJA "Pregunta porcentaje" ──────────────────────────────────────
+      const sheetPct = findSheet('Pregunta porcentaje');
+      if(!sheetPct) throw new Error('No se encontró la hoja "Pregunta porcentaje".');
+      const s1 = XLSX.utils.sheet_to_json(sheetPct, {header:1, raw:true});
       const hDir = s1[0] || [], hDept = s1[1] || [], newDepts = [], newDirs = new Set(), newMap = {}, vCols = [];
       let curDir = "General";
-      
       for(let c=1; c<hDept.length; c++){
         if(hDir[c]) curDir = String(hDir[c]).trim();
         if(hDept[c]){ const d = String(hDept[c]).trim(); newDepts.push(d); newMap[d] = curDir; newDirs.add(curDir); vCols.push({c, d}); }
       }
-      
-      const nQ = [], nSc = [], nOpenQ = {};
+      const nQ = [], nSc = [];
       for(let r=2; r<s1.length; r++){
         const row = s1[r]; if(!row || !row[0]) continue;
-        const rawVals = vCols.map(vc => {
+        const vals = vCols.map(vc => {
           const raw = row[vc.c];
-          if(raw === undefined || raw === null) return { num: null, txt: null };
-          const strVal = String(raw).trim();
-          if(strVal.toUpperCase() === 'NA' || strVal.toUpperCase() === 'N/A' || strVal === '') return { num: null, txt: null };
+          if(raw === undefined || raw === null) return null;
+          const strVal = String(raw).trim().toUpperCase();
+          if(strVal === 'NA' || strVal === 'N/A' || strVal === '') return null;
           const n = parseFloat(strVal.replace(',', '.'));
-          if(!isNaN(n)) return { num: n <= 1 ? n * 10 : n, txt: null };
-          return { num: null, txt: strVal };
+          return isNaN(n) ? null : (n <= 1 ? n * 10 : n);
         });
-        const numVals = rawVals.map(v => v.num);
-        const hasAnyNum = numVals.some(v => v !== null);
-        const hasAnyTxt = rawVals.some(v => v.txt !== null);
-        // Si tiene al menos un valor numérico → pregunta cuantitativa normal
-        if(hasAnyNum){ nQ.push(String(row[0])); nSc.push(numVals); }
-        // Si solo tiene texto (ningún número) y hay al menos una respuesta → pregunta abierta
-        else if(hasAnyTxt){
-          const qLabel = String(row[0]);
-          if(!nOpenQ[qLabel]) nOpenQ[qLabel] = {};
-          rawVals.forEach((v, idx) => {
-            if(v.txt !== null){
-              const dName = vCols[idx].d;
-              if(!nOpenQ[qLabel][dName]) nOpenQ[qLabel][dName] = [];
-              nOpenQ[qLabel][dName].push(v.txt);
-            }
-          });
-        }
+        if(vals.some(v=>v!==null)){ nQ.push(String(row[0])); nSc.push(vals); }
       }
-      
+
+      // ── HOJA "Comentarios" ──────────────────────────────────────────────
       const nComm = {}; newDepts.forEach(d => nComm[d] = []);
-      if(wb.SheetNames.length > 1){
-        const s2 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[1]], {header:1});
+      const sheetComm = findSheet('Comentarios');
+      if(sheetComm){
+        const s2 = XLSX.utils.sheet_to_json(sheetComm, {header:1});
         const h2 = s2[1]||[];
         for(let r=2; r<s2.length; r++){
           const row = s2[r]; if(!row) continue;
@@ -1980,9 +2134,11 @@ function handleFile(file){
         }
       }
 
+      // ── HOJA "respuestas" (participación) ──────────────────────────────
       const nPart = {};
-      if(wb.SheetNames.length > 2){
-        const s3 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[2]], {header:1, defval:null});
+      const sheetResp = findSheet('respuestas');
+      if(sheetResp){
+        const s3 = XLSX.utils.sheet_to_json(sheetResp, {header:1, defval:null});
         const hDept3 = s3[1] || [], rowSent = s3[2] || [], rowAns = s3[3] || [];
         for(let c=1; c<hDept3.length; c++){
           if(hDept3[c]){
@@ -1993,6 +2149,38 @@ function handleFile(file){
         }
       }
 
+      // ── HOJA "preguntas abiertas" ───────────────────────────────────────
+      // Estructura: Fila 2 = nombres de departamentos (col B en adelante)
+      //             Fila 3+ = Col A = texto de pregunta, resto = respuestas
+      const nOpenQ = {};
+      const sheetOpen = findSheet('preguntas abiertas');
+      if(sheetOpen){
+        const sOpen = XLSX.utils.sheet_to_json(sheetOpen, {header:1, raw:false, defval:''});
+        const hDeptOpen = sOpen[1] || [];
+        // Mapear columnas con nombre de depto
+        const openCols = [];
+        for(let c=1; c<hDeptOpen.length; c++){
+          const dName = String(hDeptOpen[c]).trim();
+          if(dName) openCols.push({c, d: dName});
+        }
+        for(let r=2; r<sOpen.length; r++){
+          const row = sOpen[r]; if(!row || !row[0]) continue;
+          const qLabel = String(row[0]).trim(); if(!qLabel) continue;
+          if(!nOpenQ[qLabel]) nOpenQ[qLabel] = {};
+          openCols.forEach(oc => {
+            const val = row[oc.c];
+            if(val && String(val).trim() !== ''){
+              const txt = String(val).trim();
+              if(!nOpenQ[qLabel][oc.d]) nOpenQ[qLabel][oc.d] = [];
+              nOpenQ[qLabel][oc.d].push(txt);
+            }
+          });
+          // Eliminar pregunta si quedó vacía
+          if(Object.keys(nOpenQ[qLabel]).length === 0) delete nOpenQ[qLabel];
+        }
+      }
+
+      // ── Hojas de peticiones (mantener compatibilidad) ───────────────────
       wb.SheetNames.forEach(sheetName => {
         const snLower = sheetName.toLowerCase().trim();
         let prefix = null;
@@ -2017,7 +2205,7 @@ function handleFile(file){
       document.getElementById('importModal').classList.remove('open');
       rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name, nOpenQ);
       showToast('Datos cargados con éxito','ok');
-    } catch(err){ console.error(err); showToast('Error al leer el Excel', 'err'); }
+    } catch(err){ console.error(err); showToast('Error: ' + err.message, 'err'); }
   };
   reader.readAsArrayBuffer(file);
 }
