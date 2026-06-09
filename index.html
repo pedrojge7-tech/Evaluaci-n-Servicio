@@ -1929,10 +1929,10 @@ function renderOpenQuestions(orderedDepts) {
     return;
   }
 
-  const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
-
+  // Usar TODOS los deptos propios de cada pregunta, no el filtro de hoja 1
+  // porque los deptos de preguntas abiertas pueden ser distintos (ej: "dejaron de comprar")
   const activeQuestions = Object.keys(OPEN_QUESTIONS).filter(q =>
-    realDepts.some(d => OPEN_QUESTIONS[q][d] && OPEN_QUESTIONS[q][d].length > 0)
+    Object.values(OPEN_QUESTIONS[q]).some(arr => arr.length > 0)
   );
 
   if (activeQuestions.length === 0) {
@@ -1945,14 +1945,15 @@ function renderOpenQuestions(orderedDepts) {
 
   const showQuestion = (qLabel) => {
     document.querySelectorAll('.open-q-tab').forEach(t => t.classList.remove('active'));
-    const activeTab = tabsEl.querySelector('[data-oq]');
     document.querySelectorAll('.open-q-tab').forEach(t => { if(t.dataset.oq === qLabel) t.classList.add('active'); });
 
     const deptData = OPEN_QUESTIONS[qLabel] || {};
+    // Usar los deptos propios de esta pregunta
+    const qDepts = Object.keys(deptData);
 
-    // Recopilar todas las respuestas del filtro activo
+    // Recopilar todas las respuestas
     const allResponses = []; // { text, dept }
-    realDepts.forEach(d => {
+    qDepts.forEach(d => {
       (deptData[d] || []).forEach(txt => allResponses.push({ text: txt, dept: d }));
     });
 
@@ -2034,8 +2035,8 @@ function renderOpenQuestions(orderedDepts) {
 
     // ── Lista de respuestas agrupadas por departamento ─────────────────
     let listHtml = '';
-    if(realDepts.length > 1) {
-      realDepts.forEach(d => {
+    if(qDepts.length > 1) {
+      qDepts.forEach(d => {
         const resps = deptData[d];
         if(!resps || resps.length === 0) return;
         const col = deptColor(d);
@@ -2049,7 +2050,7 @@ function renderOpenQuestions(orderedDepts) {
         });
       });
     } else {
-      const d = realDepts[0];
+      const d = qDepts[0];
       const resps = deptData[d] || [];
       // Agrupar por categoría
       const grouped = {};
@@ -2150,34 +2151,42 @@ function handleFile(file){
       }
 
       // ── HOJA "preguntas abiertas" ───────────────────────────────────────
-      // Estructura: Fila 2 = nombres de departamentos (col B en adelante)
-      //             Fila 3+ = Col A = texto de pregunta, resto = respuestas
+      // Estructura real:
+      //   Fila 1: "Dirección >"  | NombreDir  (col B+)
+      //   Fila 2: "Departamento >"| NombreDepto (col B+)
+      //   Fila 3+: col A = nombre pregunta (solo en la primera fila de cada bloque)
+      //            Las siguientes filas tienen col A vacía, col B = respuesta
       const nOpenQ = {};
       const sheetOpen = findSheet('preguntas abiertas');
       if(sheetOpen){
         const sOpen = XLSX.utils.sheet_to_json(sheetOpen, {header:1, raw:false, defval:''});
         const hDeptOpen = sOpen[1] || [];
-        // Mapear columnas con nombre de depto
         const openCols = [];
         for(let c=1; c<hDeptOpen.length; c++){
           const dName = String(hDeptOpen[c]).trim();
           if(dName) openCols.push({c, d: dName});
         }
+        let currentQ = null;
         for(let r=2; r<sOpen.length; r++){
-          const row = sOpen[r]; if(!row || !row[0]) continue;
-          const qLabel = String(row[0]).trim(); if(!qLabel) continue;
-          if(!nOpenQ[qLabel]) nOpenQ[qLabel] = {};
+          const row = sOpen[r] || [];
+          const cellA = String(row[0] || '').trim();
+          if(cellA && !cellA.startsWith('Direcci') && !cellA.startsWith('Departamento')){
+            currentQ = cellA;
+          }
+          if(!currentQ) continue;
+          if(!nOpenQ[currentQ]) nOpenQ[currentQ] = {};
           openCols.forEach(oc => {
             const val = row[oc.c];
             if(val && String(val).trim() !== ''){
               const txt = String(val).trim();
-              if(!nOpenQ[qLabel][oc.d]) nOpenQ[qLabel][oc.d] = [];
-              nOpenQ[qLabel][oc.d].push(txt);
+              if(!nOpenQ[currentQ][oc.d]) nOpenQ[currentQ][oc.d] = [];
+              nOpenQ[currentQ][oc.d].push(txt);
             }
           });
-          // Eliminar pregunta si quedó vacía
-          if(Object.keys(nOpenQ[qLabel]).length === 0) delete nOpenQ[qLabel];
         }
+        Object.keys(nOpenQ).forEach(q => {
+          if(Object.keys(nOpenQ[q]).length === 0) delete nOpenQ[q];
+        });
       }
 
       // ── Hojas de peticiones (mantener compatibilidad) ───────────────────
