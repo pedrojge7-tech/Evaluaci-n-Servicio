@@ -75,7 +75,6 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing: antialiased;}
 
-/* Menú Hamburguesa & Sidebar */
 .hamburger-btn { background: none; border: none; cursor: pointer; color: var(--if-navy); padding: 8px;
   margin-right: 12px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: background 0.2s; }
 .hamburger-btn:hover { background: var(--surface2); }
@@ -1225,15 +1224,24 @@ function updateAllViews() {
   renderDeptTabs(orderedDepts);
   renderOpenQuestions(orderedDepts);
   
-  if(activeDepts.size === 1 && !activeDepts.has("Todos")) {
-      const single = Array.from(activeDepts)[0];
-      if(!single.startsWith("PROM.")) {
-          setTimeout(() => {
-              const tabs = document.querySelectorAll(".dept-tab");
-              for(let t of tabs) { if(t.textContent.includes(single)) { t.click(); break; } }
-          }, 100);
-      }
-  }
+  setTimeout(() => {
+    if(activeDepts.size === 1 && !activeDepts.has("Todos")) {
+        const single = Array.from(activeDepts)[0];
+        if(!single.startsWith("PROM.")) {
+            const tabs = document.querySelectorAll(".dept-tab");
+            for(let t of tabs) { if(t.textContent.includes(single)) { t.click(); break; } }
+        }
+    } else {
+        const btnCorp = document.querySelector(".btn-consolidado");
+        if (btnCorp) {
+            btnCorp.click();
+        } else {
+            document.getElementById("catChips").innerHTML = "";
+            document.getElementById("commentList").innerHTML = `<div class="no-comments">Selecciona un área para ver sus comentarios</div>`;
+            document.getElementById("peticionesCard").style.display = "none";
+        }
+    }
+  }, 100);
 }
 
 function renderNPS(orderedDepts) {
