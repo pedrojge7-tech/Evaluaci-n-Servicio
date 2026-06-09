@@ -294,6 +294,20 @@ tbody td:first-child { text-align: left; }
 .no-comments{text-align:center;padding:48px;font-weight:500;color:var(--muted);font-size:.9rem; width: 100%; background:var(--surface2); border-radius:var(--rs); border: 1px dashed var(--border);}
 #commentsChartContainer { display:none; position:relative; height:360px; width:100%; margin-top:16px; animation:fadeIn .3s ease; margin-bottom: 20px;}
 
+/* Preguntas Abiertas */
+.open-q-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.open-q-tab { padding: 9px 20px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--surface); font-family: var(--font); font-weight: 600; font-size: .8rem; color: var(--muted); cursor: pointer; transition: all .2s; white-space: normal; text-align: left; max-width: 380px; line-height: 1.4; }
+.open-q-tab:hover { border-color: var(--if-navy-light); color: var(--if-navy); background: var(--surface2); }
+.open-q-tab.active { background: var(--if-navy); color: #fff; border-color: var(--if-navy); box-shadow: 0 4px 12px rgba(21,33,48,0.15); }
+.open-q-content { display: flex; flex-direction: column; gap: 20px; }
+.open-q-dept-block { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--rs); overflow: hidden; }
+.open-q-dept-header { display: flex; align-items: center; gap: 10px; padding: 12px 18px; border-bottom: 1px solid var(--border); background: var(--surface); }
+.open-q-dept-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.open-q-dept-name { font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--if-navy); }
+.open-q-dept-count { font-weight: 600; font-size: .7rem; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); padding: 2px 9px; border-radius: 50px; margin-left: auto; }
+.open-q-responses { display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; }
+.open-q-response-item { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--oq-col, var(--primary)); border-radius: var(--rs); padding: 12px 16px; font-weight: 500; font-size: .85rem; line-height: 1.6; color: var(--text); animation: fadeIn .3s ease; }
+
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(21, 33, 48, .7);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
 .modal-overlay.open{display:flex;}
 @keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px);}to{opacity:1;transform:scale(1) translateY(0);}}
@@ -662,6 +676,19 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
   </div>
+  <div class="chart-card open-q-card" id="openQuestionsCard" style="display:none; margin-top:24px;">
+    <div class="chart-hdr">
+      <div>
+        <div class="chart-title" style="display:flex; align-items:center; gap:10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          Preguntas Abiertas
+        </div>
+        <div class="chart-sub">Respuestas cualitativas de la Hoja 1 · No cuantificables pero igualmente valiosas</div>
+      </div>
+    </div>
+    <div id="openQTabs" class="open-q-tabs"></div>
+    <div id="openQContent" class="open-q-content"></div>
+  </div>
 </main>
 
 <script>
@@ -673,8 +700,8 @@ let appMode = 'interno';
 
 // Almacén dual: guarda la información de ambos módulos de forma independiente
 let store = {
-  interno: { DIRS: [], DEPTS: [], DEPT_TO_DIR: {}, QUESTIONS: [], SCORES: [], AVERAGES: [], COMMENTS: {}, PARTICIPATION: {}, NPS_DATA: {}, REPORT_DATE: null, fileName: "Servicio Interno" },
-  externo: { DIRS: [], DEPTS: [], DEPT_TO_DIR: {}, QUESTIONS: [], SCORES: [], AVERAGES: [], COMMENTS: {}, PARTICIPATION: {}, NPS_DATA: {}, REPORT_DATE: null, fileName: "Evaluación a Cliente Externo" }
+  interno: { DIRS: [], DEPTS: [], DEPT_TO_DIR: {}, QUESTIONS: [], SCORES: [], AVERAGES: [], COMMENTS: {}, PARTICIPATION: {}, NPS_DATA: {}, OPEN_QUESTIONS: {}, REPORT_DATE: null, fileName: "Servicio Interno" },
+  externo: { DIRS: [], DEPTS: [], DEPT_TO_DIR: {}, QUESTIONS: [], SCORES: [], AVERAGES: [], COMMENTS: {}, PARTICIPATION: {}, NPS_DATA: {}, OPEN_QUESTIONS: {}, REPORT_DATE: null, fileName: "Evaluación a Cliente Externo" }
 };
 
 const PALETTE = ['#1E3347', '#E07010', '#2C4560', '#F4921E', '#3D5060', '#C86008', '#7A8D9E', '#D68940', '#152130', '#B8C4CE'];
@@ -689,7 +716,8 @@ let SCORES = [];
 let AVERAGES = [];
 let COMMENTS = {};
 let PARTICIPATION = {}; 
-let NPS_DATA = {}; 
+let NPS_DATA = {};
+let OPEN_QUESTIONS = {}; // { "Texto de pregunta": { "NombreDepto": ["respuesta1","respuesta2",...] } }
 
 let CUSTOM_LOGO_LEFT = null;
 let CUSTOM_LOGO_RIGHT = null;
@@ -734,7 +762,8 @@ function saveState() {
   store[appMode] = {
     DIRS: DIRS, DEPTS: DEPTS, DEPT_TO_DIR: DEPT_TO_DIR, QUESTIONS: QUESTIONS, 
     SCORES: SCORES, AVERAGES: AVERAGES, COMMENTS: COMMENTS, 
-    PARTICIPATION: PARTICIPATION, NPS_DATA: NPS_DATA, REPORT_DATE: REPORT_DATE, 
+    PARTICIPATION: PARTICIPATION, NPS_DATA: NPS_DATA, OPEN_QUESTIONS: OPEN_QUESTIONS,
+    REPORT_DATE: REPORT_DATE, 
     fileName: document.getElementById('dashTitle').textContent
   };
 }
@@ -750,6 +779,7 @@ function loadState() {
   COMMENTS = s.COMMENTS || {};
   PARTICIPATION = s.PARTICIPATION || {};
   NPS_DATA = s.NPS_DATA || {};
+  OPEN_QUESTIONS = s.OPEN_QUESTIONS || {};
   REPORT_DATE = s.REPORT_DATE ? new Date(s.REPORT_DATE) : new Date();
   
   document.getElementById('dashTitle').textContent = s.fileName || (appMode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno");
@@ -1165,6 +1195,7 @@ function updateAllViews() {
   renderRankingList(orderedDepts, activeQIndices);
   renderDetailTable(orderedDepts, activeQIndices);
   renderDeptTabs(orderedDepts);
+  renderOpenQuestions(orderedDepts);
 
   if(activeDepts.size === 1 && !activeDepts.has('Todos')) {
       const single = Array.from(activeDepts)[0];
@@ -1823,6 +1854,74 @@ Formato: SOLO HTML con <div class='insight-section-title'>, <div class='insight-
   }
 };
 
+function renderOpenQuestions(orderedDepts) {
+  const card = document.getElementById('openQuestionsCard');
+  const tabsEl = document.getElementById('openQTabs');
+  const contentEl = document.getElementById('openQContent');
+
+  // Solo aplica en modo externo y si hay preguntas abiertas
+  if (appMode !== 'externo' || !OPEN_QUESTIONS || Object.keys(OPEN_QUESTIONS).length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+
+  const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
+
+  // Filtrar solo preguntas que tengan al menos una respuesta en los deptos activos
+  const activeQuestions = Object.keys(OPEN_QUESTIONS).filter(q =>
+    realDepts.some(d => OPEN_QUESTIONS[q][d] && OPEN_QUESTIONS[q][d].length > 0)
+  );
+
+  if (activeQuestions.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+
+  card.style.display = 'flex';
+  tabsEl.innerHTML = '';
+
+  const showQuestion = (qLabel) => {
+    document.querySelectorAll('.open-q-tab').forEach(t => t.classList.remove('active'));
+    const activeTab = tabsEl.querySelector('[data-q="' + CSS.escape(qLabel) + '"]');
+    if (activeTab) activeTab.classList.add('active');
+
+    const deptData = OPEN_QUESTIONS[qLabel] || {};
+    let html = '';
+
+    realDepts.forEach(d => {
+      const responses = deptData[d];
+      if (!responses || responses.length === 0) return;
+      const col = deptColor(d);
+      html += `<div class="open-q-dept-block">
+        <div class="open-q-dept-header">
+          <div class="open-q-dept-dot" style="background:${col};"></div>
+          <span class="open-q-dept-name">${d}</span>
+          <span class="open-q-dept-count">${responses.length} respuesta${responses.length !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="open-q-responses">
+          ${responses.map(r => `<div class="open-q-response-item" style="--oq-col:${col};">${r}</div>`).join('')}
+        </div>
+      </div>`;
+    });
+
+    if (!html) html = '<div class="no-comments">Sin respuestas para la selección actual.</div>';
+    contentEl.innerHTML = html;
+  };
+
+  // Crear tabs por cada pregunta
+  activeQuestions.forEach((qLabel, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'open-q-tab' + (i === 0 ? ' active' : '');
+    btn.setAttribute('data-q', qLabel);
+    btn.textContent = qLabel;
+    btn.onclick = () => showQuestion(qLabel);
+    tabsEl.appendChild(btn);
+  });
+
+  // Mostrar la primera por defecto
+  showQuestion(activeQuestions[0]);
+}
+
 function handleFile(file){
   showToast('⏳ Procesando...'); window.cachedAnalysisHTML = ""; window.cachedFilterKey = "";
   const reader = new FileReader();
@@ -1838,18 +1937,35 @@ function handleFile(file){
         if(hDept[c]){ const d = String(hDept[c]).trim(); newDepts.push(d); newMap[d] = curDir; newDirs.add(curDir); vCols.push({c, d}); }
       }
       
-      const nQ = [], nSc = [];
+      const nQ = [], nSc = [], nOpenQ = {};
       for(let r=2; r<s1.length; r++){
         const row = s1[r]; if(!row || !row[0]) continue;
-        const vals = vCols.map(vc => {
+        const rawVals = vCols.map(vc => {
           const raw = row[vc.c];
-          if(raw === undefined || raw === null) return null;
-          const strVal = String(raw).trim().toUpperCase();
-          if(strVal === 'NA' || strVal === 'N/A' || strVal === '') return null;
+          if(raw === undefined || raw === null) return { num: null, txt: null };
+          const strVal = String(raw).trim();
+          if(strVal.toUpperCase() === 'NA' || strVal.toUpperCase() === 'N/A' || strVal === '') return { num: null, txt: null };
           const n = parseFloat(strVal.replace(',', '.'));
-          return isNaN(n) ? null : (n <= 1 ? n * 10 : n);
+          if(!isNaN(n)) return { num: n <= 1 ? n * 10 : n, txt: null };
+          return { num: null, txt: strVal };
         });
-        if(vals.some(v=>v!==null)){ nQ.push(String(row[0])); nSc.push(vals); }
+        const numVals = rawVals.map(v => v.num);
+        const hasAnyNum = numVals.some(v => v !== null);
+        const hasAnyTxt = rawVals.some(v => v.txt !== null);
+        // Si tiene al menos un valor numérico → pregunta cuantitativa normal
+        if(hasAnyNum){ nQ.push(String(row[0])); nSc.push(numVals); }
+        // Si solo tiene texto (ningún número) y hay al menos una respuesta → pregunta abierta
+        else if(hasAnyTxt){
+          const qLabel = String(row[0]);
+          if(!nOpenQ[qLabel]) nOpenQ[qLabel] = {};
+          rawVals.forEach((v, idx) => {
+            if(v.txt !== null){
+              const dName = vCols[idx].d;
+              if(!nOpenQ[qLabel][dName]) nOpenQ[qLabel][dName] = [];
+              nOpenQ[qLabel][dName].push(v.txt);
+            }
+          });
+        }
       }
       
       const nComm = {}; newDepts.forEach(d => nComm[d] = []);
@@ -1899,15 +2015,15 @@ function handleFile(file){
       });
 
       document.getElementById('importModal').classList.remove('open');
-      rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name);
+      rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name, nOpenQ);
       showToast('Datos cargados con éxito','ok');
     } catch(err){ console.error(err); showToast('Error al leer el Excel', 'err'); }
   };
   reader.readAsArrayBuffer(file);
 }
 
-function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname){
-  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {};
+function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname, nOpenQ){
+  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {}; OPEN_QUESTIONS = nOpenQ || {};
   REPORT_DATE = new Date();
   injectDirectionAverages(); 
   document.getElementById('dashTitle').textContent = appMode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno";
@@ -1978,6 +2094,8 @@ async function tryLoadFromURL(){
           store = JSON.parse(raw.store);
           if(store.interno.REPORT_DATE) store.interno.REPORT_DATE = new Date(store.interno.REPORT_DATE);
           if(store.externo.REPORT_DATE) store.externo.REPORT_DATE = new Date(store.externo.REPORT_DATE);
+          if(!store.interno.OPEN_QUESTIONS) store.interno.OPEN_QUESTIONS = {};
+          if(!store.externo.OPEN_QUESTIONS) store.externo.OPEN_QUESTIONS = {};
       } else {
           let oldDirs = ['General'];
           let oldDeptMap = {};
