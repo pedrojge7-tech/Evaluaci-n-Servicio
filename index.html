@@ -1376,58 +1376,169 @@ function renderKPIs(orderedDepts){
   }
 }
 
-// Devuelve un ARRAY con todas las categorías que aplican al comentario.
-// Un comentario puede aparecer en múltiples categorías si toca varios temas.
+// Devuelve un ARRAY con las categorías que aplican (máximo 3).
+// Usa frases clave, no palabras sueltas. Sin fallback a "Otras Observaciones".
 function classifyComment(text){
   if(!text) return [];
   if(text.startsWith("[PET_RES]") || text.startsWith("[PET_NO_RES]")) return [];
-  
-  const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, "").trim();
-  if(t.length < 5 && !t.match(/mal|peor|pago|falla|lento/)) return [];
-  
-  const uselessStarts = ["na", "n/a", "ningun", "nada", "todo ok", "ok", "todo bien", "sin observaci", "no tengo comentario", "no hay comentario", "sin comentario", "todo excelente", "excelente", "muy bien", "bien", "sin detalle", "desconozco", "no conozco", "ignoro", "no aplica", "todo en orden", "sin queja", "ninguna sugerencia"];
-  for(let start of uselessStarts){ if(t.startsWith(start) || t === start) return []; }
-  if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien|sin comentarios|sin observaciones|todo muy bien)$/.test(t)) return [];
 
-  const raw = text.toLowerCase();
-  // normalized = sin acentos, minúsculas, sin puntuación (mismo que t pero lo usamos para los regex)
-  const norm = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[.,!¡?¿()"']/g, " ").replace(/\s+/g, " ").trim();
+  // Normalizar: minúsculas, sin acentos, sin puntuación
+  const n = text.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[.,!¡?¿()"';:]/g, " ")
+    .replace(/\s+/g, " ").trim();
 
-  const categories = {
-    "Sistemas, Equipo y Tecnología": /\bsistema\b|\bsoftware\b|\bportal\b|\bplataforma\b|\bconexion\b|\baplicacion\b|\bcomputadora\b|\blaptop\b|\bmouse\b|\bteclado\b|\bmonitor\b|\bimpresora\b|\binternet\b|\berror de sistema\b|\btecnolog/,
-    "Tiempos de Respuesta": /\btiempo(s)? de respuesta\b|\brapidez\b|\brapida(s)?\b|\brapido(s)?\b|\btiempos\b|\bagilizar\b|\bdemora\b|\bretraso\b|\blento\b|\blenta\b|\bespera\b|\bagilidad\b|\btardan\b|\btarda(n)?\b|\btardanza\b|\boptimizar tiempo\b|\bmas rapido\b|\brespuesta (mas )?rapida\b|\brespuesta oportuna\b|\btiempo de atencion\b|\bdemoran\b|\bse tarda\b/,
-    "Comunicación y Seguimiento": /\bcomunicacion\b|\bcomunicar\b|\bavisar\b|\btransparencia\b|\bnotificar\b|\bnotificacion\b|\bseguimiento\b|\baviso\b|\bcorreo\b|\bllamada\b|\bjunta\b|\breunion\b|\bfeedback\b|\bmala comunicacion\b|\bfalta de comunicacion\b|\bfalta de informacion\b|\bno informan\b|\bno avisan\b|\bno notifican\b|\bno dan seguimiento\b|\bmejorar comunicacion\b|\bfalta de seguimiento\b/,
-    "Procesos y Burocracia": /\bproceso(s)?\b|\bburocracia\b|\btramite\b|\bpapeleo\b|\bfirma\b|\bautorizacion\b|\bpolitica\b|\bprocedimiento\b|\bflujo de trabajo\b/,
-    "Abasto y Proveedores": /\babasto\b|\bmercancia\b|\bproveedor\b|\bmerma\b|\bdesabasto\b|\bsurtido\b|\bfaltante(s)?\b|\binsumo\b/,
-    "Logística y Entregas": /\blogistica\b|\bruta(s)?\b|\bentrega(s)?\b|\benvio\b|\btransporte\b|\bchofer\b|\bcamion\b|\bvehiculo\b/,
-    "Capacitación y Desarrollo": /\bcapacitacion\b|\bcapacitar\b|\bentrenamiento\b|\bcurso\b|\baprender\b|\binduccion\b|\bdesarrollo profesional\b|\bformacion\b/,
-    "Costos y Presupuestos": /\bcosto(s)?\b|\bcotizacion\b|\bprecio\b|\bcaro\b|\bpresupuesto\b|\bgasto\b|\bahorro\b/,
-    "Visión de Negocio": /\bnegocio\b|\bsucursal\b|\brendimiento\b|\bventas\b|\bmercado\b/,
-    "Actitud y Trato al Cliente": /\btrato\b|\bempatia\b|\bamable\b|\bamabilidad\b|\bactitud\b|\bdisposicion\b|\bservicio al cliente\b|\bgrosero\b|\bprepotente\b|\bmala actitud\b|\bbuena actitud\b|\batencion al cliente\b|\batencion personalizada\b/,
-    "Calidad y Precisión": /\bcalidad\b|\bexactitud\b|\bprecision\b|\bequivocacion\b|\bincorrecto\b|\bdetalle\b|\brevision\b|\berrores frecuentes\b|\bfalta de calidad\b|\bbaja calidad\b|\berror(es)?\b|\bfallo(s)?\b|\bdefecto\b/,
-    "Gestión de Personal": /\bplantilla\b|\brecursos humanos\b|\bvacante\b|\bcontratacion\b|\brotacion de personal\b|\bfalta de personal\b|\bpoco personal\b|\bmas personal\b/,
-    "Infraestructura y Mantenimiento": /\bmantenimiento\b|\blimpieza\b|\binstalacion\b|\breparacion\b|\bconstruccion\b|\baire acondicionado\b|\bestacionamiento\b|\bcomedor\b|\boficina\b|\bsilla\b|\bescritorio\b/,
-    "Nómina y Prestaciones": /\bnomina\b|\bsueldo\b|\bsalario\b|\bcompensacion\b|\bbono\b|\bdeduccion\b|\bfiniquito\b|\bprestacion\b|\bquincena\b|\baguinaldo\b|\bfondo de ahorro\b|\bvales\b/,
-    "Innovación y Mejora Continua": /\binnovacion\b|\bmejorar el proceso\b|\bmejora continua\b|\bnueva forma\b|\bpropuesta de mejora\b|\bimplementar\b/,
-    "Seguridad y Riesgos": /\bseguridad\b|\briesgo\b|\bpeligro\b|\baccidente\b|\bproteccion\b/,
-    "Planeación y Organización": /\bplaneacion\b|\bplanificacion\b|\bdesorganizacion\b|\bfalta de planeacion\b|\bfalta de organizacion\b|\bfalta de coordinacion\b/,
-    "Liderazgo y Gestión": /\bliderazgo\b|\bjefe\b|\bgerente\b|\bcoordinador\b|\bsupervisor\b|\bmando\b|\bjefatura\b/,
-    "Resolución de Problemas": /\bno resuelven\b|\bno solucionan\b|\bno atienden\b|\bsin solucion\b|\bproblemas sin resolver\b|\bno dan solucion\b/,
-    "Documentación y Archivo": /\bdocumentacion\b|\barchivo\b|\bexpediente\b|\bformato(s)?\b/,
-    "Horarios, Turnos y Permisos": /\bhorario\b|\bturno\b|\bpermiso\b|\bvacaciones\b|\bdescanso\b|\bjornada\b/,
-    "Carga de Trabajo y Estrés": /\bcarga de trabajo\b|\bmucho trabajo\b|\bsaturado\b|\bestres\b|\bexceso de trabajo\b|\bpresion laboral\b/,
-    "Clima Laboral y Compañerismo": /\bambiente laboral\b|\bclima laboral\b|\bcompanero(s)?\b|\bchisme\b|\brespeto\b|\bcultura organizacional\b|\bintegracion\b/,
-    "Sugerencias de Mejora": /\bsugerencia\b|\brecomiendo\b|\bse podria\b|\bdeberian\b|\bse necesita\b|\bse requiere\b|\boportunidad de mejora\b|\bpodrian mejorar\b/
-  };
+  if(n.length < 8) return [];
 
-  const matched = [];
-  for (const [cat, regex] of Object.entries(categories)) {
-    if (norm.match(regex)) matched.push(cat);
+  // Frases/palabras vacías — ignorar completamente
+  const noise = /^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|si|no)$|^(todo (bien|ok|excelente|muy bien)|sin (comentario|observacion|queja|detalle|novedad)|no (hay|tengo) comentario|por el momento (no|sin)|de momento (no|sin)|hasta ahora (no|sin)|no aplica|desconozco|ignoro|no conozco)/;
+  if(noise.test(n)) return [];
+
+  // Cada categoría: array de patrones. Un comentario entra si matchea AL MENOS UN patrón.
+  // Los patrones son frases o términos técnicos específicos — no palabras sueltas genéricas.
+  const CATS = [
+    {
+      name: "Tiempos de Respuesta",
+      patterns: [
+        /se tarda(n)?\b/, /tarda(n)? (mucho|demasiado|tiempo)/, /tiempo(s)? de respuesta/,
+        /demora(n|s)?\b/, /tardanza/, /retraso(s)?\b/, /muy lento/, /demasiado lento/,
+        /respuesta (rapida|oportuna|inmediata)/, /agilizar/, /mas rapido/,
+        /tiempo(s)? (muy |de |de atencion)/, /espera(n)? mucho/, /tardan en/,
+        /no responden (rapido|pronto|a tiempo)/, /optimizar (el )?tiempo/
+      ]
+    },
+    {
+      name: "Comunicación y Seguimiento",
+      patterns: [
+        /comunicacion\b/, /falta de comunicacion/, /falta de informacion/,
+        /no (nos |les |me )?(informan|avisan|notifican|comunican|dicen)/,
+        /no (dan|hay) seguimiento/, /falta (de )?seguimiento/,
+        /nunca (nos |me |les )?(dicen|informan|avisan|comunican)/,
+        /sin (aviso|notificacion|comunicacion)/, /mala comunicacion/,
+        /no (nos |me )?enteramos/, /falta de retroalimentacion/,
+        /retroalimentacion\b/, /feedback\b/, /transparencia\b/,
+        /no (nos |me )?explican/, /no saben (el )?porque/
+      ]
+    },
+    {
+      name: "Reclutamiento y Contratación",
+      patterns: [
+        /reclutamiento/, /contratacion\b/, /candidato(s)?\b/, /perfil (del|de) (puesto|candidato)/,
+        /no (tienen|cumple[n]?) (el |con el |con )?perfil/, /habilidades (requeridas|del puesto)/,
+        /entrevista(s)?\b/, /postulante(s)?\b/, /vacante(s)?\b/,
+        /mandar(nos)? gente/, /enviar (personal|candidatos)/, /seleccion de personal/,
+        /recursos humanos (no|tarda)/, /proceso de (seleccion|reclutamiento|contratacion)/
+      ]
+    },
+    {
+      name: "Calidad del Servicio",
+      patterns: [
+        /calidad (del|de) servicio/, /baja calidad/, /falta de calidad/,
+        /mal servicio/, /servicio (deficiente|malo|regular|mejorar)/,
+        /errores (frecuentes|constantes|repetidos)/, /muchos errores/,
+        /equivocacion(es)?\b/, /incorrectos?\b/, /inexacto/,
+        /no (es|son) (correcto|correctos|exacto)/, /datos (incorrectos|erroneos|mal)/,
+        /precision\b/, /exactitud\b/, /defecto(s)?\b/
+      ]
+    },
+    {
+      name: "Procesos y Procedimientos",
+      patterns: [
+        /proceso(s)? (no|muy|poco|demasiado|mas|mejor)/, /proceso(s)? (confuso|lento|tardado|largo|complejo)/,
+        /los procesos (no|son|estan)/, /mejorar (el|los) proceso/,
+        /procedimiento(s)? (no|muy|poco)/, /demasiados (pasos|tramites|firmas)/,
+        /mucho(s)? (tramite|papeleo|paso)/, /tramites (excesivos|complicados|innecesarios)/,
+        /burocracia\b/, /autorizacion(es)? (tardada|lenta|complicada)/,
+        /flujo de (trabajo|proceso)/, /no (esta|estan) (claro|claros) (el|los) proceso/
+      ]
+    },
+    {
+      name: "Atención y Trato",
+      patterns: [
+        /mala actitud/, /buena actitud/, /actitud (del|de) (personal|servicio)/,
+        /mal trato/, /buen trato/, /trato (al|hacia el) (cliente|usuario)/,
+        /grosero(s)?\b/, /prepotente(s)?\b/, /amable(s)?\b/, /amabilidad\b/,
+        /empatia\b/, /disposicion (para|de) ayudar/, /no (nos|me) (atienden|apoyan)/,
+        /atencion al (cliente|usuario)/, /atencion (personalizada|deficiente|mala)/
+      ]
+    },
+    {
+      name: "Capacitación y Conocimiento",
+      patterns: [
+        /capacitacion\b/, /falta (de )?capacitacion/, /no (estan|esta) capacitado/,
+        /capacitar (al|a los) personal/, /entrenamiento\b/, /induccion\b/,
+        /no (conocen|saben|dominan) (el|los)/, /falta de conocimiento/,
+        /conocimiento (del|de) (producto|proceso|sistema|servicio)/,
+        /curso(s)?\b/, /formacion (profesional|del personal)/
+      ]
+    },
+    {
+      name: "Personal y Recursos Humanos",
+      patterns: [
+        /falta (de )?personal/, /poco personal/, /mas personal/, /mas gente/,
+        /no hay suficiente (personal|gente)/, /sobrecarga (de|del) personal/,
+        /rotacion (de personal|de empleados)/, /alta rotacion/,
+        /plantilla\b/, /nomina\b/, /sueldo\b/, /salario\b/,
+        /prestaciones?\b/, /bono(s)?\b/, /aguinaldo\b/, /quincena\b/,
+        /deduccion(es)?\b/, /fondo de ahorro/, /compensacion\b/
+      ]
+    },
+    {
+      name: "Infraestructura y Equipo",
+      patterns: [
+        /sistema(s)? (no funciona|falla|lento|cae|se cae|tarda)/, /falla(n)? (el|los) sistema/,
+        /sistema (muy lento|muy tardado|no sirve)/, /software\b/, /plataforma\b/,
+        /computadora(s)?\b/, /equipo (de computo|de trabajo|danado|viejo)/,
+        /internet (lento|falla|no funciona)/, /instalaciones\b/,
+        /mantenimiento (de|del)/, /limpieza (de|del)/, /aire acondicionado/,
+        /espacio (de trabajo|insuficiente|reducido)/, /comedor\b/
+      ]
+    },
+    {
+      name: "Abasto y Logística",
+      patterns: [
+        /abasto\b/, /desabasto\b/, /faltante(s) de (material|producto|insumo)/,
+        /no (hay|tienen) (material|producto|insumo|stock)/,
+        /entrega(s)? (tardada|lenta|incorrecta|incompleta)/, /retraso en (la|las) entrega/,
+        /logistica\b/, /transporte (de|del)/, /ruta(s) de entrega/,
+        /proveedor(es)? (no entrega|tarda|falla)/, /merma\b/
+      ]
+    },
+    {
+      name: "Clima y Ambiente Laboral",
+      patterns: [
+        /ambiente (de trabajo|laboral)/, /clima (laboral|de trabajo)/,
+        /trabajo en equipo/, /compañerismo\b/, /companero(s)? (de trabajo)?/,
+        /conflicto(s)? (entre|con) (compañeros|personal|equipos)/,
+        /falta de (respeto|trabajo en equipo)/, /chismes?\b/,
+        /cultura (organizacional|de la empresa)/, /valores (de la empresa|organizacionales)/
+      ]
+    },
+    {
+      name: "Planeación y Organización",
+      patterns: [
+        /falta (de )?planeacion/, /falta (de )?organizacion/, /falta (de )?coordinacion/,
+        /desorganizacion\b/, /sin (planeacion|organizacion|coordinacion)/,
+        /no (hay|existe) (planeacion|coordinacion)/, /mala (planeacion|organizacion)/,
+        /no (coordinan|organizan|planean)/, /cambios (de ultimo momento|de ultimo minuto)/,
+        /improvisacion\b/
+      ]
+    }
+  ];
+
+  // Score por categoría: contar cuántos patrones matchean
+  const scores = [];
+  for(const cat of CATS){
+    let hits = 0;
+    for(const p of cat.patterns){ if(p.test(n)) hits++; }
+    if(hits > 0) scores.push({ name: cat.name, hits });
   }
 
-  if (matched.length > 0) return matched;
-  if (t.length >= 8) return ["Otras Observaciones"];
-  return [];
+  if(scores.length === 0) return [];
+
+  // Ordenar por hits desc y retornar máximo 3
+  scores.sort((a,b) => b.hits - a.hits);
+  return scores.slice(0, 3).map(s => s.name);
 }
 
 // Helper: ¿tiene al menos una categoría válida?
@@ -2649,7 +2760,6 @@ function toggleInlineTable(chartType) {
   const btn = document.getElementById('btnToggleBar');
 
   const isVisible = tableDiv.style.display !== 'none';
-
   if (isVisible) {
     tableDiv.style.display = 'none';
     chartWrap.style.display = 'block';
@@ -2657,89 +2767,80 @@ function toggleInlineTable(chartType) {
     return;
   }
 
-  // Reconstruir depts activos
   const allowedDirs = activeDirs.has("Todas") ? DIRS : Array.from(activeDirs);
   const filteredDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
-  const orderedDepts = activeDepts.has("Todos")
+  const orderedDepts = (activeDepts.has("Todos")
     ? filteredDepts.filter(d => !d.startsWith("PROM. "))
-    : filteredDepts.filter(d => activeDepts.has(d));
+    : filteredDepts.filter(d => activeDepts.has(d)))
+    .filter(d => !isNaN(AVERAGES[DEPTS.indexOf(d)]) && AVERAGES[DEPTS.indexOf(d)] > 0);
 
   if (!orderedDepts.length) { showToast("Sin datos para mostrar", "warn"); return; }
 
-  const pc = v => v >= 9 ? 'score-high' : v >= 8 ? 'score-mid' : 'score-low';
+  const getAvg = d => AVERAGES[DEPTS.indexOf(d)] || 0;
+  const globalAvg = orderedDepts.reduce((s,d)=>s+getAvg(d),0)/orderedDepts.length;
+  const sorted = [...orderedDepts].sort((a,b)=>getAvg(b)-getAvg(a));
+  const maxVal = getAvg(sorted[0]);
+  const BAR_MAX = Math.max(maxVal, 10);
 
-  // Tabla comparativa dept vs dept:
-  // Filas = preguntas + fila de promedio general
-  // Columnas = cada departamento (ordenados de mayor a menor promedio)
-  // Celda resaltada = mejor score por fila
-  const activeQIndices = [];
-  QUESTIONS.forEach((q, qi) => {
-    const hasData = orderedDepts.some(d => { const v = SCORES[qi][DEPTS.indexOf(d)]; return v !== null && v !== undefined && !isNaN(v); });
-    if (hasData) activeQIndices.push(qi);
-  });
-
-  const sorted = [...orderedDepts].sort((a,b) => (AVERAGES[DEPTS.indexOf(b)]||0) - (AVERAGES[DEPTS.indexOf(a)]||0));
-
-  // CSS para el ranking inline
-  const rankStyle = (rank, total) => {
-    if (rank === 0) return 'background:var(--success-bg); color:var(--success); font-weight:800;';
-    if (rank === total - 1 && total > 1) return 'background:var(--danger-bg); color:var(--danger); font-weight:700;';
-    return '';
+  // Para cada dept: fuertes (top 3 preguntas) y débiles (bottom 3 preguntas)
+  const getTopBottom = (d) => {
+    const di = DEPTS.indexOf(d);
+    const activeQs = QUESTIONS.map((q,qi)=>({ q, v: SCORES[qi][di] }))
+      .filter(x => x.v !== null && x.v !== undefined && !isNaN(x.v));
+    const byScore = [...activeQs].sort((a,b)=>b.v-a.v);
+    return {
+      top: byScore.slice(0,2),
+      bottom: byScore.slice(-2).reverse()
+    };
   };
 
-  const headerCols = sorted.map(d => `
-    <th style="text-align:center; min-width:90px; padding:10px 8px;">
-      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${deptColor(d)};margin-right:4px;vertical-align:middle;"></span>
-      <span style="font-size:.68rem;">${d}</span>
-    </th>`).join('');
-
-  const bodyRows = activeQIndices.map(qi => {
-    const rowVals = sorted.map(d => SCORES[qi][DEPTS.indexOf(d)]);
-    const validVals = rowVals.filter(v => v !== null && v !== undefined && !isNaN(v));
-    const maxVal = validVals.length ? Math.max(...validVals) : null;
-    const minVal = validVals.length > 1 ? Math.min(...validVals) : null;
-    const avg = validVals.length ? validVals.reduce((a,b)=>a+b,0)/validVals.length : null;
-    const cells = rowVals.map(v => {
-      if (v === null || v === undefined || isNaN(v)) return `<td style="text-align:center; color:var(--muted);">—</td>`;
-      const isBest = v === maxVal;
-      const isWorst = v === minVal && minVal !== maxVal;
-      const extra = isBest ? 'background:var(--success-bg); color:var(--success); font-weight:800;' : isWorst ? 'background:var(--danger-bg); color:var(--danger); font-weight:700;' : '';
-      return `<td style="text-align:center; ${extra} border-radius:6px; padding:8px 6px;">${v.toFixed(1)}</td>`;
-    }).join('');
-    return `<tr>
-      <td style="font-size:.75rem; font-weight:600; padding:8px 12px; max-width:160px; white-space:normal; line-height:1.3;">${QUESTIONS[qi]}</td>
-      ${cells}
-      <td style="text-align:center; color:var(--muted); font-size:.78rem; padding:8px 6px;">${avg !== null ? avg.toFixed(1) : '—'}</td>
-    </tr>`;
-  }).join('');
-
-  // Fila de promedio general
-  const avgCells = sorted.map(d => {
-    const avg = AVERAGES[DEPTS.indexOf(d)] || 0;
-    return `<td style="text-align:center;"><span class="score-pill ${pc(avg)}">${avg.toFixed(2)}</span></td>`;
-  }).join('');
-  const globalAvg = sorted.reduce((s,d)=>s+(AVERAGES[DEPTS.indexOf(d)]||0),0)/sorted.length;
-
-  const html = `
-    <div style="font-size:.72rem; color:var(--muted); margin-bottom:8px; font-weight:600;">
-      <span style="display:inline-block; width:10px; height:10px; background:var(--success-bg); border:1.5px solid var(--success); border-radius:3px; vertical-align:middle; margin-right:4px;"></span>Mejor en esa pregunta &nbsp;
-      <span style="display:inline-block; width:10px; height:10px; background:var(--danger-bg); border:1.5px solid var(--danger); border-radius:3px; vertical-align:middle; margin-right:4px;"></span>Peor en esa pregunta
+  let html = `
+    <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px; flex-wrap:wrap;">
+      <div style="display:flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; color:var(--muted);">
+        <span style="display:inline-block;width:32px;height:3px;background:var(--if-orange);border-radius:2px;"></span>
+        Promedio general: <b style="color:var(--if-navy); font-size:.85rem; margin-left:2px;">${globalAvg.toFixed(2)}</b>
+      </div>
     </div>
-    <table style="width:100%; border-collapse:separate; border-spacing:0; font-size:.8rem;">
-      <thead><tr>
-        <th style="text-align:left; min-width:160px; padding:10px 12px;">Pregunta</th>
-        ${headerCols}
-        <th style="text-align:center; min-width:60px; padding:10px 6px; color:var(--muted);">Prom.</th>
-      </tr></thead>
-      <tbody>
-        ${bodyRows}
-        <tr style="background:var(--surface2); border-top: 2px solid var(--border);">
-          <td style="font-weight:800; font-size:.78rem; padding:10px 12px;">Promedio General</td>
-          ${avgCells}
-          <td style="text-align:center; font-weight:800; color:var(--primary);">${globalAvg.toFixed(2)}</td>
-        </tr>
-      </tbody>
-    </table>`;
+    <div style="display:flex; flex-direction:column; gap:8px;">
+  `;
+
+  sorted.forEach((d, i) => {
+    const avg = getAvg(d);
+    const delta = avg - globalAvg;
+    const deltaStr = (delta >= 0 ? '+' : '') + delta.toFixed(2);
+    const deltaColor = delta >= 0.3 ? '#065F46' : delta <= -0.3 ? '#991B1B' : '#92400E';
+    const deltaBg = delta >= 0.3 ? '#D1FAE5' : delta <= -0.3 ? '#FEE2E2' : '#FEF3C7';
+    const barW = (avg / BAR_MAX * 100).toFixed(1);
+    const barColor = delta >= 0.3 ? '#10B981' : delta <= -0.3 ? '#EF4444' : '#F59E0B';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+    const { top, bottom } = getTopBottom(d);
+
+    html += `
+      <div style="border:1px solid var(--border); border-radius:8px; padding:12px 14px; background:var(--surface);">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <span style="font-size:.85rem; min-width:24px; text-align:center;">${medal}</span>
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${deptColor(d)};flex-shrink:0;"></span>
+          <span style="font-weight:700; font-size:.88rem; color:var(--if-navy); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${d}</span>
+          <span style="font-weight:900; font-size:1.05rem; color:var(--if-navy); margin-left:auto;">${avg.toFixed(2)}</span>
+          <span style="font-size:.72rem; font-weight:700; padding:2px 8px; border-radius:50px; background:${deltaBg}; color:${deltaColor}; flex-shrink:0;">${deltaStr} vs prom.</span>
+        </div>
+        <div style="background:var(--surface2); border-radius:6px; height:8px; overflow:hidden; margin-bottom:10px;">
+          <div style="height:100%; width:${barW}%; background:${barColor}; border-radius:6px; transition:width .4s;"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+          <div style="background:#F0FDF4; border-radius:6px; padding:6px 8px;">
+            <div style="font-size:.65rem; font-weight:700; color:#065F46; margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em;">↑ Fortalezas</div>
+            ${top.map(x=>`<div style="font-size:.68rem; color:#1F2937; line-height:1.3; margin-bottom:2px;">• ${x.q.length>45?x.q.substring(0,43)+'…':x.q} <b style="color:#065F46;">(${x.v.toFixed(1)})</b></div>`).join('')}
+          </div>
+          <div style="background:#FFF7F7; border-radius:6px; padding:6px 8px;">
+            <div style="font-size:.65rem; font-weight:700; color:#991B1B; margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em;">↓ Oportunidades</div>
+            ${bottom.map(x=>`<div style="font-size:.68rem; color:#1F2937; line-height:1.3; margin-bottom:2px;">• ${x.q.length>45?x.q.substring(0,43)+'…':x.q} <b style="color:#991B1B;">(${x.v.toFixed(1)})</b></div>`).join('')}
+          </div>
+        </div>
+      </div>`;
+  });
+
+  html += `</div>`;
 
   tableDiv.innerHTML = html;
   tableDiv.style.display = 'block';
