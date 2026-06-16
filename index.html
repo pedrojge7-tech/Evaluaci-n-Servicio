@@ -646,14 +646,9 @@ tbody td:first-child { text-align: left; }
           <div class="chart-title">Desempeño por Pregunta</div>
           <div class="chart-sub">Puntuación de cada entidad en cada pregunta</div>
         </div>
-        <button class="btn-ver-resultados" id="btnToggleLine" onclick="toggleInlineTable('line')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
-          Ver tabla
-        </button>
       </div>
       <div class="chart-container" id="lineChartWrap"><canvas id="lineChart"></canvas></div>
       <div id="lineLegend"></div>
-      <div id="lineInlineTable" style="display:none; margin-top:16px; overflow-x:auto;"></div>
     </div>
     <div class="chart-card">
       <div class="chart-hdr">
@@ -663,7 +658,7 @@ tbody td:first-child { text-align: left; }
         </div>
         <button class="btn-ver-resultados" id="btnToggleBar" onclick="toggleInlineTable('bar')">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
-          Ver tabla
+          Comparar
         </button>
       </div>
       <div class="chart-container" id="barChartWrap"><canvas id="barChart"></canvas></div>
@@ -1395,37 +1390,39 @@ function classifyComment(text){
   if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien|sin comentarios|sin observaciones|todo muy bien)$/.test(t)) return [];
 
   const raw = text.toLowerCase();
+  // normalized = sin acentos, minúsculas, sin puntuación (mismo que t pero lo usamos para los regex)
+  const norm = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[.,!¡?¿()"']/g, " ").replace(/\s+/g, " ").trim();
 
   const categories = {
-    "Sistemas, Equipo y Tecnología": /sistema|software|portal|plataforma|red|conexi.n|aplicaci.n|computadora|laptop|mouse|teclado|monitor|pantalla|impresora|internet|falla|error de sistema|tecnolog/g,
-    "Tiempos de Respuesta": /tiempo|rapidez|rápida|rápido|urgente|tard|agilizar|demora|retraso|lento|espera|agilidad/g,
-    "Comunicación y Seguimiento": /comunicaci|avisar|claro|transparencia|informaci|notificar|respuesta|contestar|seguimiento|aviso|correo|llamada|mensaje|junta|feedback/g,
-    "Procesos y Burocracia": /proceso|burocracia|tr.mite|papelo|firma|autorizaci|pol.tica/g,
-    "Abasto y Proveedores": /abasto|mercanc.a|proveedor|merma|desabasto|material|surtido|faltante|insumo/g,
-    "Logística y Entregas": /log.stica|ruta|entrega|env.o|transporte|chofer|camiones|veh.culo/g,
-    "Capacitación y Desarrollo": /capacitaci|entrenamiento|enseñar|curso|aprender|gu.a|induccion|desarrollo/g,
-    "Costos y Presupuestos": /costo|cotizaci.n|precio|cara|caro|presupuesto|gasto|ahorro/g,
-    "Visión de Negocio": /necesidad|negocio|beneficio|sucursal|rendimiento|ventas|mercado/g,
-    "Actitud y Trato al Cliente": /atenci.n|trato|empat.a|amable|actitud|disposici.n|apoyo|servicio al cliente|groser|prepotente|resoluci/g,
-    "Calidad y Precisión": /calidad|exactitud|precisi.n|error|equivocaci.n|correcto|detalle|revisi/g,
-    "Gestión de Personal": /personal|plantilla|recursos humanos|gente|vacante|contrataci.n|rotaci.n|falta de personal/g,
-    "Infraestructura y Mantenimiento": /mantenimiento|limpieza|instalaci|reparaci|obra|construcci|baño|aire|luz|espacio|estacionamiento|comedor|oficina|silla|escritorio/g,
-    "Nómina y Prestaciones": /n.mina|pago|sueldo|salario|compensaci|bono|deducci|finiquito|prestaci|quincena|aguinaldo|fondo de ahorro|vales/g,
-    "Innovación y Mejora Continua": /innovaci|nuevo|creativo|idea|mejora continua/g,
-    "Seguridad y Riesgos": /seguridad|riesgo|peligro|accidente|protecci/g,
-    "Planeación y Organización": /organizaci|planeaci|orden|coordinaci|estructura/g,
-    "Liderazgo y Gestión": /liderazgo|jefe|gerente|direcci.n|coordinador|supervisor|mando/g,
-    "Resolución de Problemas": /soluci.n|resolver|problema|conflicto/g,
-    "Documentación y Archivo": /document|archivo|papel|expediente|formato/g,
-    "Horarios, Turnos y Permisos": /horario|turno|hora|salida|entrada|comida|permiso|vacaciones/g,
-    "Carga de Trabajo y Estrés": /carga|mucho trabajo|saturad|estr.s|presi|exceso|pesad/g,
-    "Clima Laboral y Compañerismo": /ambiente|clima|compañer|chisme|rumor|respeto|valores|cultura|equipo|integraci/g,
-    "Sugerencias de Mejora": /falta|necesita|requiere|ocupamos|deber.an|sugerencia|recomiendo|mejorar|oportunidad/g
+    "Sistemas, Equipo y Tecnología": /\bsistema\b|\bsoftware\b|\bportal\b|\bplataforma\b|\bconexion\b|\baplicacion\b|\bcomputadora\b|\blaptop\b|\bmouse\b|\bteclado\b|\bmonitor\b|\bimpresora\b|\binternet\b|\berror de sistema\b|\btecnolog/,
+    "Tiempos de Respuesta": /\btiempo(s)? de respuesta\b|\brapidez\b|\brapida(s)?\b|\brapido(s)?\b|\btiempos\b|\bagilizar\b|\bdemora\b|\bretraso\b|\blento\b|\blenta\b|\bespera\b|\bagilidad\b|\btardan\b|\btarda(n)?\b|\btardanza\b|\boptimizar tiempo\b|\bmas rapido\b|\brespuesta (mas )?rapida\b|\brespuesta oportuna\b|\btiempo de atencion\b|\bdemoran\b|\bse tarda\b/,
+    "Comunicación y Seguimiento": /\bcomunicacion\b|\bcomunicar\b|\bavisar\b|\btransparencia\b|\bnotificar\b|\bnotificacion\b|\bseguimiento\b|\baviso\b|\bcorreo\b|\bllamada\b|\bjunta\b|\breunion\b|\bfeedback\b|\bmala comunicacion\b|\bfalta de comunicacion\b|\bfalta de informacion\b|\bno informan\b|\bno avisan\b|\bno notifican\b|\bno dan seguimiento\b|\bmejorar comunicacion\b|\bfalta de seguimiento\b/,
+    "Procesos y Burocracia": /\bproceso(s)?\b|\bburocracia\b|\btramite\b|\bpapeleo\b|\bfirma\b|\bautorizacion\b|\bpolitica\b|\bprocedimiento\b|\bflujo de trabajo\b/,
+    "Abasto y Proveedores": /\babasto\b|\bmercancia\b|\bproveedor\b|\bmerma\b|\bdesabasto\b|\bsurtido\b|\bfaltante(s)?\b|\binsumo\b/,
+    "Logística y Entregas": /\blogistica\b|\bruta(s)?\b|\bentrega(s)?\b|\benvio\b|\btransporte\b|\bchofer\b|\bcamion\b|\bvehiculo\b/,
+    "Capacitación y Desarrollo": /\bcapacitacion\b|\bcapacitar\b|\bentrenamiento\b|\bcurso\b|\baprender\b|\binduccion\b|\bdesarrollo profesional\b|\bformacion\b/,
+    "Costos y Presupuestos": /\bcosto(s)?\b|\bcotizacion\b|\bprecio\b|\bcaro\b|\bpresupuesto\b|\bgasto\b|\bahorro\b/,
+    "Visión de Negocio": /\bnegocio\b|\bsucursal\b|\brendimiento\b|\bventas\b|\bmercado\b/,
+    "Actitud y Trato al Cliente": /\btrato\b|\bempatia\b|\bamable\b|\bamabilidad\b|\bactitud\b|\bdisposicion\b|\bservicio al cliente\b|\bgrosero\b|\bprepotente\b|\bmala actitud\b|\bbuena actitud\b|\batencion al cliente\b|\batencion personalizada\b/,
+    "Calidad y Precisión": /\bcalidad\b|\bexactitud\b|\bprecision\b|\bequivocacion\b|\bincorrecto\b|\bdetalle\b|\brevision\b|\berrores frecuentes\b|\bfalta de calidad\b|\bbaja calidad\b|\berror(es)?\b|\bfallo(s)?\b|\bdefecto\b/,
+    "Gestión de Personal": /\bplantilla\b|\brecursos humanos\b|\bvacante\b|\bcontratacion\b|\brotacion de personal\b|\bfalta de personal\b|\bpoco personal\b|\bmas personal\b/,
+    "Infraestructura y Mantenimiento": /\bmantenimiento\b|\blimpieza\b|\binstalacion\b|\breparacion\b|\bconstruccion\b|\baire acondicionado\b|\bestacionamiento\b|\bcomedor\b|\boficina\b|\bsilla\b|\bescritorio\b/,
+    "Nómina y Prestaciones": /\bnomina\b|\bsueldo\b|\bsalario\b|\bcompensacion\b|\bbono\b|\bdeduccion\b|\bfiniquito\b|\bprestacion\b|\bquincena\b|\baguinaldo\b|\bfondo de ahorro\b|\bvales\b/,
+    "Innovación y Mejora Continua": /\binnovacion\b|\bmejorar el proceso\b|\bmejora continua\b|\bnueva forma\b|\bpropuesta de mejora\b|\bimplementar\b/,
+    "Seguridad y Riesgos": /\bseguridad\b|\briesgo\b|\bpeligro\b|\baccidente\b|\bproteccion\b/,
+    "Planeación y Organización": /\bplaneacion\b|\bplanificacion\b|\bdesorganizacion\b|\bfalta de planeacion\b|\bfalta de organizacion\b|\bfalta de coordinacion\b/,
+    "Liderazgo y Gestión": /\bliderazgo\b|\bjefe\b|\bgerente\b|\bcoordinador\b|\bsupervisor\b|\bmando\b|\bjefatura\b/,
+    "Resolución de Problemas": /\bno resuelven\b|\bno solucionan\b|\bno atienden\b|\bsin solucion\b|\bproblemas sin resolver\b|\bno dan solucion\b/,
+    "Documentación y Archivo": /\bdocumentacion\b|\barchivo\b|\bexpediente\b|\bformato(s)?\b/,
+    "Horarios, Turnos y Permisos": /\bhorario\b|\bturno\b|\bpermiso\b|\bvacaciones\b|\bdescanso\b|\bjornada\b/,
+    "Carga de Trabajo y Estrés": /\bcarga de trabajo\b|\bmucho trabajo\b|\bsaturado\b|\bestres\b|\bexceso de trabajo\b|\bpresion laboral\b/,
+    "Clima Laboral y Compañerismo": /\bambiente laboral\b|\bclima laboral\b|\bcompanero(s)?\b|\bchisme\b|\brespeto\b|\bcultura organizacional\b|\bintegracion\b/,
+    "Sugerencias de Mejora": /\bsugerencia\b|\brecomiendo\b|\bse podria\b|\bdeberian\b|\bse necesita\b|\bse requiere\b|\boportunidad de mejora\b|\bpodrian mejorar\b/
   };
 
   const matched = [];
   for (const [cat, regex] of Object.entries(categories)) {
-    if (raw.match(regex)) matched.push(cat);
+    if (norm.match(regex)) matched.push(cat);
   }
 
   if (matched.length > 0) return matched;
@@ -2646,16 +2643,17 @@ function renderPeticiones(depts) {
 }
 
 function toggleInlineTable(chartType) {
-  const tableDiv = document.getElementById(chartType === 'line' ? 'lineInlineTable' : 'barInlineTable');
-  const chartWrap = document.getElementById(chartType === 'line' ? 'lineChartWrap' : 'barChartWrap');
-  const btn = document.getElementById(chartType === 'line' ? 'btnToggleLine' : 'btnToggleBar');
+  if (chartType !== 'bar') return;
+  const tableDiv = document.getElementById('barInlineTable');
+  const chartWrap = document.getElementById('barChartWrap');
+  const btn = document.getElementById('btnToggleBar');
 
   const isVisible = tableDiv.style.display !== 'none';
 
   if (isVisible) {
     tableDiv.style.display = 'none';
     chartWrap.style.display = 'block';
-    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg> Ver tabla`;
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg> Comparar`;
     return;
   }
 
@@ -2668,58 +2666,80 @@ function toggleInlineTable(chartType) {
 
   if (!orderedDepts.length) { showToast("Sin datos para mostrar", "warn"); return; }
 
-  const pillClass = v => v >= 9 ? 'score-high' : v >= 8 ? 'score-mid' : 'score-low';
+  const pc = v => v >= 9 ? 'score-high' : v >= 8 ? 'score-mid' : 'score-low';
 
-  let html = '';
+  // Tabla comparativa dept vs dept:
+  // Filas = preguntas + fila de promedio general
+  // Columnas = cada departamento (ordenados de mayor a menor promedio)
+  // Celda resaltada = mejor score por fila
+  const activeQIndices = [];
+  QUESTIONS.forEach((q, qi) => {
+    const hasData = orderedDepts.some(d => { const v = SCORES[qi][DEPTS.indexOf(d)]; return v !== null && v !== undefined && !isNaN(v); });
+    if (hasData) activeQIndices.push(qi);
+  });
 
-  if (chartType === 'bar') {
-    // Tabla: Entidad | Promedio — ordenada de mayor a menor
-    const sorted = [...orderedDepts].sort((a,b) => (AVERAGES[DEPTS.indexOf(b)]||0) - (AVERAGES[DEPTS.indexOf(a)]||0));
-    html = `<table id="detailTable" style="min-width:300px; width:100%;">
+  const sorted = [...orderedDepts].sort((a,b) => (AVERAGES[DEPTS.indexOf(b)]||0) - (AVERAGES[DEPTS.indexOf(a)]||0));
+
+  // CSS para el ranking inline
+  const rankStyle = (rank, total) => {
+    if (rank === 0) return 'background:var(--success-bg); color:var(--success); font-weight:800;';
+    if (rank === total - 1 && total > 1) return 'background:var(--danger-bg); color:var(--danger); font-weight:700;';
+    return '';
+  };
+
+  const headerCols = sorted.map(d => `
+    <th style="text-align:center; min-width:90px; padding:10px 8px;">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${deptColor(d)};margin-right:4px;vertical-align:middle;"></span>
+      <span style="font-size:.68rem;">${d}</span>
+    </th>`).join('');
+
+  const bodyRows = activeQIndices.map(qi => {
+    const rowVals = sorted.map(d => SCORES[qi][DEPTS.indexOf(d)]);
+    const validVals = rowVals.filter(v => v !== null && v !== undefined && !isNaN(v));
+    const maxVal = validVals.length ? Math.max(...validVals) : null;
+    const minVal = validVals.length > 1 ? Math.min(...validVals) : null;
+    const avg = validVals.length ? validVals.reduce((a,b)=>a+b,0)/validVals.length : null;
+    const cells = rowVals.map(v => {
+      if (v === null || v === undefined || isNaN(v)) return `<td style="text-align:center; color:var(--muted);">—</td>`;
+      const isBest = v === maxVal;
+      const isWorst = v === minVal && minVal !== maxVal;
+      const extra = isBest ? 'background:var(--success-bg); color:var(--success); font-weight:800;' : isWorst ? 'background:var(--danger-bg); color:var(--danger); font-weight:700;' : '';
+      return `<td style="text-align:center; ${extra} border-radius:6px; padding:8px 6px;">${v.toFixed(1)}</td>`;
+    }).join('');
+    return `<tr>
+      <td style="font-size:.75rem; font-weight:600; padding:8px 12px; max-width:160px; white-space:normal; line-height:1.3;">${QUESTIONS[qi]}</td>
+      ${cells}
+      <td style="text-align:center; color:var(--muted); font-size:.78rem; padding:8px 6px;">${avg !== null ? avg.toFixed(1) : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  // Fila de promedio general
+  const avgCells = sorted.map(d => {
+    const avg = AVERAGES[DEPTS.indexOf(d)] || 0;
+    return `<td style="text-align:center;"><span class="score-pill ${pc(avg)}">${avg.toFixed(2)}</span></td>`;
+  }).join('');
+  const globalAvg = sorted.reduce((s,d)=>s+(AVERAGES[DEPTS.indexOf(d)]||0),0)/sorted.length;
+
+  const html = `
+    <div style="font-size:.72rem; color:var(--muted); margin-bottom:8px; font-weight:600;">
+      <span style="display:inline-block; width:10px; height:10px; background:var(--success-bg); border:1.5px solid var(--success); border-radius:3px; vertical-align:middle; margin-right:4px;"></span>Mejor en esa pregunta &nbsp;
+      <span style="display:inline-block; width:10px; height:10px; background:var(--danger-bg); border:1.5px solid var(--danger); border-radius:3px; vertical-align:middle; margin-right:4px;"></span>Peor en esa pregunta
+    </div>
+    <table style="width:100%; border-collapse:separate; border-spacing:0; font-size:.8rem;">
       <thead><tr>
-        <th style="text-align:left;">Entidad</th>
-        <th style="text-align:center;">Promedio</th>
+        <th style="text-align:left; min-width:160px; padding:10px 12px;">Pregunta</th>
+        ${headerCols}
+        <th style="text-align:center; min-width:60px; padding:10px 6px; color:var(--muted);">Prom.</th>
       </tr></thead>
       <tbody>
-        ${sorted.map(d => {
-          const avg = AVERAGES[DEPTS.indexOf(d)] || 0;
-          return `<tr>
-            <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${deptColor(d)};margin-right:8px;vertical-align:middle;"></span>${d}</td>
-            <td style="text-align:center;"><span class="score-pill ${pillClass(avg)}">${avg.toFixed(2)}</span></td>
-          </tr>`;
-        }).join('')}
+        ${bodyRows}
+        <tr style="background:var(--surface2); border-top: 2px solid var(--border);">
+          <td style="font-weight:800; font-size:.78rem; padding:10px 12px;">Promedio General</td>
+          ${avgCells}
+          <td style="text-align:center; font-weight:800; color:var(--primary);">${globalAvg.toFixed(2)}</td>
+        </tr>
       </tbody>
     </table>`;
-  } else {
-    // Tabla: Pregunta | Entidad1 | Entidad2 | ... — igual que el tooltip del line chart
-    const activeQIndices = [];
-    QUESTIONS.forEach((q, qi) => {
-      const hasData = orderedDepts.some(d => { const v = SCORES[qi][DEPTS.indexOf(d)]; return v !== null && v !== undefined && !isNaN(v); });
-      if (hasData) activeQIndices.push(qi);
-    });
-    html = `<table id="detailTable" style="min-width:500px; width:100%;">
-      <thead><tr>
-        <th style="text-align:left; min-width:140px;">Pregunta</th>
-        ${orderedDepts.map(d => `<th style="text-align:center;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${deptColor(d)};margin-right:5px;vertical-align:middle;"></span>${d.startsWith("PROM.") ? d : d}</th>`).join('')}
-        <th style="text-align:center;">Prom.</th>
-      </tr></thead>
-      <tbody>
-        ${activeQIndices.map(qi => {
-          const rowVals = orderedDepts.map(d => SCORES[qi][DEPTS.indexOf(d)]);
-          const valid = rowVals.filter(v => v !== null && v !== undefined && !isNaN(v));
-          const avg = valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : null;
-          return `<tr>
-            <td style="font-size:.78rem; font-weight:600; padding-right:12px;">${QUESTIONS[qi]}</td>
-            ${rowVals.map(v => v === null || v === undefined || isNaN(v)
-              ? `<td style="text-align:center; color:var(--muted);">—</td>`
-              : `<td style="text-align:center;"><span class="score-pill ${pillClass(v)}">${v.toFixed(1)}</span></td>`
-            ).join('')}
-            <td style="text-align:center;"><b>${avg !== null ? avg.toFixed(2) : '—'}</b></td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table>`;
-  }
 
   tableDiv.innerHTML = html;
   tableDiv.style.display = 'block';
