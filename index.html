@@ -594,20 +594,6 @@ tbody td:first-child { text-align: left; }
 
 <div class="toast" id="toast"></div>
 
-<!-- Floating Results Panel -->
-<div class="floating-results-overlay" id="floatingResultsOverlay" onclick="closeFloatingResults()">
-  <div class="floating-results-panel" onclick="event.stopPropagation()">
-    <button class="floating-results-close" onclick="closeFloatingResults()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-    </button>
-    <h3 id="floatingResultsTitle">Resultados por Entidad</h3>
-    <div class="flo-sub" id="floatingResultsSub"></div>
-    <div class="floating-results-body">
-      <table class="flo-table"><thead id="floatingResultsThead"></thead><tbody id="floatingResultsTbody"></tbody></table>
-    </div>
-  </div>
-</div>
-
 <main class="main">
 
   <div class="insight-container">
@@ -660,13 +646,14 @@ tbody td:first-child { text-align: left; }
           <div class="chart-title">Desempeño por Pregunta</div>
           <div class="chart-sub">Puntuación de cada entidad en cada pregunta</div>
         </div>
-        <button class="btn-ver-resultados" onclick="openFloatingResults('line')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          Ver Resultados
+        <button class="btn-ver-resultados" id="btnToggleLine" onclick="toggleInlineTable('line')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+          Ver tabla
         </button>
       </div>
-      <div class="chart-container"><canvas id="lineChart"></canvas></div>
-      <div id="lineLegend"></div> 
+      <div class="chart-container" id="lineChartWrap"><canvas id="lineChart"></canvas></div>
+      <div id="lineLegend"></div>
+      <div id="lineInlineTable" style="display:none; margin-top:16px; overflow-x:auto;"></div>
     </div>
     <div class="chart-card">
       <div class="chart-hdr">
@@ -674,12 +661,13 @@ tbody td:first-child { text-align: left; }
           <div class="chart-title">Promedio General por Entidad</div>
           <div class="chart-sub">Escala 1–10 · Promedio de todas las preguntas</div>
         </div>
-        <button class="btn-ver-resultados" onclick="openFloatingResults('bar')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          Ver Resultados
+        <button class="btn-ver-resultados" id="btnToggleBar" onclick="toggleInlineTable('bar')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+          Ver tabla
         </button>
       </div>
-      <div class="chart-container"><canvas id="barChart"></canvas></div>
+      <div class="chart-container" id="barChartWrap"><canvas id="barChart"></canvas></div>
+      <div id="barInlineTable" style="display:none; margin-top:16px; overflow-x:auto;"></div>
     </div>
   </div>
 
@@ -1544,27 +1532,32 @@ function renderCatChips(depts){
   Object.keys(cats).sort((a,b)=>cats[b].length - cats[a].length).forEach(cat => { container.appendChild(makeChip(cat, cats[cat].length, () => { document.getElementById("commentsChartContainer").style.display = "none"; renderComments(deptArr, cat); })); });
 }
 
-function renderComments(depts, cat){
+function renderComments(depts, filterCat){
   const list = document.getElementById("commentList");
   const deptArr = Array.isArray(depts) ? depts : [depts];
 
-  // Construir mapa de cat → [{text, dept}], permitiendo que un comentario aparezca en N cats
-  const buildCatMap = (arr) => {
+  // Construye mapa categoría → [{text, dept}] sin filtro de cat
+  // Un comentario que toque N categorías aparece en las N
+  const buildMultiCatMap = (commentsArr) => {
     const map = {};
-    arr.forEach(({text, dept}) => {
-      const cats = cat ? (classifyComment(text).includes(cat) ? [cat] : []) : classifyComment(text);
-      cats.forEach(c => { if(!map[c]) map[c] = []; map[c].push({text, dept}); });
+    commentsArr.forEach(({text, dept}) => {
+      classifyComment(text).forEach(c => {
+        if(!map[c]) map[c] = [];
+        map[c].push({text, dept});
+      });
     });
     return map;
   };
 
-  if (cat) {
-    // Vista filtrada por categoría: mostrar todos los comentarios que tengan esa cat
+  const cleanText = (t) => t.replace(/^\[PET_RES\]\s*/, "").replace(/^\[PET_NO_RES\]\s*/, "");
+
+  if (filterCat) {
+    // Vista de una categoría específica: todos los comentarios que la incluyan, sin agrupar
     let filtered = [];
     deptArr.forEach(d => {
       (COMMENTS[d]||[]).forEach(c => {
         if (c.startsWith("[PET_RES]") || c.startsWith("[PET_NO_RES]")) return;
-        if (classifyComment(c).includes(cat)) filtered.push({text: c, dept: d});
+        if (classifyComment(c).includes(filterCat)) filtered.push({text: c, dept: d});
       });
     });
     if(!filtered.length){ list.innerHTML = `<div class="no-comments">Sin comentarios relevantes para la mejora continua.</div>`; return; }
@@ -1574,16 +1567,16 @@ function renderComments(depts, cat){
         const dc = filtered.filter(x => x.dept === d);
         if (!dc.length) return;
         html += `<div style="font-weight: 900; font-size: 1.1rem; color: var(--if-orange); margin-top: 24px; margin-bottom: 8px; border-bottom: 2px solid var(--if-orange); padding-bottom: 4px; text-transform: uppercase;">${d}</div>`;
-        html += dc.map(c => { const cleanText = c.text.replace(/^\[PET_RES\]\s*/, "").replace(/^\[PET_NO_RES\]\s*/, ""); return `<div class="comment-item" style="--al:${deptColor(d)}">${cleanText}</div>`; }).join("");
+        html += dc.map(c => `<div class="comment-item" style="--al:${deptColor(d)}">${cleanText(c.text)}</div>`).join("");
       });
     } else {
-      html += filtered.map(c => { const cleanText = c.text.replace(/^\[PET_RES\]\s*/, "").replace(/^\[PET_NO_RES\]\s*/, ""); return `<div class="comment-item" style="--al:${deptColor(deptArr[0])}">${cleanText}</div>`; }).join("");
+      html += filtered.map(c => `<div class="comment-item" style="--al:${deptColor(deptArr[0])}">${cleanText(c.text)}</div>`).join("");
     }
     list.innerHTML = html;
     return;
   }
 
-  // Vista "Todos": agrupar por categoría, cada comentario puede estar en varias
+  // Vista "Todos": agrupar por categoría; un comentario aparece repetido en cada cat que le aplica
   let allValid = [];
   deptArr.forEach(d => {
     (COMMENTS[d]||[]).forEach(c => {
@@ -1599,19 +1592,17 @@ function renderComments(depts, cat){
       const deptComments = allValid.filter(c => c.dept === d);
       if (!deptComments.length) return;
       html += `<div style="font-weight: 900; font-size: 1.1rem; color: var(--if-orange); margin-top: 24px; margin-bottom: 8px; border-bottom: 2px solid var(--if-orange); padding-bottom: 4px; text-transform: uppercase;">${d}</div>`;
-      const grouped = buildCatMap(deptComments);
-      const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
-      sortedCats.forEach(cName => {
+      const grouped = buildMultiCatMap(deptComments);
+      Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length).forEach(cName => {
         html += `<div style="font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;">${cName} (${grouped[cName].length})</div>`;
-        html += grouped[cName].map(c => { const cleanText = c.text.replace(/^\[PET_RES\]\s*/, "").replace(/^\[PET_NO_RES\]\s*/, ""); return `<div class="comment-item" style="--al:${deptColor(d)}">${cleanText}</div>`; }).join("");
+        html += grouped[cName].map(c => `<div class="comment-item" style="--al:${deptColor(d)}">${cleanText(c.text)}</div>`).join("");
       });
     });
   } else {
-    const grouped = buildCatMap(allValid);
-    const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
-    sortedCats.forEach(cName => {
+    const grouped = buildMultiCatMap(allValid);
+    Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length).forEach(cName => {
       html += `<div style="font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;">${cName} (${grouped[cName].length})</div>`;
-      html += grouped[cName].map(c => { const cleanText = c.text.replace(/^\[PET_RES\]\s*/, "").replace(/^\[PET_NO_RES\]\s*/, ""); return `<div class="comment-item" style="--al:${deptColor(deptArr[0])}">${cleanText}</div>`; }).join("");
+      html += grouped[cName].map(c => `<div class="comment-item" style="--al:${deptColor(deptArr[0])}">${cleanText(c.text)}</div>`).join("");
     });
   }
   list.innerHTML = html;
@@ -2654,14 +2645,21 @@ function renderPeticiones(depts) {
   document.getElementById("petNoResList").innerHTML = renderList(noResueltas);
 }
 
-function openFloatingResults(chartType) {
-  const overlay = document.getElementById("floatingResultsOverlay");
-  const title = document.getElementById("floatingResultsTitle");
-  const sub = document.getElementById("floatingResultsSub");
-  const thead = document.getElementById("floatingResultsThead");
-  const tbody = document.getElementById("floatingResultsTbody");
+function toggleInlineTable(chartType) {
+  const tableDiv = document.getElementById(chartType === 'line' ? 'lineInlineTable' : 'barInlineTable');
+  const chartWrap = document.getElementById(chartType === 'line' ? 'lineChartWrap' : 'barChartWrap');
+  const btn = document.getElementById(chartType === 'line' ? 'btnToggleLine' : 'btnToggleBar');
 
-  // Reconstruir los depts activos igual que updateAllViews
+  const isVisible = tableDiv.style.display !== 'none';
+
+  if (isVisible) {
+    tableDiv.style.display = 'none';
+    chartWrap.style.display = 'block';
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg> Ver tabla`;
+    return;
+  }
+
+  // Reconstruir depts activos
   const allowedDirs = activeDirs.has("Todas") ? DIRS : Array.from(activeDirs);
   const filteredDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
   const orderedDepts = activeDepts.has("Todos")
@@ -2670,55 +2668,63 @@ function openFloatingResults(chartType) {
 
   if (!orderedDepts.length) { showToast("Sin datos para mostrar", "warn"); return; }
 
-  if (chartType === "bar") {
-    title.textContent = "Promedio General por Entidad";
-    sub.textContent = "Promedio de todas las preguntas · Escala 1–10";
-    thead.innerHTML = `<tr><th>Entidad</th><th>Dirección</th><th>Promedio</th></tr>`;
+  const pillClass = v => v >= 9 ? 'score-high' : v >= 8 ? 'score-mid' : 'score-low';
+
+  let html = '';
+
+  if (chartType === 'bar') {
+    // Tabla: Entidad | Promedio — ordenada de mayor a menor
     const sorted = [...orderedDepts].sort((a,b) => (AVERAGES[DEPTS.indexOf(b)]||0) - (AVERAGES[DEPTS.indexOf(a)]||0));
-    tbody.innerHTML = sorted.map((d, i) => {
-      const avg = AVERAGES[DEPTS.indexOf(d)] || 0;
-      const pillClass = avg >= 9 ? "flo-score-high" : avg >= 8 ? "flo-score-mid" : "flo-score-low";
-      return `<tr>
-        <td><span class="flo-dept-dot" style="background:${deptColor(d)}"></span><b>${d}</b></td>
-        <td style="color:var(--muted); font-size:.78rem;">${DEPT_TO_DIR[d] || "—"}</td>
-        <td><span class="flo-score-pill ${pillClass}">${avg.toFixed(2)}</span></td>
-      </tr>`;
-    }).join("");
+    html = `<table id="detailTable" style="min-width:300px; width:100%;">
+      <thead><tr>
+        <th style="text-align:left;">Entidad</th>
+        <th style="text-align:center;">Promedio</th>
+      </tr></thead>
+      <tbody>
+        ${sorted.map(d => {
+          const avg = AVERAGES[DEPTS.indexOf(d)] || 0;
+          return `<tr>
+            <td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${deptColor(d)};margin-right:8px;vertical-align:middle;"></span>${d}</td>
+            <td style="text-align:center;"><span class="score-pill ${pillClass(avg)}">${avg.toFixed(2)}</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
   } else {
-    title.textContent = "Desempeño por Pregunta";
-    sub.textContent = "Puntaje de cada entidad en cada pregunta";
-    // Columnas: Pregunta | dept1 | dept2 | ...
-    thead.innerHTML = `<tr>
-      <th style="min-width:180px;">Pregunta</th>
-      ${orderedDepts.map(d => `<th style="text-align:center;"><span class="flo-dept-dot" style="background:${deptColor(d)}"></span>${d.startsWith("PROM.") ? d : d}</th>`).join("")}
-      <th>Promedio</th>
-    </tr>`;
+    // Tabla: Pregunta | Entidad1 | Entidad2 | ... — igual que el tooltip del line chart
     const activeQIndices = [];
     QUESTIONS.forEach((q, qi) => {
       const hasData = orderedDepts.some(d => { const v = SCORES[qi][DEPTS.indexOf(d)]; return v !== null && v !== undefined && !isNaN(v); });
       if (hasData) activeQIndices.push(qi);
     });
-    tbody.innerHTML = activeQIndices.map(qi => {
-      const rowVals = orderedDepts.map(d => SCORES[qi][DEPTS.indexOf(d)]);
-      const valid = rowVals.filter(v => v !== null && v !== undefined && !isNaN(v));
-      const avg = valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : null;
-      return `<tr>
-        <td style="font-weight:600; font-size:.78rem;">${QUESTIONS[qi]}</td>
-        ${rowVals.map(v => {
-          if (v === null || v === undefined || isNaN(v)) return `<td style="text-align:center; color:var(--muted);">—</td>`;
-          const pillClass = v >= 9 ? "flo-score-high" : v >= 8 ? "flo-score-mid" : "flo-score-low";
-          return `<td style="text-align:center;"><span class="flo-score-pill ${pillClass}">${v.toFixed(1)}</span></td>`;
-        }).join("")}
-        <td style="text-align:right;"><b>${avg !== null ? avg.toFixed(2) : "—"}</b></td>
-      </tr>`;
-    }).join("");
+    html = `<table id="detailTable" style="min-width:500px; width:100%;">
+      <thead><tr>
+        <th style="text-align:left; min-width:140px;">Pregunta</th>
+        ${orderedDepts.map(d => `<th style="text-align:center;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${deptColor(d)};margin-right:5px;vertical-align:middle;"></span>${d.startsWith("PROM.") ? d : d}</th>`).join('')}
+        <th style="text-align:center;">Prom.</th>
+      </tr></thead>
+      <tbody>
+        ${activeQIndices.map(qi => {
+          const rowVals = orderedDepts.map(d => SCORES[qi][DEPTS.indexOf(d)]);
+          const valid = rowVals.filter(v => v !== null && v !== undefined && !isNaN(v));
+          const avg = valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : null;
+          return `<tr>
+            <td style="font-size:.78rem; font-weight:600; padding-right:12px;">${QUESTIONS[qi]}</td>
+            ${rowVals.map(v => v === null || v === undefined || isNaN(v)
+              ? `<td style="text-align:center; color:var(--muted);">—</td>`
+              : `<td style="text-align:center;"><span class="score-pill ${pillClass(v)}">${v.toFixed(1)}</span></td>`
+            ).join('')}
+            <td style="text-align:center;"><b>${avg !== null ? avg.toFixed(2) : '—'}</b></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
   }
 
-  overlay.classList.add("open");
-}
-
-function closeFloatingResults() {
-  document.getElementById("floatingResultsOverlay").classList.remove("open");
+  tableDiv.innerHTML = html;
+  tableDiv.style.display = 'block';
+  chartWrap.style.display = 'none';
+  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Ver gráfica`;
 }
 
 (async ()=>{
