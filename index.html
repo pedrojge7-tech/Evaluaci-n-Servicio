@@ -53,14 +53,14 @@
   --if-gray-500:   #7A8D9E;
   --bg: var(--if-gray-100); 
   --surface: #FFFFFF; 
-  --surface2: var(--if-white);
+  --surface2: var(--if-white); 
   --border: rgba(184, 196, 206, 0.4); 
   --text: var(--if-navy); 
   --muted: var(--if-gray-500); 
   --primary: var(--if-orange); 
   --primary-hover: var(--if-orange-hover); 
   --primary-light: rgba(224, 112, 16, 0.06); 
-  --success: #10B981;
+  --success: #10B981; 
   --success-bg: #D1FAE5;
   --warning: #F59E0B;
   --warning-bg: #FEF3C7;
@@ -69,28 +69,25 @@
   --font: 'Inter', system-ui, -apple-system, sans-serif;
   --shadow: 0 4px 6px -1px rgba(21, 33, 48, 0.05), 0 2px 4px -1px rgba(21, 33, 48, 0.03);
   --shadow-md: 0 12px 25px -5px rgba(21, 33, 48, 0.08), 0 8px 10px -6px rgba(21, 33, 48, 0.04);
-  --r: 20px;
+  --r: 20px; 
   --rs: 12px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing: antialiased;}
 
-.hamburger-btn { background: none; border: none; cursor: pointer; color: var(--if-navy); padding: 8px;
-  margin-right: 12px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: background 0.2s; }
+/* Menú Hamburguesa & Sidebar */
+.hamburger-btn { background: none; border: none; cursor: pointer; color: var(--if-navy); padding: 8px; margin-right: 12px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: background 0.2s; }
 .hamburger-btn:hover { background: var(--surface2); }
 .sidebar-overlay { position: fixed; inset: 0; background: rgba(21, 33, 48, 0.5); z-index: 1050; display: none; opacity: 0; transition: opacity 0.3s; }
 .sidebar-overlay.show { display: block; opacity: 1; }
-.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 300px; background: var(--surface);
-  z-index: 1100; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-md); display: flex; flex-direction: column; }
+.sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 300px; background: var(--surface); z-index: 1100; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-md); display: flex; flex-direction: column; }
 .sidebar.open { transform: translateX(0); }
 .sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .sidebar-header h3 { font-weight: 800; color: var(--if-navy); font-size: 1.1rem; letter-spacing:-0.02em; }
-.close-sidebar { background: none; border: none; cursor: pointer; color: var(--muted);
-  transition: color 0.2s; display:flex; align-items:center; justify-content:center; }
+.close-sidebar { background: none; border: none; cursor: pointer; color: var(--muted); transition: color 0.2s; display:flex; align-items:center; justify-content:center; }
 .close-sidebar:hover { color: var(--danger); }
 .sidebar-menu { padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; }
-.sidebar-item { padding: 14px 16px; border-radius: 8px; border: 1.5px solid transparent; background: transparent; text-align: left; font-family: var(--font);
-  font-weight: 600; font-size: .95rem; color: var(--text); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+.sidebar-item { padding: 14px 16px; border-radius: 8px; border: 1.5px solid transparent; background: transparent; text-align: left; font-family: var(--font); font-weight: 600; font-size: .95rem; color: var(--text); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
 .sidebar-item:hover { background: var(--surface2); border-color: var(--border); }
 .sidebar-item.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); box-shadow: 0 2px 8px rgba(224,112,16,0.15); }
 .sidebar-item svg { flex-shrink: 0; }
@@ -99,9 +96,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 #loginScreen ~ * { visibility: hidden; }
 body.reader-mode #loginScreen ~ * { visibility: visible; }
 .login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:48px 40px;width:380px;box-shadow:var(--shadow-md);text-align:center;}
-.brand-logo-if { background: var(--if-orange); color: #fff; font-weight: 900; font-size: 28px;
-  width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin: 0 auto 24px; letter-spacing: -1.5px;
-  box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3); }
+.brand-logo-if { background: var(--if-orange); color: #fff; font-weight: 900; font-size: 28px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin: 0 auto 24px; letter-spacing: -1.5px; box-shadow: 0 4px 12px rgba(224, 112, 16, 0.3); }
 .login-box h2{font-weight:800;font-size:1.6rem;letter-spacing:-0.03em;margin-bottom:8px; color: var(--if-navy);}
 .login-box p{font-weight:400;font-size:.85rem;color:var(--muted);margin-bottom:28px;}
 .login-input{width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:12px 16px;font-family:var(--font);font-size:.95rem;outline:none;margin-bottom:16px;transition:all .2s; color: var(--text); background: var(--surface2);}
@@ -130,18 +125,14 @@ body.reader-mode #loginScreen ~ * { visibility: visible; }
 .btn-share:hover{background:var(--if-navy-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21, 33, 48, 0.15);}
 
 .insight-container { display: flex; justify-content: center; margin-bottom: 32px; margin-top: 10px; padding: 0 40px; }
-.btn-insight-master { background: linear-gradient(45deg, #FF512F 0%, #F09819 51%, #FF512F 100%); background-size: 200% auto; color: #fff; border: none;
-  padding: 16px 38px; border-radius: 50px; font-size: 1.15rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px; font-family: var(--font);
-  box-shadow: 0 4px 15px rgba(240, 152, 25, 0.4); transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); letter-spacing: 0.02em;
-  animation: gradient-shift 3s linear infinite, pulse-neon 2s infinite; }
+.btn-insight-master { background: linear-gradient(45deg, #FF512F 0%, #F09819 51%, #FF512F 100%); background-size: 200% auto; color: #fff; border: none; padding: 16px 38px; border-radius: 50px; font-size: 1.15rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 10px; font-family: var(--font); box-shadow: 0 4px 15px rgba(240, 152, 25, 0.4); transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); letter-spacing: 0.02em; animation: gradient-shift 3s linear infinite, pulse-neon 2s infinite; }
 .btn-insight-master:hover { transform: scale(1.03) translateY(-2px); box-shadow: 0 8px 25px rgba(240, 152, 25, 0.6); filter: brightness(1.05); }
 .btn-insight-master:active { transform: scale(0.98); }
 @keyframes gradient-shift { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
 @keyframes pulse-neon { 0% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0.5); } 70% { box-shadow: 0 0 0 15px rgba(240, 152, 25, 0); } 100% { box-shadow: 0 0 0 0 rgba(240, 152, 25, 0); } }
 
 .nps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-.nps-gauge-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px;
-  box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
+.nps-gauge-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px; box-shadow: var(--shadow); position: relative; display: flex; flex-direction: column; align-items: center; transition: transform 0.2s, box-shadow 0.2s; }
 .nps-gauge-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .nps-gauge-title { font-weight: 800; font-size: .9rem; color: var(--if-navy); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.05em; text-align: center; width: 100%; white-space: normal; }
 .nps-gauge-wrapper { position: relative; width: 100%; max-width: 220px; display:flex; justify-content:center; }
@@ -160,8 +151,7 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 
 .main{max-width:1440px;margin:0 auto;padding:10px 40px 80px;}
 
-.participation-card { display: none; margin-bottom: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 28px;
-  box-shadow: var(--shadow); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.participation-card { display: none; margin-bottom: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 28px; box-shadow: var(--shadow); overflow-x: auto; -webkit-overflow-scrolling: touch; }
 #participationTable { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .8rem; }
 #participationTable th { background: var(--surface2); padding: 12px 16px; font-weight: 700; font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-bottom: 1px solid var(--border); text-align: center; }
 #participationTable th:first-child { border-top-left-radius: var(--rs); border-bottom-left-radius: var(--rs); }
@@ -219,31 +209,6 @@ body.reader-mode #defaultLogoRight { display: none !important; }
 .kpi-bar-fill{height:100%;background:var(--ca,var(--primary));border-radius:10px; transition: width 0.5s ease;}
 
 .charts-row{display:grid;gap:24px;margin-bottom:24px;}
-
-/* --- Floating Results Panel --- */
-.btn-ver-resultados { background: var(--surface); border: 1.5px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 50px; font-family: var(--font); font-size: .72rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all .2s; flex-shrink: 0; }
-.btn-ver-resultados:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-.btn-ver-resultados svg { flex-shrink: 0; }
-.floating-results-overlay { position: fixed; inset: 0; z-index: 3000; display: none; }
-.floating-results-overlay.open { display: block; }
-.floating-results-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--shadow-md); padding: 28px; width: min(700px, 95vw); max-height: 80vh; display: flex; flex-direction: column; z-index: 3001; }
-.floating-results-panel h3 { font-weight: 800; font-size: 1rem; color: var(--if-navy); margin-bottom: 4px; letter-spacing: -0.02em; }
-.floating-results-panel .flo-sub { font-size: .75rem; color: var(--muted); font-weight: 500; margin-bottom: 20px; }
-.floating-results-close { position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; color: var(--muted); transition: color .2s; display: flex; align-items: center; }
-.floating-results-close:hover { color: var(--danger); }
-.floating-results-body { overflow-y: auto; flex: 1; }
-.flo-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: .82rem; }
-.flo-table th { background: var(--surface2); padding: 10px 14px; font-weight: 700; font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-bottom: 1px solid var(--border); text-align: left; position: sticky; top: 0; }
-.flo-table th:last-child { text-align: right; }
-.flo-table td { padding: 12px 14px; border-bottom: 1px solid var(--surface2); vertical-align: middle; }
-.flo-table td:last-child { text-align: right; }
-.flo-table tr:last-child td { border-bottom: none; }
-.flo-table tr:hover td { background: var(--surface2); }
-.flo-dept-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
-.flo-score-pill { display: inline-block; padding: 3px 10px; border-radius: 50px; font-weight: 700; font-size: .8rem; }
-.flo-score-high { background: var(--success-bg); color: var(--success); }
-.flo-score-mid  { background: var(--warning-bg); color: var(--warning); }
-.flo-score-low  { background: var(--danger-bg);  color: var(--danger); }
 .cols-2{grid-template-columns:repeat(auto-fit, minmax(420px, 1fr));}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0;height:100%;}
 .chart-hdr{margin-bottom:20px;flex-shrink:0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;}
@@ -329,6 +294,7 @@ tbody td:first-child { text-align: left; }
 .no-comments{text-align:center;padding:48px;font-weight:500;color:var(--muted);font-size:.9rem; width: 100%; background:var(--surface2); border-radius:var(--rs); border: 1px dashed var(--border);}
 #commentsChartContainer { display:none; position:relative; height:360px; width:100%; margin-top:16px; animation:fadeIn .3s ease; margin-bottom: 20px;}
 
+/* Preguntas Abiertas */
 .open-q-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
 .open-q-tab { padding: 9px 20px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--surface); font-family: var(--font); font-weight: 600; font-size: .8rem; color: var(--muted); cursor: pointer; transition: all .2s; white-space: normal; text-align: left; max-width: 380px; line-height: 1.4; }
 .open-q-tab:hover { border-color: var(--if-navy-light); color: var(--if-navy); background: var(--surface2); }
@@ -545,7 +511,7 @@ tbody td:first-child { text-align: left; }
       <b>"Comentarios":</b> F1=Direcciones, F2=Departamentos, F3+=Comentarios.<br>
       <b>"respuestas":</b> F1=Dir, F2=Deptos, F3=Enviados, F4=Contestaron.<br>
       <b>"preguntas abiertas":</b> F2=Departamentos, A3+=Texto pregunta, resto=Respuestas.
-  </div>
+    </div>
     <div class="dropzone" id="dropzone">
       <input type="file" accept=".xlsx,.xls" id="fileInput">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
@@ -647,8 +613,8 @@ tbody td:first-child { text-align: left; }
           <div class="chart-sub">Puntuación de cada entidad en cada pregunta</div>
         </div>
       </div>
-      <div class="chart-container" id="lineChartWrap"><canvas id="lineChart"></canvas></div>
-      <div id="lineLegend"></div>
+      <div class="chart-container"><canvas id="lineChart"></canvas></div>
+      <div id="lineLegend"></div> 
     </div>
     <div class="chart-card">
       <div class="chart-hdr">
@@ -656,13 +622,8 @@ tbody td:first-child { text-align: left; }
           <div class="chart-title">Promedio General por Entidad</div>
           <div class="chart-sub">Escala 1–10 · Promedio de todas las preguntas</div>
         </div>
-        <button class="btn-ver-resultados" id="btnToggleBar" onclick="toggleInlineTable('bar')">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
-          Comparar
-        </button>
       </div>
-      <div class="chart-container" id="barChartWrap"><canvas id="barChart"></canvas></div>
-      <div id="barInlineTable" style="display:none; margin-top:16px; overflow-x:auto;"></div>
+      <div class="chart-container"><canvas id="barChart"></canvas></div>
     </div>
   </div>
 
@@ -716,7 +677,6 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
   </div>
-  
   <div class="chart-card open-q-card" id="openQuestionsCard" style="display:none; margin-top:24px;">
     <div class="chart-hdr">
       <div>
@@ -728,14 +688,10 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
     <div id="openQTabs" class="open-q-tabs"></div>
-   
     <div id="openQChartArea" style="display:none; margin-bottom:28px;">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;">
         <div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-            <div style="font-weight:800; font-size:.85rem; color:var(--if-navy); text-transform:uppercase; letter-spacing:.06em;">Distribución de Clasificaciones</div>
-            <button id="btnVerDatosDona" class="btn btn-import" style="padding: 4px 10px; font-size: 0.7rem;">Ver Datos</button>
-          </div>
+          <div style="font-weight:800; font-size:.85rem; color:var(--if-navy); text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px;">Distribución de Clasificaciones</div>
           <div style="position:relative; max-width:320px; margin:0 auto;"><canvas id="openQDonutChart"></canvas></div>
         </div>
         <div>
@@ -752,18 +708,19 @@ tbody td:first-child { text-align: left; }
 
 <script>
 Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
-Chart.defaults.color = "#7A8D9E"; 
-Chart.defaults.scale.grid.color = "rgba(184, 196, 206, 0.3)"; 
+Chart.defaults.color = '#7A8D9E'; 
+Chart.defaults.scale.grid.color = 'rgba(184, 196, 206, 0.3)'; 
 
-let appMode = "interno";
+let appMode = 'interno';
 
+// Almacén dual: guarda la información de ambos módulos de forma independiente
 let store = {
   interno: { DIRS: [], DEPTS: [], DEPT_TO_DIR: {}, QUESTIONS: [], SCORES: [], AVERAGES: [], COMMENTS: {}, PARTICIPATION: {}, NPS_DATA: {}, OPEN_QUESTIONS: {}, REPORT_DATE: null, fileName: "Servicio Interno" },
   externo: { DIRS: [], DEPTS: [], DEPT_TO_DIR: {}, QUESTIONS: [], SCORES: [], AVERAGES: [], COMMENTS: {}, PARTICIPATION: {}, NPS_DATA: {}, OPEN_QUESTIONS: {}, REPORT_DATE: null, fileName: "Evaluación a Cliente Externo" }
 };
 
-const PALETTE = ["#1E3347", "#E07010", "#2C4560", "#F4921E", "#3D5060", "#C86008", "#7A8D9E", "#D68940", "#152130", "#B8C4CE"];
-const PROM_PALETTE = ["#152130"]; 
+const PALETTE = ['#1E3347', '#E07010', '#2C4560', '#F4921E', '#3D5060', '#C86008', '#7A8D9E', '#D68940', '#152130', '#B8C4CE'];
+const PROM_PALETTE = ['#152130']; 
 
 let REPORT_DATE = new Date();
 let DIRS = [];
@@ -775,35 +732,29 @@ let AVERAGES = [];
 let COMMENTS = {};
 let PARTICIPATION = {}; 
 let NPS_DATA = {};
-let OPEN_QUESTIONS = {};
+let OPEN_QUESTIONS = {}; // { "Texto de pregunta": { "NombreDepto": ["respuesta1","respuesta2",...] } }
 
 let CUSTOM_LOGO_LEFT = null;
 let CUSTOM_LOGO_RIGHT = null;
-let activeDirs = new Set(["Todas"]);
-let activeDepts = new Set(["Todos"]);
-let barChart, lineChart, commentsChart, openQDonutChart;
-let selectedLineIdx = null;
-let cachedAnalysisHTML = "";
-let cachedFilterKey = "";
 
-window.showDonutData = false;
-window.toggleDonutData = function() {
-  window.showDonutData = !window.showDonutData;
-  const btn = document.getElementById("btnVerDatosDona");
-  if(btn) btn.textContent = window.showDonutData ? "Ocultar Datos" : "Ver Datos";
-  if(openQDonutChart) openQDonutChart.update();
-};
+let activeDirs = new Set(['Todas']);
+let activeDepts = new Set(['Todos']);
+let barChart, lineChart, commentsChart, openQDonutChart;
+window.selectedLineIdx = null;
+
+window.cachedAnalysisHTML = "";
+window.cachedFilterKey = "";
 
 window.toggleDir = function(dirId) {
-  const rows = document.querySelectorAll(`.row-${dirId}`);
-  const arrow = document.getElementById(`arrow-${dirId}`);
-  const isOpen = arrow.classList.contains("open");
+  const rows = document.querySelectorAll('.row-' + dirId);
+  const arrow = document.getElementById('arrow-' + dirId);
+  const isOpen = arrow.classList.contains('open');
   if(isOpen) {
-    arrow.classList.remove("open");
-    rows.forEach(r => r.classList.remove("open"));
+    arrow.classList.remove('open');
+    rows.forEach(r => r.classList.remove('open'));
   } else {
-    arrow.classList.add("open");
-    rows.forEach(r => r.classList.add("open"));
+    arrow.classList.add('open');
+    rows.forEach(r => r.classList.add('open'));
   }
 };
 
@@ -813,21 +764,22 @@ const TOAST_ICONS = {
   warn: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`
 };
 
-function showToast(msg, type="") {
-  const t = document.getElementById("toast");
-  const icon = TOAST_ICONS[type] || "";
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  const icon = TOAST_ICONS[type] || '';
   t.innerHTML = `<span style="display:flex;align-items:center;gap:8px;">${icon}<span>${msg}</span></span>`;
-  t.className = `toast show ${type}`;
-  setTimeout(() => t.className = "toast", 3500);
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3500);
 }
 
+// Funciones para guardar y cargar desde el "store" dual
 function saveState() {
   store[appMode] = {
     DIRS: DIRS, DEPTS: DEPTS, DEPT_TO_DIR: DEPT_TO_DIR, QUESTIONS: QUESTIONS, 
     SCORES: SCORES, AVERAGES: AVERAGES, COMMENTS: COMMENTS, 
     PARTICIPATION: PARTICIPATION, NPS_DATA: NPS_DATA, OPEN_QUESTIONS: OPEN_QUESTIONS,
     REPORT_DATE: REPORT_DATE, 
-    fileName: document.getElementById("dashTitle").textContent
+    fileName: document.getElementById('dashTitle').textContent
   };
 }
 
@@ -845,29 +797,28 @@ function loadState() {
   OPEN_QUESTIONS = s.OPEN_QUESTIONS || {};
   REPORT_DATE = s.REPORT_DATE ? new Date(s.REPORT_DATE) : new Date();
   
-  document.getElementById("dashTitle").textContent = s.fileName || (appMode === "externo" ? "Evaluación a Cliente Externo" : "Servicio Interno");
+  document.getElementById('dashTitle').textContent = s.fileName || (appMode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno");
 }
 
 function setAppMode(mode) {
   saveState(); 
   appMode = mode;
-  window.showDonutData = false;
-  document.getElementById("modeInterno").classList.toggle("active", mode === "interno");
-  document.getElementById("modeExterno").classList.toggle("active", mode === "externo");
+  document.getElementById('modeInterno').classList.toggle('active', mode === 'interno');
+  document.getElementById('modeExterno').classList.toggle('active', mode === 'externo');
 
   loadState();
 
-  const partSub = document.getElementById("partSub");
-  if(partSub) partSub.textContent = mode === "externo" ? "Encuestados vs. respuestas recibidas" : "Colaboradores encuestados vs. respuestas recibidas";
+  const partSub = document.getElementById('partSub');
+  if(partSub) partSub.textContent = mode === 'externo' ? "Encuestados vs. respuestas recibidas" : "Colaboradores encuestados vs. respuestas recibidas";
   
-  const comSub = document.getElementById("comSub");
-  if(comSub) comSub.textContent = mode === "externo" ? "Clasificados automáticamente · Selecciona a un cliente o vista general" : "Clasificados automáticamente · Selecciona un departamento o vista general";
-  
-  const npsSub = document.getElementById("npsSub");
-  if(npsSub) npsSub.textContent = mode === "externo" ? "¿Qué tan probable es que recomiendes el servicio recibido a alguien más? (Fórmula: % Promotores - % Detractores)" : "¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)";
-  
-  activeDirs.clear(); activeDirs.add("Todas"); 
-  activeDepts.clear(); activeDepts.add("Todos");
+  const comSub = document.getElementById('comSub');
+  if(comSub) comSub.textContent = mode === 'externo' ? "Clasificados automáticamente · Selecciona a un cliente o vista general" : "Clasificados automáticamente · Selecciona un departamento o vista general";
+
+  const npsSub = document.getElementById('npsSub');
+  if(npsSub) npsSub.textContent = mode === 'externo' ? "¿Qué tan probable es que recomiendes el servicio recibido a alguien más? (Fórmula: % Promotores - % Detractores)" : "¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)";
+
+  activeDirs.clear(); activeDirs.add('Todas'); 
+  activeDepts.clear(); activeDepts.add('Todos');
   
   updateSubtitle();
   buildFilters(); 
@@ -875,17 +826,18 @@ function setAppMode(mode) {
 }
 
 function injectDirectionAverages() {
-  if (DEPTS.length === 0) return;
-  DEPTS = DEPTS.filter(d => !d.startsWith("PROM. "));
+  if (DEPTS.length === 0) return; 
+  DEPTS = DEPTS.filter(d => !d.startsWith('PROM. '));
   const dirs = Array.from(new Set(Object.values(DEPT_TO_DIR)));
+  
   dirs.forEach(dir => {
-    const promName = `PROM. ${dir}`;
+    const promName = "PROM. " + dir;
     if (!DEPTS.includes(promName)) {
       DEPTS.push(promName);
       DEPT_TO_DIR[promName] = dir;
       COMMENTS[promName] = []; 
     }
-    const dirDepts = DEPTS.filter(d => DEPT_TO_DIR[d] === dir && !d.startsWith("PROM. "));
+    const dirDepts = DEPTS.filter(d => DEPT_TO_DIR[d] === dir && !d.startsWith('PROM. '));
     const diProm = DEPTS.indexOf(promName);
     SCORES.forEach((qScores) => {
        const validScores = dirDepts.map(d => qScores[DEPTS.indexOf(d)]).filter(v => v !== null && v !== undefined && !isNaN(v));
@@ -893,6 +845,7 @@ function injectDirectionAverages() {
        qScores[diProm] = avg !== null ? +(avg.toFixed(2)) : null;
     });
   });
+
   AVERAGES = DEPTS.map((_, di) => {
     const vals = SCORES.map(q => q[di]).filter(v => v !== null && v !== undefined && !isNaN(v));
     return vals.length ? +(vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(2) : 0;
@@ -901,50 +854,51 @@ function injectDirectionAverages() {
 
 function updateSubtitle(){
   if (DEPTS.length === 0) {
-    document.getElementById("dashSubtitle").textContent = "Cargue un archivo Excel para comenzar.";
+    document.getElementById('dashSubtitle').textContent = "Cargue un archivo Excel para comenzar.";
     return;
   }
-  const opts = { month: "long", year: "numeric" };
-  const dStr = REPORT_DATE.toLocaleDateString("es-ES", opts);
+  const opts = { month: 'long', year: 'numeric' };
+  const dStr = REPORT_DATE.toLocaleDateString('es-ES', opts);
   const capDate = dStr.charAt(0).toUpperCase() + dStr.slice(1);
-  const realDeptsCount = DEPTS.filter(d => !d.startsWith("PROM. ")).length;
+  const realDeptsCount = DEPTS.filter(d => !d.startsWith('PROM. ')).length;
   
-  let labelDir = appMode === "externo" ? "clientes" : "direcciones";
-  document.getElementById("dashSubtitle").textContent = `${realDeptsCount} entidades · ${DIRS.length} ${labelDir} · ${capDate}`;
+  let labelDir = appMode === 'externo' ? 'clientes' : 'direcciones';
+  document.getElementById('dashSubtitle').textContent = realDeptsCount + " entidades · " + DIRS.length + " " + labelDir + " · " + capDate;
 }
 
 async function doLogin(){
-  const email = document.getElementById("loginEmail").value.trim();
-  const pwd = document.getElementById("loginPwd").value.trim();
-  const btn = document.getElementById("loginBtn");
-  const err = document.getElementById("loginErr");
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPwd').value.trim();
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginErr');
+
   if(!email || !pwd) {
       err.textContent = "Ingresa tu correo y contraseña.";
-      err.style.display = "block";
+      err.style.display = 'block';
       return;
   }
 
   try {
     btn.textContent = "Iniciando sesión...";
     btn.disabled = true;
-    err.style.display = "none";
+    err.style.display = 'none';
     await firebase.auth().signInWithEmailAndPassword(email, pwd);
   } catch(error) {
     err.textContent = "Correo o contraseña incorrectos.";
-    err.style.display = "block";
+    err.style.display = 'block';
     btn.textContent = "Ingresar al Dashboard";
     btn.disabled = false;
     return; 
   }
 
-  const ls = document.getElementById("loginScreen");
-  if(ls) { ls.remove(); document.documentElement.style.setProperty("--login-display", "none"); }
+  const ls = document.getElementById('loginScreen');
+  if(ls) { ls.remove(); document.documentElement.style.setProperty('--login-display', 'none'); }
   
   try {
       initDashboard();
   } catch(e) {
       console.error(e);
-      showToast("Error al visualizar los datos", "err");
+      showToast('Error al visualizar los datos', 'err');
   }
 }
 
@@ -952,22 +906,24 @@ let isInitialized = false;
 function updateHamburgerVisibility() {
   const hasInterno = store.interno.DEPTS.length > 0;
   const hasExterno = store.externo.DEPTS.length > 0;
-  const hamburger = document.getElementById("btnHamburger");
-  const isReader = document.body.classList.contains("reader-mode");
+  const hamburger = document.getElementById('btnHamburger');
+  const isReader = document.body.classList.contains('reader-mode');
 
   if (!isReader) {
-    hamburger.style.display = "";
+    // Modo admin: hamburguesa siempre visible
+    hamburger.style.display = '';
     return;
   }
 
+  // Modo lector: ocultar si solo un módulo tiene datos y forzar ese modo
   if (hasInterno && hasExterno) {
-    hamburger.style.display = "";
+    hamburger.style.display = '';
   } else {
-    hamburger.style.display = "none";
-    if (hasExterno && !hasInterno && appMode !== "externo") {
-      appMode = "externo";
-    } else if (hasInterno && !hasExterno && appMode !== "interno") {
-      appMode = "interno";
+    hamburger.style.display = 'none';
+    if (hasExterno && !hasInterno && appMode !== 'externo') {
+      appMode = 'externo';
+    } else if (hasInterno && !hasExterno && appMode !== 'interno') {
+      appMode = 'interno';
     }
   }
 }
@@ -980,17 +936,17 @@ function initDashboard(){
   }
   updateHamburgerVisibility();
   loadState(); 
-  document.getElementById("modeInterno").classList.toggle("active", appMode === "interno");
-  document.getElementById("modeExterno").classList.toggle("active", appMode === "externo");
+  document.getElementById('modeInterno').classList.toggle('active', appMode === 'interno');
+  document.getElementById('modeExterno').classList.toggle('active', appMode === 'externo');
   
-  const partSub = document.getElementById("partSub");
-  if(partSub) partSub.textContent = appMode === "externo" ? "Encuestados vs. respuestas recibidas" : "Colaboradores encuestados vs. respuestas recibidas";
+  const partSub = document.getElementById('partSub');
+  if(partSub) partSub.textContent = appMode === 'externo' ? "Encuestados vs. respuestas recibidas" : "Colaboradores encuestados vs. respuestas recibidas";
   
-  const comSub = document.getElementById("comSub");
-  if(comSub) comSub.textContent = appMode === "externo" ? "Clasificados automáticamente · Selecciona a un cliente o vista general" : "Clasificados automáticamente · Selecciona un departamento o vista general";
-  
-  const npsSub = document.getElementById("npsSub");
-  if(npsSub) npsSub.textContent = appMode === "externo" ? "¿Qué tan probable es que recomiendes el servicio recibido a alguien más? (Fórmula: % Promotores - % Detractores)" : "¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)";
+  const comSub = document.getElementById('comSub');
+  if(comSub) comSub.textContent = appMode === 'externo' ? "Clasificados automáticamente · Selecciona a un cliente o vista general" : "Clasificados automáticamente · Selecciona un departamento o vista general";
+
+  const npsSub = document.getElementById('npsSub');
+  if(npsSub) npsSub.textContent = appMode === 'externo' ? "¿Qué tan probable es que recomiendes el servicio recibido a alguien más? (Fórmula: % Promotores - % Detractores)" : "¿Qué tan probable es que recomiendes el servicio del departamento a un compañero? (Fórmula: % Promotores - % Detractores)";
   
   updateSubtitle();
   buildFilters();
@@ -999,77 +955,78 @@ function initDashboard(){
 
 function applyCustomLogos() {
     if(CUSTOM_LOGO_LEFT) {
-        document.getElementById("defaultLogoLeft").style.display = "none";
-        document.getElementById("logoLeftImg").src = CUSTOM_LOGO_LEFT;
-        document.getElementById("logoLeftImg").style.display = "block";
-        document.getElementById("logoLeftBox").style.background = "transparent";
+        document.getElementById('defaultLogoLeft').style.display = 'none';
+        document.getElementById('logoLeftImg').src = CUSTOM_LOGO_LEFT;
+        document.getElementById('logoLeftImg').style.display = 'block';
+        document.getElementById('logoLeftBox').style.background = 'transparent';
     }
     if(CUSTOM_LOGO_RIGHT) {
-        document.getElementById("defaultLogoRight").style.display = "none";
-        document.getElementById("logoRightImg").src = CUSTOM_LOGO_RIGHT;
-        document.getElementById("logoRightImg").style.display = "block";
-        document.getElementById("logoRightBox").style.border = "none";
+        document.getElementById('defaultLogoRight').style.display = 'none';
+        document.getElementById('logoRightImg').src = CUSTOM_LOGO_RIGHT;
+        document.getElementById('logoRightImg').style.display = 'block';
+        document.getElementById('logoRightBox').style.border = 'none';
     }
 }
 
 function wireButtons(){
-  document.getElementById("btnImport").onclick = () => document.getElementById("importModal").classList.add("open");
-  document.getElementById("btnCloseImport").onclick = () => document.getElementById("importModal").classList.remove("open");
-  document.getElementById("btnExportPDF").onclick = () => window.print();
-  document.getElementById("btnShare").onclick = () => document.getElementById("shareModal").classList.add("open");
-  document.getElementById("btnCloseShare").onclick = () => document.getElementById("shareModal").classList.remove("open");
-  document.getElementById("btnOpenReader").onclick = generateReaderLink;
-  document.getElementById("btnCopyLink").onclick = copyLink;
+  document.getElementById('btnImport').onclick = () => document.getElementById('importModal').classList.add('open');
+  document.getElementById('btnCloseImport').onclick = () => document.getElementById('importModal').classList.remove('open');
+  document.getElementById('btnExportPDF').onclick = () => window.print();
+  document.getElementById('btnShare').onclick = () => document.getElementById('shareModal').classList.add('open');
+  document.getElementById('btnCloseShare').onclick = () => document.getElementById('shareModal').classList.remove('open');
+  document.getElementById('btnOpenReader').onclick = generateReaderLink;
+  document.getElementById('btnCopyLink').onclick = copyLink;
 
-  document.getElementById("btnNPS").onclick = openNPSModal;
-  document.getElementById("btnCloseNPS").onclick = () => document.getElementById("npsModal").classList.remove("open");
-  document.getElementById("btnSaveNPS").onclick = saveNPSModal;
-  
-  document.getElementById("logoLeftBox").onclick = () => { if(!document.body.classList.contains("reader-mode")) document.getElementById("logoLeftInput").click(); };
-  document.getElementById("logoLeftImg").onclick = () => { if(!document.body.classList.contains("reader-mode")) document.getElementById("logoLeftInput").click(); };
-  document.getElementById("logoLeftInput").onchange = (e) => {
+  document.getElementById('btnNPS').onclick = openNPSModal;
+  document.getElementById('btnCloseNPS').onclick = () => document.getElementById('npsModal').classList.remove('open');
+  document.getElementById('btnSaveNPS').onclick = saveNPSModal;
+
+  document.getElementById('logoLeftBox').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoLeftInput').click(); };
+  document.getElementById('logoLeftImg').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoLeftInput').click(); };
+  document.getElementById('logoLeftInput').onchange = (e) => {
       const file = e.target.files[0];
       if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_LEFT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
   };
 
-  document.getElementById("logoRightBox").onclick = () => { if(!document.body.classList.contains("reader-mode")) document.getElementById("logoRightInput").click(); };
-  document.getElementById("logoRightInput").onchange = (e) => {
+  document.getElementById('logoRightBox').onclick = () => { if(!document.body.classList.contains('reader-mode')) document.getElementById('logoRightInput').click(); };
+  document.getElementById('logoRightInput').onchange = (e) => {
       const file = e.target.files[0];
       if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_RIGHT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
   };
 
-  document.getElementById("btnHamburger").onclick = () => {
-    document.getElementById("sidebarOverlay").classList.add("show");
-    document.getElementById("sidebar").classList.add("open");
+  // Menú Hamburguesa
+  document.getElementById('btnHamburger').onclick = () => {
+    document.getElementById('sidebarOverlay').classList.add('show');
+    document.getElementById('sidebar').classList.add('open');
   };
   const closeSidebar = () => {
-    document.getElementById("sidebarOverlay").classList.remove("show");
-    document.getElementById("sidebar").classList.remove("open");
+    document.getElementById('sidebarOverlay').classList.remove('show');
+    document.getElementById('sidebar').classList.remove('open');
   };
-  document.getElementById("closeSidebar").onclick = closeSidebar;
-  document.getElementById("sidebarOverlay").onclick = closeSidebar;
-  document.getElementById("modeInterno").onclick = () => { setAppMode("interno"); closeSidebar(); };
-  document.getElementById("modeExterno").onclick = () => { setAppMode("externo"); closeSidebar(); };
+  document.getElementById('closeSidebar').onclick = closeSidebar;
+  document.getElementById('sidebarOverlay').onclick = closeSidebar;
 
-  const dropzone = document.getElementById("dropzone");
-  dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add("over"); };
-  dropzone.ondragleave = () => dropzone.classList.remove("over");
-  dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove("over");
-  if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
-  document.getElementById("fileInput").onchange = (e) => { if(e.target.files[0]) handleFile(e.target.files[0]); };
+  document.getElementById('modeInterno').onclick = () => { setAppMode('interno'); closeSidebar(); };
+  document.getElementById('modeExterno').onclick = () => { setAppMode('externo'); closeSidebar(); };
+
+  const dropzone = document.getElementById('dropzone');
+  dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('over'); };
+  dropzone.ondragleave = () => dropzone.classList.remove('over');
+  dropzone.ondrop = (e) => { e.preventDefault(); dropzone.classList.remove('over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
+  document.getElementById('fileInput').onchange = (e) => { if(e.target.files[0]) handleFile(e.target.files[0]); };
   
-  const lp = document.getElementById("loginPwd");
-  if(lp) { lp.onkeydown = (e) => { if(e.key==="Enter") doLogin(); }; }
-  const btn = document.getElementById("loginBtn"); 
+  const lp = document.getElementById('loginPwd'); 
+  if(lp) { lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
+  const btn = document.getElementById('loginBtn'); 
   if(btn) btn.onclick = doLogin;
-  
-  document.getElementById("participationTable").addEventListener("change", (e) => {
-      if(e.target.classList.contains("part-input")) {
-          const dept = e.target.getAttribute("data-dept");
-          const type = e.target.getAttribute("data-type");
+
+  document.getElementById('participationTable').addEventListener('change', (e) => {
+      if(e.target.classList.contains('part-input')) {
+          const dept = e.target.getAttribute('data-dept');
+          const type = e.target.getAttribute('data-type');
           let valStr = e.target.value.trim();
           
-          if (valStr === "") {
+          if (valStr === '') {
               if (PARTICIPATION[dept]) {
                   delete PARTICIPATION[dept][type];
                   if(Object.keys(PARTICIPATION[dept]).length === 0) delete PARTICIPATION[dept];
@@ -1077,44 +1034,45 @@ function wireButtons(){
           } else {
               let val = parseInt(valStr, 10);
               if (isNaN(val) || val < 0) val = 0;
-    
               if (!PARTICIPATION[dept]) PARTICIPATION[dept] = {};
               PARTICIPATION[dept][type] = val;
           }
           
-          const openDirs = Array.from(document.querySelectorAll(".toggle-arrow.open")).map(el => el.id);
-          const allowedDirs = activeDirs.has("Todas") ? DIRS : Array.from(activeDirs);
+          const openDirs = Array.from(document.querySelectorAll('.toggle-arrow.open')).map(el => el.id);
+          const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
           const filteredDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
-          const orderedDepts = activeDepts.has("Todos") ? filteredDepts.filter(d => !d.startsWith("PROM. ")) : filteredDepts.filter(d => activeDepts.has(d));
+          const orderedDepts = activeDepts.has('Todos') ? filteredDepts.filter(d => !d.startsWith('PROM. ')) : filteredDepts.filter(d => activeDepts.has(d));
           renderParticipation(orderedDepts);
+          
           openDirs.forEach(id => {
               const arrow = document.getElementById(id);
-              if(arrow && !arrow.classList.contains("open")) toggleDir(id.replace("arrow-", ""));
+              if(arrow && !arrow.classList.contains('open')) toggleDir(id.replace('arrow-', ''));
           });
-          showToast("Participación actualizada", "ok");
+          showToast('Participación actualizada', 'ok');
       }
   });
 }
 
 function copyLink(){
-  const inp = document.getElementById("linkInput");
-  if(!inp.value || inp.value.startsWith("Haz clic")) return;
+  const inp = document.getElementById('linkInput');
+  if(!inp.value || inp.value.startsWith('Haz clic')) return;
   navigator.clipboard.writeText(inp.value).then(()=>{
-    const btn = document.getElementById("btnCopyLink");
-    btn.textContent="¡Copiado!"; setTimeout(()=>btn.textContent="Copiar", 2000);
+    const btn = document.getElementById('btnCopyLink');
+    btn.textContent='¡Copiado!'; setTimeout(()=>btn.textContent='Copiar', 2000);
   });
 }
 
 function openNPSModal() {
-  const list = document.getElementById("npsInputList");
-  list.innerHTML = "";
-  const realDepts = DEPTS.filter(d => !d.startsWith("PROM. "));
+  const list = document.getElementById('npsInputList');
+  list.innerHTML = '';
+  const realDepts = DEPTS.filter(d => !d.startsWith('PROM. '));
+  
   if (realDepts.length === 0) {
-     list.innerHTML = `<p style="color:var(--muted); text-align:center; padding: 20px;">Primero importa un archivo Excel con departamentos.</p>`;
+     list.innerHTML = '<p style="color:var(--muted); text-align:center; padding: 20px;">Primero importa un archivo Excel con departamentos.</p>';
   } else {
      realDepts.forEach(d => {
-       let data = NPS_DATA[d] || {det: "", pas: "", pro: ""};
-       if (typeof data === "number") data = {det: "", pas: "", pro: ""};
+       let data = NPS_DATA[d] || {det: '', pas: '', pro: ''};
+       if (typeof data === 'number') data = {det: '', pas: '', pro: ''};
        list.innerHTML += `
          <div class="nps-row" style="flex-direction: column; align-items: flex-start; border-bottom: 1px solid var(--border); padding: 16px 0;">
            <label style="font-weight: 800; color: var(--if-navy); font-size: .95rem;">${d}</label>
@@ -1136,84 +1094,84 @@ function openNPSModal() {
        `;
      });
   }
-  document.getElementById("npsModal").classList.add("open");
+  document.getElementById('npsModal').classList.add('open');
 }
 
 function saveNPSModal() {
-  const rows = document.querySelectorAll("#npsInputList .nps-row");
+  const rows = document.querySelectorAll('#npsInputList .nps-row');
   rows.forEach(row => {
     const detInp = row.querySelector('input[data-type="det"]');
     const pasInp = row.querySelector('input[data-type="pas"]');
     const proInp = row.querySelector('input[data-type="pro"]');
-    const d = detInp.getAttribute("data-dept");
-    
+    const d = detInp.getAttribute('data-dept');
     const det = detInp.value.trim();
     const pas = pasInp.value.trim();
     const pro = proInp.value.trim();
 
-    if (det === "" && pas === "" && pro === "") { delete NPS_DATA[d]; } 
+    if (det === '' && pas === '' && pro === '') { delete NPS_DATA[d]; } 
     else { NPS_DATA[d] = { det: parseInt(det || 0, 10), pas: parseInt(pas || 0, 10), pro: parseInt(pro || 0, 10) }; }
   });
-  document.getElementById("npsModal").classList.remove("open");
+  document.getElementById('npsModal').classList.remove('open');
   updateAllViews();
-  showToast("NPS calculado y actualizado", "ok");
+  showToast('NPS calculado y actualizado', 'ok');
 }
 
 function buildFilters() {
-  const fbDir = document.getElementById("filterBarDir");
-  const dirLabel = appMode === "externo" ? "FILTRAR POR CLIENTE:" : "FILTRAR POR DIRECCIÓN:";
-  fbDir.innerHTML = `<span class="filter-label">${dirLabel}</span>`;
+  const fbDir = document.getElementById('filterBarDir');
+  const dirLabel = appMode === 'externo' ? 'FILTRAR POR CLIENTE:' : 'FILTRAR POR DIRECCIÓN:';
+  fbDir.innerHTML = `<span class='filter-label'>${dirLabel}</span>`;
+  
   if (DIRS.length === 0) return; 
 
-  ["Todas"].concat(DIRS).forEach(dir => {
-    const btn = document.createElement("button");
-    btn.className = `filter-chip filter-chip-dir truncated ${activeDirs.has(dir) ? "active" : ""}`;
+  ['Todas'].concat(DIRS).forEach(dir => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-chip filter-chip-dir truncated' + (activeDirs.has(dir) ? ' active' : '');
     btn.textContent = dir;
     btn.onclick = () => {
-      if(dir==="Todas"){ activeDirs.clear(); activeDirs.add("Todas"); }
-      else { activeDirs.delete("Todas"); if(activeDirs.has(dir)) activeDirs.delete(dir); else activeDirs.add(dir); if(activeDirs.size===0) activeDirs.add("Todas"); }
-      activeDepts.clear(); activeDepts.add("Todos");
+      if(dir==='Todas'){ activeDirs.clear(); activeDirs.add('Todas'); }
+      else { activeDirs.delete('Todas'); if(activeDirs.has(dir)) activeDirs.delete(dir); else activeDirs.add(dir); if(activeDirs.size===0) activeDirs.add('Todas'); }
+      activeDepts.clear(); activeDepts.add('Todos');
       buildFilters(); updateAllViews();
     };
     fbDir.appendChild(btn);
   });
-  
-  const fbDept = document.getElementById("filterBarDept");
-  fbDept.innerHTML = `<div style="display:flex; width:100%; align-items:flex-start; gap:10px; margin-bottom:12px; flex-wrap:wrap;"><span class="filter-label" style="margin:0;">FILTRAR POR ENTIDAD:</span><button class="filter-chip ${activeDepts.has('Todos') ? 'active' : ''}" id="btnDeptTodos">Todos los Deptos</button></div>`;
-  document.getElementById("btnDeptTodos").onclick = () => { activeDepts.clear(); activeDepts.add("Todos"); buildFilters(); updateAllViews(); };
-  
-  const allowedDirs = activeDirs.has("Todas") ? DIRS : Array.from(activeDirs);
+
+  const fbDept = document.getElementById('filterBarDept');
+  fbDept.innerHTML = `<div style='display:flex; width:100%; align-items:flex-start; gap:10px; margin-bottom:12px; flex-wrap:wrap;'><span class='filter-label' style='margin:0;'>FILTRAR POR ENTIDAD:</span><button class='filter-chip ${activeDepts.has('Todos') ? 'active' : ''}' id='btnDeptTodos'>Todos los Deptos</button></div>`;
+  document.getElementById('btnDeptTodos').onclick = () => { activeDepts.clear(); activeDepts.add('Todos'); buildFilters(); updateAllViews(); };
+
+  const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
   const groups = getDeptsGroupedByDir(DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d])));
-  
+
   for (const [dir, dList] of Object.entries(groups)) {
-    const groupDiv = document.createElement("div");
-    groupDiv.className = "filter-dir-group";
-    groupDiv.innerHTML = `<span class="filter-dir-group-title truncated">${dir}</span>`;
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'filter-dir-group';
+    groupDiv.innerHTML = "<span class='filter-dir-group-title truncated'>" + dir + "</span>";
     
-    const promName = `PROM. ${dir}`;
+    const promName = "PROM. " + dir;
     if (DEPTS.includes(promName)) {
-      const btnProm = document.createElement("button");
-      btnProm.className = `filter-chip filter-chip-prom truncated ${activeDepts.has(promName) ? "active" : ""}`;
-      btnProm.style.setProperty("--prom-col", deptColor(promName));
+      const btnProm = document.createElement('button');
+      btnProm.className = 'filter-chip filter-chip-prom truncated' + (activeDepts.has(promName) ? ' active' : '');
+      btnProm.style.setProperty('--prom-col', deptColor(promName));
       btnProm.textContent = "⭐ Promedio";
       btnProm.onclick = () => { 
-        activeDepts.delete("Todos"); 
+        activeDepts.delete('Todos'); 
         if(activeDepts.has(promName)) activeDepts.delete(promName); else activeDepts.add(promName);
-        if(activeDepts.size===0) activeDepts.add("Todos");
+        if(activeDepts.size===0) activeDepts.add('Todos');
         buildFilters(); updateAllViews();
       };
       groupDiv.appendChild(btnProm);
     }
 
     dList.forEach(d => {
-      if (d.startsWith("PROM. ")) return;
-      const btn = document.createElement("button");
-      btn.className = `filter-chip truncated ${activeDepts.has(d) ? "active" : ""}`;
+      if (d.startsWith('PROM. ')) return;
+      const btn = document.createElement('button');
+      btn.className = 'filter-chip truncated' + (activeDepts.has(d) ? ' active' : '');
       btn.textContent = d;
       btn.onclick = () => {
-        activeDepts.delete("Todos"); 
+        activeDepts.delete('Todos'); 
         if(activeDepts.has(d)) activeDepts.delete(d); else activeDepts.add(d);
-        if(activeDepts.size===0) activeDepts.add("Todos");
+        if(activeDepts.size===0) activeDepts.add('Todos');
         buildFilters(); updateAllViews();
       };
       groupDiv.appendChild(btn);
@@ -1223,17 +1181,17 @@ function buildFilters() {
 }
 
 function deptColor(d) { 
-  if (d.startsWith("PROM. ")) {
-    const dirName = d.replace("PROM. ", "");
-    return PROM_PALETTE[DIRS.indexOf(dirName) % PROM_PALETTE.length] || "#152130"; 
+  if (d.startsWith('PROM. ')) {
+    const dirName = d.replace('PROM. ', '');
+    return PROM_PALETTE[DIRS.indexOf(dirName) % PROM_PALETTE.length] || '#152130'; 
   }
-  return PALETTE[DEPTS.indexOf(d) % PALETTE.length] || PALETTE[0];
+  return PALETTE[DEPTS.indexOf(d) % PALETTE.length] || PALETTE[0]; 
 }
 
 function updateAllViews() {
-  const allowedDirs = activeDirs.has("Todas") ? DIRS : Array.from(activeDirs);
+  const allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
   const filteredDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
-  const orderedDepts = activeDepts.has("Todos") ? filteredDepts.filter(d => !d.startsWith("PROM. ")) : filteredDepts.filter(d => activeDepts.has(d));
+  const orderedDepts = activeDepts.has('Todos') ? filteredDepts.filter(d => !d.startsWith('PROM. ')) : filteredDepts.filter(d => activeDepts.has(d));
 
   const activeQIndices = [];
   QUESTIONS.forEach((q, qi) => {
@@ -1243,7 +1201,7 @@ function updateAllViews() {
     });
     if(hasData) activeQIndices.push(qi);
   });
-  
+
   renderParticipation(orderedDepts);
   renderNPS(orderedDepts);
   renderKPIs(orderedDepts);
@@ -1253,41 +1211,32 @@ function updateAllViews() {
   renderDetailTable(orderedDepts, activeQIndices);
   renderDeptTabs(orderedDepts);
   renderOpenQuestions(orderedDepts);
-  
-  setTimeout(() => {
-    if(activeDepts.size === 1 && !activeDepts.has("Todos")) {
-        const single = Array.from(activeDepts)[0];
-        if(!single.startsWith("PROM.")) {
-            const tabs = document.querySelectorAll(".dept-tab");
-            for(let t of tabs) { if(t.textContent.includes(single)) { t.click(); break; } }
-        }
-    } else {
-        const btnCorp = document.querySelector(".btn-consolidado");
-        if (btnCorp) {
-            btnCorp.click();
-        } else {
-            document.getElementById("catChips").innerHTML = "";
-            document.getElementById("commentList").innerHTML = `<div class="no-comments">Selecciona un área para ver sus comentarios</div>`;
-            document.getElementById("peticionesCard").style.display = "none";
-        }
-    }
-  }, 100);
+
+  if(activeDepts.size === 1 && !activeDepts.has('Todos')) {
+      const single = Array.from(activeDepts)[0];
+      if(!single.startsWith('PROM.')) {
+          setTimeout(() => {
+              const tabs = document.querySelectorAll('.dept-tab');
+              for(let t of tabs) { if(t.textContent.includes(single)) { t.click(); break; } }
+          }, 100);
+      }
+  }
 }
 
 function renderNPS(orderedDepts) {
-  const card = document.getElementById("npsCard");
-  const grid = document.getElementById("npsGrid");
-  grid.innerHTML = "";
+  const card = document.getElementById('npsCard');
+  const grid = document.getElementById('npsGrid');
+  grid.innerHTML = '';
   let hasData = false;
   
   orderedDepts.forEach(d => {
     let val = null;
     let breakdown = null;
 
-    if(d.startsWith("PROM. ")) {
-       const dir = d.replace("PROM. ", "");
-       const subDepts = DEPTS.filter(x => DEPT_TO_DIR[x] === dir && !x.startsWith("PROM. "));
-       const validSubDepts = subDepts.filter(x => NPS_DATA[x] !== undefined && typeof NPS_DATA[x] === "object");
+    if(d.startsWith('PROM. ')) {
+       const dir = d.replace('PROM. ', '');
+       const subDepts = DEPTS.filter(x => DEPT_TO_DIR[x] === dir && !x.startsWith('PROM. '));
+       const validSubDepts = subDepts.filter(x => NPS_DATA[x] !== undefined && typeof NPS_DATA[x] === 'object');
        if(validSubDepts.length > 0) {
          let tDet = 0, tPas = 0, tPro = 0;
          validSubDepts.forEach(sub => { tDet += NPS_DATA[sub].det; tPas += NPS_DATA[sub].pas; tPro += NPS_DATA[sub].pro; });
@@ -1295,13 +1244,10 @@ function renderNPS(orderedDepts) {
          if (total > 0) { val = Math.round(((tPro - tDet) / total) * 100); breakdown = { det: tDet, pas: tPas, pro: tPro, total }; }
        }
     } else {
-       if(NPS_DATA[d] !== undefined && typeof NPS_DATA[d] === "object") {
+       if(NPS_DATA[d] !== undefined && typeof NPS_DATA[d] === 'object') {
          const data = NPS_DATA[d];
          const total = data.det + data.pas + data.pro;
-         if (total > 0) { 
-           val = Math.round(((data.pro - data.det) / total) * 100);
-           breakdown = { det: data.det, pas: data.pas, pro: data.pro, total };
-         }
+         if (total > 0) { val = Math.round(((data.pro - data.det) / total) * 100); breakdown = { det: data.det, pas: data.pas, pro: data.pro, total }; }
        }
     }
     
@@ -1309,12 +1255,10 @@ function renderNPS(orderedDepts) {
        hasData = true;
        const clampedVal = Math.max(-100, Math.min(100, val));
        const p = (clampedVal + 100) / 200; 
-       const arcLength = Math.PI * 80;
+       const arcLength = Math.PI * 80; 
        const fillLength = p * arcLength;
        const rotation = (p * 180) - 90;
-       let color = "#EF4444";
-       if (val >= 0) color = "#F59E0B"; if (val >= 50) color = "#10B981";
-       
+       let color = '#EF4444'; if (val >= 0) color = '#F59E0B'; if (val >= 50) color = '#10B981'; 
        const html = `
        <div class="nps-gauge-card">
            <div class="nps-gauge-title">${d}</div>
@@ -1324,7 +1268,7 @@ function renderNPS(orderedDepts) {
                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="${color}" stroke-width="16" stroke-linecap="round" stroke-dasharray="${fillLength} ${arcLength}" stroke-dashoffset="0" style="transition: stroke-dasharray 1s ease-out;"/>
                    <g transform="rotate(${rotation} 100 100)" style="transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);">
                       <path d="M 96 45 L 104 45 L 100 12 Z" fill="#152130" />
-                       <circle cx="100" cy="45" r="4" fill="#152130"/>
+                      <circle cx="100" cy="45" r="4" fill="#152130"/>
                    </g>
                </svg>
                <div class="nps-value-container">
@@ -1343,408 +1287,241 @@ function renderNPS(orderedDepts) {
        grid.innerHTML += html;
     }
   });
-  if(!hasData) { card.style.display = "none"; } else { card.style.display = "block"; }
+  if(!hasData) { card.style.display = 'none'; } else { card.style.display = 'block'; }
 }
 
 function renderKPIs(orderedDepts){
-  const container = document.getElementById("kpiContainer");
-  container.innerHTML = "";
+  const container = document.getElementById('kpiContainer');
+  container.innerHTML = '';
   if(orderedDepts.length === 0) return;
 
   const groups = getDeptsGroupedByDir(orderedDepts);
-  const sortedGlobal = [...DEPTS].filter(d=>!d.startsWith("PROM. ")).sort((a,b)=>AVERAGES[DEPTS.indexOf(b)]-AVERAGES[DEPTS.indexOf(a)]);
+  const sortedGlobal = [...DEPTS].filter(d=>!d.startsWith('PROM. ')).sort((a,b)=>AVERAGES[DEPTS.indexOf(b)]-AVERAGES[DEPTS.indexOf(a)]);
 
   for (const [dir, dList] of Object.entries(groups)) {
-    let sectionHTML = `<div class="kpi-dir-section"><h3 class="kpi-dir-title truncated">${dir}</h3><div class="kpi-grid">`;
-    const promDepts = dList.filter(d => d.startsWith("PROM. "));
-    const realDepts = dList.filter(d => !d.startsWith("PROM. ")).sort((a,b) => AVERAGES[DEPTS.indexOf(b)] - AVERAGES[DEPTS.indexOf(a)]);
-    
+    let sectionHTML = "<div class='kpi-dir-section'><h3 class='kpi-dir-title truncated'>" + dir + "</h3><div class='kpi-grid'>";
+    const promDepts = dList.filter(d => d.startsWith('PROM. '));
+    const realDepts = dList.filter(d => !d.startsWith('PROM. ')).sort((a,b) => AVERAGES[DEPTS.indexOf(b)] - AVERAGES[DEPTS.indexOf(a)]);
+
     promDepts.concat(realDepts).forEach(d => {
       const di = DEPTS.indexOf(d), avg = AVERAGES[di], col = deptColor(d);
-      const isProm = d.startsWith("PROM. ");
-      sectionHTML += `
-      <div class="kpi-card" style="--ca:${col}">
-        <div class="kpi-header-row">
-          <div class="kpi-dept"><span class="kpi-dept-inner">${isProm ? '⭐ Promedio '+dir : d}</span></div>
-          ${!isProm ? `<div class="kpi-rank">#${sortedGlobal.indexOf(d)+1} de ${sortedGlobal.length}</div>` : ""}
-        </div>
-        <div class="kpi-score">${avg.toFixed(1)}<sup>/10</sup></div>
-        <div class="kpi-bar"><div class="kpi-bar-fill" style="width:${avg*10}%"></div></div>
-      </div>`;
+      const isProm = d.startsWith('PROM. ');
+      sectionHTML += "<div class='kpi-card' style='--ca:" + col + "'>" +
+        "<div class='kpi-header-row'><div class='kpi-dept'><span class='kpi-dept-inner'>" + (isProm ? '⭐ Promedio '+dir : d) + "</span></div>" + (!isProm ? "<div class='kpi-rank'>#" + (sortedGlobal.indexOf(d)+1) + " de " + sortedGlobal.length + "</div>" : "") + "</div>" +
+        "<div class='kpi-score'>" + avg.toFixed(1) + "<sup>/10</sup></div>" +
+        "<div class='kpi-bar'><div class='kpi-bar-fill' style='width:" + (avg*10) + "%'></div></div>" +
+      "</div>";
     });
-    container.innerHTML += sectionHTML + `</div></div>`;
+    container.innerHTML += sectionHTML + "</div></div>";
   }
 }
 
-// Devuelve un ARRAY con las categorías que aplican (máximo 3).
-// Usa frases clave, no palabras sueltas. Sin fallback a "Otras Observaciones".
 function classifyComment(text){
-  if(!text) return [];
-  if(text.startsWith("[PET_RES]") || text.startsWith("[PET_NO_RES]")) return [];
+  if(!text) return 'Ignorar';
+  if(text.startsWith('[PET_RES]')) return 'Peticiones resueltas';
+  if(text.startsWith('[PET_NO_RES]')) return 'Peticiones no resueltas';
+  
+  const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
+  if(t.length < 5 && !t.match(/mal|peor|pago|falla|lento/)) return 'Ignorar';
+  
+  const uselessStarts = ['na', 'n/a', 'ningun', 'nada', 'todo ok', 'ok', 'todo bien', 'sin observaci', 'no tengo comentario', 'no hay comentario', 'sin comentario', 'todo excelente', 'excelente', 'muy bien', 'bien', 'sin detalle', 'desconozco', 'no conozco', 'ignoro', 'no aplica', 'todo en orden', 'sin queja', 'ninguna sugerencia'];
+  for(let start of uselessStarts){ if(t.startsWith(start) || t === start) return 'Ignorar'; }
+  if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien|sin comentarios|sin observaciones|todo muy bien)$/.test(t)) return 'Ignorar';
 
-  // Normalizar: minúsculas, sin acentos, sin puntuación
-  const n = text.toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[.,!¡?¿()"';:]/g, " ")
-    .replace(/\s+/g, " ").trim();
-
-  if(n.length < 8) return [];
-
-  // Frases/palabras vacías — ignorar completamente
-  const noise = /^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|si|no)$|^(todo (bien|ok|excelente|muy bien)|sin (comentario|observacion|queja|detalle|novedad)|no (hay|tengo) comentario|por el momento (no|sin)|de momento (no|sin)|hasta ahora (no|sin)|no aplica|desconozco|ignoro|no conozco)/;
-  if(noise.test(n)) return [];
-
-  // Cada categoría: array de patrones. Un comentario entra si matchea AL MENOS UN patrón.
-  // Los patrones son frases o términos técnicos específicos — no palabras sueltas genéricas.
-  const CATS = [
-    {
-      name: "Tiempos de Respuesta",
-      patterns: [
-        /se tarda(n)?\b/, /tarda(n)? (mucho|demasiado|tiempo)/, /tiempo(s)? de respuesta/,
-        /demora(n|s)?\b/, /tardanza/, /retraso(s)?\b/, /muy lento/, /demasiado lento/,
-        /respuesta (rapida|oportuna|inmediata)/, /agilizar/, /mas rapido/,
-        /tiempo(s)? (muy |de |de atencion)/, /espera(n)? mucho/, /tardan en/,
-        /no responden (rapido|pronto|a tiempo)/, /optimizar (el )?tiempo/
-      ]
-    },
-    {
-      name: "Comunicación y Seguimiento",
-      patterns: [
-        /comunicacion\b/, /falta de comunicacion/, /falta de informacion/,
-        /no (nos |les |me )?(informan|avisan|notifican|comunican|dicen)/,
-        /no (dan|hay) seguimiento/, /falta (de )?seguimiento/,
-        /nunca (nos |me |les )?(dicen|informan|avisan|comunican)/,
-        /sin (aviso|notificacion|comunicacion)/, /mala comunicacion/,
-        /no (nos |me )?enteramos/, /falta de retroalimentacion/,
-        /retroalimentacion\b/, /feedback\b/, /transparencia\b/,
-        /no (nos |me )?explican/, /no saben (el )?porque/
-      ]
-    },
-    {
-      name: "Reclutamiento y Contratación",
-      patterns: [
-        /reclutamiento/, /contratacion\b/, /candidato(s)?\b/, /perfil (del|de) (puesto|candidato)/,
-        /no (tienen|cumple[n]?) (el |con el |con )?perfil/, /habilidades (requeridas|del puesto)/,
-        /entrevista(s)?\b/, /postulante(s)?\b/, /vacante(s)?\b/,
-        /mandar(nos)? gente/, /enviar (personal|candidatos)/, /seleccion de personal/,
-        /recursos humanos (no|tarda)/, /proceso de (seleccion|reclutamiento|contratacion)/
-      ]
-    },
-    {
-      name: "Calidad del Servicio",
-      patterns: [
-        /calidad (del|de) servicio/, /baja calidad/, /falta de calidad/,
-        /mal servicio/, /servicio (deficiente|malo|regular|mejorar)/,
-        /errores (frecuentes|constantes|repetidos)/, /muchos errores/,
-        /equivocacion(es)?\b/, /incorrectos?\b/, /inexacto/,
-        /no (es|son) (correcto|correctos|exacto)/, /datos (incorrectos|erroneos|mal)/,
-        /precision\b/, /exactitud\b/, /defecto(s)?\b/
-      ]
-    },
-    {
-      name: "Procesos y Procedimientos",
-      patterns: [
-        /proceso(s)? (no|muy|poco|demasiado|mas|mejor)/, /proceso(s)? (confuso|lento|tardado|largo|complejo)/,
-        /los procesos (no|son|estan)/, /mejorar (el|los) proceso/,
-        /procedimiento(s)? (no|muy|poco)/, /demasiados (pasos|tramites|firmas)/,
-        /mucho(s)? (tramite|papeleo|paso)/, /tramites (excesivos|complicados|innecesarios)/,
-        /burocracia\b/, /autorizacion(es)? (tardada|lenta|complicada)/,
-        /flujo de (trabajo|proceso)/, /no (esta|estan) (claro|claros) (el|los) proceso/
-      ]
-    },
-    {
-      name: "Atención y Trato",
-      patterns: [
-        /mala actitud/, /buena actitud/, /actitud (del|de) (personal|servicio)/,
-        /mal trato/, /buen trato/, /trato (al|hacia el) (cliente|usuario)/,
-        /grosero(s)?\b/, /prepotente(s)?\b/, /amable(s)?\b/, /amabilidad\b/,
-        /empatia\b/, /disposicion (para|de) ayudar/, /no (nos|me) (atienden|apoyan)/,
-        /atencion al (cliente|usuario)/, /atencion (personalizada|deficiente|mala)/
-      ]
-    },
-    {
-      name: "Capacitación y Conocimiento",
-      patterns: [
-        /capacitacion\b/, /falta (de )?capacitacion/, /no (estan|esta) capacitado/,
-        /capacitar (al|a los) personal/, /entrenamiento\b/, /induccion\b/,
-        /no (conocen|saben|dominan) (el|los)/, /falta de conocimiento/,
-        /conocimiento (del|de) (producto|proceso|sistema|servicio)/,
-        /curso(s)?\b/, /formacion (profesional|del personal)/
-      ]
-    },
-    {
-      name: "Personal y Recursos Humanos",
-      patterns: [
-        /falta (de )?personal/, /poco personal/, /mas personal/, /mas gente/,
-        /no hay suficiente (personal|gente)/, /sobrecarga (de|del) personal/,
-        /rotacion (de personal|de empleados)/, /alta rotacion/,
-        /plantilla\b/, /nomina\b/, /sueldo\b/, /salario\b/,
-        /prestaciones?\b/, /bono(s)?\b/, /aguinaldo\b/, /quincena\b/,
-        /deduccion(es)?\b/, /fondo de ahorro/, /compensacion\b/
-      ]
-    },
-    {
-      name: "Infraestructura y Equipo",
-      patterns: [
-        /sistema(s)? (no funciona|falla|lento|cae|se cae|tarda)/, /falla(n)? (el|los) sistema/,
-        /sistema (muy lento|muy tardado|no sirve)/, /software\b/, /plataforma\b/,
-        /computadora(s)?\b/, /equipo (de computo|de trabajo|danado|viejo)/,
-        /internet (lento|falla|no funciona)/, /instalaciones\b/,
-        /mantenimiento (de|del)/, /limpieza (de|del)/, /aire acondicionado/,
-        /espacio (de trabajo|insuficiente|reducido)/, /comedor\b/
-      ]
-    },
-    {
-      name: "Abasto y Logística",
-      patterns: [
-        /abasto\b/, /desabasto\b/, /faltante(s) de (material|producto|insumo)/,
-        /no (hay|tienen) (material|producto|insumo|stock)/,
-        /entrega(s)? (tardada|lenta|incorrecta|incompleta)/, /retraso en (la|las) entrega/,
-        /logistica\b/, /transporte (de|del)/, /ruta(s) de entrega/,
-        /proveedor(es)? (no entrega|tarda|falla)/, /merma\b/
-      ]
-    },
-    {
-      name: "Clima y Ambiente Laboral",
-      patterns: [
-        /ambiente (de trabajo|laboral)/, /clima (laboral|de trabajo)/,
-        /trabajo en equipo/, /compañerismo\b/, /companero(s)? (de trabajo)?/,
-        /conflicto(s)? (entre|con) (compañeros|personal|equipos)/,
-        /falta de (respeto|trabajo en equipo)/, /chismes?\b/,
-        /cultura (organizacional|de la empresa)/, /valores (de la empresa|organizacionales)/
-      ]
-    },
-    {
-      name: "Planeación y Organización",
-      patterns: [
-        /falta (de )?planeacion/, /falta (de )?organizacion/, /falta (de )?coordinacion/,
-        /desorganizacion\b/, /sin (planeacion|organizacion|coordinacion)/,
-        /no (hay|existe) (planeacion|coordinacion)/, /mala (planeacion|organizacion)/,
-        /no (coordinan|organizan|planean)/, /cambios (de ultimo momento|de ultimo minuto)/,
-        /improvisacion\b/
-      ]
-    }
-  ];
-
-  // Score por categoría: contar cuántos patrones matchean
-  const scores = [];
-  for(const cat of CATS){
-    let hits = 0;
-    for(const p of cat.patterns){ if(p.test(n)) hits++; }
-    if(hits > 0) scores.push({ name: cat.name, hits });
-  }
-
-  if(scores.length === 0) return [];
-
-  // Ordenar por hits desc y retornar máximo 3
-  scores.sort((a,b) => b.hits - a.hits);
-  return scores.slice(0, 3).map(s => s.name);
-}
-
-// Helper: ¿tiene al menos una categoría válida?
-function commentIsValid(text) {
-  return classifyComment(text).length > 0;
+  const raw = text.toLowerCase();
+  if(raw.match(/sistema|software|portal|plataforma|red|conexi.n|aplicaci.n|computadora|laptop|mouse|teclado|monitor|pantalla|impresora|internet|falla|error de sistema|tecnolog/)) return 'Sistemas, Equipo y Tecnología';
+  if(raw.match(/tiempo|rapidez|rápida|rápido|urgente|tard|agilizar|demora|retraso|lento|espera|agilidad/)) return 'Tiempos de Respuesta';
+  if(raw.match(/comunicaci|avisar|claro|transparencia|informaci|notificar|respuesta|contestar|seguimiento|aviso|correo|llamada|mensaje|junta|feedback/)) return 'Comunicación y Seguimiento';
+  if(raw.match(/proceso|burocracia|tr.mite|papelo|firma|autorizaci|pol.tica/)) return 'Procesos y Burocracia';
+  if(raw.match(/abasto|mercanc.a|proveedor|merma|desabasto|material|surtido|faltante|insumo/)) return 'Abasto y Proveedores';
+  if(raw.match(/log.stica|ruta|entrega|env.o|transporte|chofer|camiones|veh.culo/)) return 'Logística y Entregas';
+  if(raw.match(/capacitaci|entrenamiento|enseñar|curso|aprender|gu.a|induccion|desarrollo/)) return 'Capacitación y Desarrollo';
+  if(raw.match(/costo|cotizaci.n|precio|cara|caro|presupuesto|gasto|ahorro/)) return 'Costos y Presupuestos';
+  if(raw.match(/necesidad|negocio|beneficio|sucursal|rendimiento|ventas|mercado/)) return 'Visión de Negocio';
+  if(raw.match(/atenci.n|trato|empat.a|amable|actitud|disposici.n|apoyo|servicio al cliente|groser|prepotente|resoluci/)) return 'Actitud y Trato al Cliente';
+  if(raw.match(/calidad|exactitud|precisi.n|error|equivocaci.n|correcto|detalle|revisi/)) return 'Calidad y Precisión';
+  if(raw.match(/personal|plantilla|recursos humanos|gente|vacante|contrataci.n|rotaci.n|falta de personal/)) return 'Gestión de Personal';
+  if(raw.match(/mantenimiento|limpieza|instalaci|reparaci|obra|construcci|baño|aire|luz|espacio|estacionamiento|comedor|oficina|silla|escritorio/)) return 'Infraestructura y Mantenimiento';
+  if(raw.match(/n.mina|pago|sueldo|salario|compensaci|bono|deducci|finiquito|prestaci|quincena|aguinaldo|fondo de ahorro|vales/)) return 'Nómina y Prestaciones';
+  if(raw.match(/innovaci|nuevo|creativo|idea|mejora continua/)) return 'Innovación y Mejora Continua';
+  if(raw.match(/seguridad|riesgo|peligro|accidente|protecci/)) return 'Seguridad y Riesgos';
+  if(raw.match(/organizaci|planeaci|orden|coordinaci|estructura/)) return 'Planeación y Organización';
+  if(raw.match(/liderazgo|jefe|gerente|direcci.n|coordinador|supervisor|mando/)) return 'Liderazgo y Gestión';
+  if(raw.match(/soluci.n|resolver|problema|conflicto/)) return 'Resolución de Problemas';
+  if(raw.match(/document|archivo|papel|expediente|formato/)) return 'Documentación y Archivo';
+  if(raw.match(/horario|turno|hora|salida|entrada|comida|permiso|vacaciones/)) return 'Horarios, Turnos y Permisos';
+  if(raw.match(/carga|mucho trabajo|saturad|estr.s|presi|exceso|pesad/)) return 'Carga de Trabajo y Estrés';
+  if(raw.match(/ambiente|clima|compañer|chisme|rumor|respeto|valores|cultura|equipo|integraci/)) return 'Clima Laboral y Compañerismo';
+  if(raw.match(/falta|necesita|requiere|ocupamos|deber.an|sugerencia|recomiendo|mejorar|oportunidad/)) return 'Sugerencias de Mejora';
+  
+  // SOLUCIÓN: Atrapa cualquier comentario largo que no haya encajado en lo anterior.
+  if(t.length >= 8) return 'Otras Observaciones';
+  
+  return 'Ignorar'; 
 }
 
 function renderDeptTabs(orderedDepts){
-  const c = document.getElementById("deptTabs");
-  c.innerHTML = "";
-  const realDepts = orderedDepts.filter(d => !d.startsWith("PROM. "));
+  const c = document.getElementById('deptTabs');
+  c.innerHTML = '';
+  const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
   if(realDepts.length === 0) return;
   const groups = getDeptsGroupedByDir(realDepts);
   
-  const btnCorp = document.createElement("button");
-  btnCorp.className = "dept-tab btn-consolidado truncated";
-  const consolidadoText = appMode === "externo" ? "CONSOLIDADO" : "CONSOLIDADO CORPORATIVO";
-  btnCorp.innerHTML = `<span class="dot"></span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path><line x1="12" y1="12" x2="12" y2="17"></line><line x1="9" y1="14.5" x2="15" y2="14.5"></line></svg> ${consolidadoText}`;
-  btnCorp.onclick = () => { document.querySelectorAll(".dept-tab").forEach(b => b.classList.remove("active")); btnCorp.classList.add("active"); renderCatChips(realDepts); renderPeticiones(realDepts); };
+  const btnCorp = document.createElement('button');
+  btnCorp.className = 'dept-tab btn-consolidado truncated';
+  const consolidadoText = appMode === 'externo' ? "CONSOLIDADO" : "CONSOLIDADO CORPORATIVO";
+  btnCorp.innerHTML = `<span class='dot'></span><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path><line x1='12' y1='12' x2='12' y2='17'></line><line x1='9' y1='14.5' x2='15' y2='14.5'></line></svg> ${consolidadoText}`;
+  btnCorp.onclick = () => { document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active')); btnCorp.classList.add('active'); renderCatChips(realDepts); renderPeticiones(realDepts); };
   c.appendChild(btnCorp);
-  
+
   for (const [dir, dList] of Object.entries(groups)) {
-    const deptsWithComments = dList.filter(d => (COMMENTS[d]||[]).some(cm => commentIsValid(cm)));
+    const deptsWithComments = dList.filter(d => (COMMENTS[d]||[]).some(cm => classifyComment(cm) !== 'Ignorar'));
     if(deptsWithComments.length === 0) continue;
 
-    const groupDiv = document.createElement("div");
-    groupDiv.className = "filter-dir-group";
-    groupDiv.innerHTML = `<span class="filter-dir-group-title truncated">${dir}</span>`;
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'filter-dir-group';
+    groupDiv.innerHTML = "<span class='filter-dir-group-title truncated'>" + dir + "</span>";
     
-    const btnGen = document.createElement("button");
-    btnGen.className = "dept-tab dept-tab-general truncated";
-    btnGen.innerHTML = `<span class="dot"></span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg> General ${dir}`;
-    btnGen.onclick = () => { document.querySelectorAll(".dept-tab").forEach(b => b.classList.remove("active")); btnGen.classList.add("active"); renderCatChips(deptsWithComments); renderPeticiones(deptsWithComments); };
+    const btnGen = document.createElement('button');
+    btnGen.className = 'dept-tab dept-tab-general truncated';
+    btnGen.innerHTML = "<span class='dot'></span><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><line x1='18' y1='20' x2='18' y2='10'></line><line x1='12' y1='20' x2='12' y2='4'></line><line x1='6' y1='20' x2='6' y2='14'></line></svg> General " + dir;
+    btnGen.onclick = () => { document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active')); btnGen.classList.add('active'); renderCatChips(deptsWithComments); renderPeticiones(deptsWithComments); };
     groupDiv.appendChild(btnGen);
-    
+
     deptsWithComments.forEach(d => {
       const col = deptColor(d);
-      const btn = document.createElement("button");
-      btn.className = "dept-tab truncated";
-      btn.style.setProperty("--tc", col);
-      btn.innerHTML = `<span class="dot"></span>${d}`;
-      btn.onclick = () => { document.querySelectorAll(".dept-tab").forEach(b => b.classList.remove("active")); btn.classList.add("active"); renderCatChips([d]); renderPeticiones([d]); };
+      const btn = document.createElement('button');
+      btn.className = 'dept-tab truncated';
+      btn.style.setProperty('--tc', col);
+      btn.innerHTML = "<span class='dot'></span>" + d;
+      btn.onclick = () => { document.querySelectorAll('.dept-tab').forEach(b => b.classList.remove('active')); btn.classList.add('active'); renderCatChips([d]); renderPeticiones([d]); };
       groupDiv.appendChild(btn);
     });
     c.appendChild(groupDiv);
   }
-  document.getElementById("commentsChartContainer").style.display = "none";
-  document.getElementById("commentList").style.display = "flex";
-  document.getElementById("peticionesCard").style.display = "none";
+  document.getElementById('commentsChartContainer').style.display = 'none';
+  document.getElementById('commentList').style.display = 'flex';
+  document.getElementById('peticionesCard').style.display = 'none';
 }
 
 function renderCommentsChart(deptsList) {
   let counts = {};
   deptsList.forEach(d => { 
     (COMMENTS[d]||[]).forEach(c => { 
-      if (c.startsWith("[PET_RES]") || c.startsWith("[PET_NO_RES]")) return;
-      const cats = classifyComment(c); 
-      cats.forEach(cat => { counts[cat] = (counts[cat] || 0) + 1; });
+      if (c.startsWith('[PET_RES]') || c.startsWith('[PET_NO_RES]')) return;
+      const cat = classifyComment(c); 
+      if(cat !== 'Ignorar') counts[cat] = (counts[cat] || 0) + 1; 
     }); 
   });
   const sorted = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
-  const ctx = document.getElementById("commentsChart").getContext("2d");
+  const ctx = document.getElementById('commentsChart').getContext('2d');
   if(commentsChart) commentsChart.destroy();
-  commentsChart = new Chart(ctx, { type: "bar", data: { labels: sorted, datasets: [{ data: sorted.map(c => counts[c]), backgroundColor: PALETTE.map(c => `${c}CC`), borderColor: PALETTE, borderWidth: 2, borderRadius: 6 }] }, options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } } });
+  commentsChart = new Chart(ctx, { type: 'bar', data: { labels: sorted, datasets: [{ data: sorted.map(c => counts[c]), backgroundColor: PALETTE.map(c => c+'CC'), borderColor: PALETTE, borderWidth: 2, borderRadius: 6 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } } });
 }
 
 function renderCatChips(depts){
   const deptArr = Array.isArray(depts) ? depts : [depts];
-  // allValid: un entry por cada (comentario, categoría) — un comentario puede aparecer en N categorías
   let allValid = [];
-  const cats = {};
   deptArr.forEach(d => { 
     (COMMENTS[d]||[]).forEach(c => { 
-      if (c.startsWith("[PET_RES]") || c.startsWith("[PET_NO_RES]")) return;
-      const catsArr = classifyComment(c);
-      if (catsArr.length === 0) return;
-      // Para el contador "Todos" evitamos duplicar el mismo texto
-      if (!allValid.find(x => x.text === c && x.dept === d)) allValid.push({text: c, dept: d});
-      catsArr.forEach(cat => { if(!cats[cat]) cats[cat] = []; cats[cat].push({text: c, dept: d}); });
+      if (c.startsWith('[PET_RES]') || c.startsWith('[PET_NO_RES]')) return;
+      if (classifyComment(c) !== 'Ignorar') allValid.push({text: c, dept: d}); 
     }); 
   });
-  const container = document.getElementById("catChips");
-  container.innerHTML = "";
+  
+  const cats = {};
+  allValid.forEach(c => { const cat = classifyComment(c.text); if(!cats[cat]) cats[cat] = []; cats[cat].push(c); });
+  
+  const container = document.getElementById('catChips');
+  container.innerHTML = '';
   
   const makeChip = (label, count, onClick) => {
-    const btn = document.createElement("button");
-    btn.className = "cat-chip truncated";
+    const btn = document.createElement('button');
+    btn.className = 'cat-chip truncated';
     btn.title = label;
-    btn.innerHTML = `<span class="chip-text">${label}</span><span class="cnt">${count}</span>`;
-    btn.onclick = () => { document.querySelectorAll(".cat-chip").forEach(c=>c.classList.remove("active")); btn.classList.add("active"); onClick(); };
+    btn.innerHTML = "<span class='chip-text'>" + label + "</span><span class='cnt'>" + count + "</span>";
+    btn.onclick = () => { document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); onClick(); };
     return btn;
   };
   
-  container.appendChild(makeChip("Todos", allValid.length, () => { document.getElementById("commentsChartContainer").style.display = "block"; renderCommentsChart(deptArr); renderComments(deptArr, null); })).classList.add("active");
-  document.getElementById("commentsChartContainer").style.display = "block";
+  container.appendChild(makeChip('Todos', allValid.length, () => { document.getElementById('commentsChartContainer').style.display = 'block'; renderCommentsChart(deptArr); renderComments(deptArr, null); })).classList.add('active');
+  document.getElementById('commentsChartContainer').style.display = 'block';
   renderCommentsChart(deptArr);
   renderComments(deptArr, null);
-  
-  Object.keys(cats).sort((a,b)=>cats[b].length - cats[a].length).forEach(cat => { container.appendChild(makeChip(cat, cats[cat].length, () => { document.getElementById("commentsChartContainer").style.display = "none"; renderComments(deptArr, cat); })); });
+
+  Object.keys(cats).sort((a,b)=>cats[b].length - cats[a].length).forEach(cat => { container.appendChild(makeChip(cat, cats[cat].length, () => { document.getElementById('commentsChartContainer').style.display = 'none'; renderComments(deptArr, cat); })); });
 }
 
-function renderComments(depts, filterCat){
-  const list = document.getElementById("commentList");
+function renderComments(depts, cat){
+  const list = document.getElementById('commentList');
   const deptArr = Array.isArray(depts) ? depts : [depts];
-
-  // Construye mapa categoría → [{text, dept}] sin filtro de cat
-  // Un comentario que toque N categorías aparece en las N
-  const buildMultiCatMap = (commentsArr) => {
-    const map = {};
-    commentsArr.forEach(({text, dept}) => {
-      classifyComment(text).forEach(c => {
-        if(!map[c]) map[c] = [];
-        map[c].push({text, dept});
-      });
-    });
-    return map;
-  };
-
-  const cleanText = (t) => t.replace(/^\[PET_RES\]\s*/, "").replace(/^\[PET_NO_RES\]\s*/, "");
-
-  if (filterCat) {
-    // Vista de una categoría específica: todos los comentarios que la incluyan, sin agrupar
-    let filtered = [];
-    deptArr.forEach(d => {
-      (COMMENTS[d]||[]).forEach(c => {
-        if (c.startsWith("[PET_RES]") || c.startsWith("[PET_NO_RES]")) return;
-        if (classifyComment(c).includes(filterCat)) filtered.push({text: c, dept: d});
-      });
-    });
-    if(!filtered.length){ list.innerHTML = `<div class="no-comments">Sin comentarios relevantes para la mejora continua.</div>`; return; }
-    let html = "";
-    if (deptArr.length > 1) {
-      deptArr.forEach(d => {
-        const dc = filtered.filter(x => x.dept === d);
-        if (!dc.length) return;
-        html += `<div style="font-weight: 900; font-size: 1.1rem; color: var(--if-orange); margin-top: 24px; margin-bottom: 8px; border-bottom: 2px solid var(--if-orange); padding-bottom: 4px; text-transform: uppercase;">${d}</div>`;
-        html += dc.map(c => `<div class="comment-item" style="--al:${deptColor(d)}">${cleanText(c.text)}</div>`).join("");
-      });
-    } else {
-      html += filtered.map(c => `<div class="comment-item" style="--al:${deptColor(deptArr[0])}">${cleanText(c.text)}</div>`).join("");
-    }
-    list.innerHTML = html;
-    return;
-  }
-
-  // Vista "Todos": agrupar por categoría; un comentario aparece repetido en cada cat que le aplica
   let allValid = [];
-  deptArr.forEach(d => {
-    (COMMENTS[d]||[]).forEach(c => {
-      if (c.startsWith("[PET_RES]") || c.startsWith("[PET_NO_RES]")) return;
-      if (commentIsValid(c)) allValid.push({text: c, dept: d});
-    });
+  deptArr.forEach(d => { 
+    (COMMENTS[d]||[]).forEach(c => { 
+      if (c.startsWith('[PET_RES]') || c.startsWith('[PET_NO_RES]')) return;
+      if (classifyComment(c) !== 'Ignorar') allValid.push({text: c, dept: d}); 
+    }); 
   });
-  if(!allValid.length){ list.innerHTML = `<div class="no-comments">Sin comentarios relevantes para la mejora continua.</div>`; return; }
-
-  let html = "";
+  const filtered = cat ? allValid.filter(c => classifyComment(c.text) === cat) : allValid;
+  
+  if(!filtered.length){ list.innerHTML = '<div class="no-comments">Sin comentarios relevantes para la mejora continua.</div>'; return; }
+  
+  let html = '';
   if (deptArr.length > 1) {
-    deptArr.forEach(d => {
-      const deptComments = allValid.filter(c => c.dept === d);
-      if (!deptComments.length) return;
-      html += `<div style="font-weight: 900; font-size: 1.1rem; color: var(--if-orange); margin-top: 24px; margin-bottom: 8px; border-bottom: 2px solid var(--if-orange); padding-bottom: 4px; text-transform: uppercase;">${d}</div>`;
-      const grouped = buildMultiCatMap(deptComments);
-      Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length).forEach(cName => {
-        html += `<div style="font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;">${cName} (${grouped[cName].length})</div>`;
-        html += grouped[cName].map(c => `<div class="comment-item" style="--al:${deptColor(d)}">${cleanText(c.text)}</div>`).join("");
+      deptArr.forEach(d => {
+          const deptComments = filtered.filter(c => c.dept === d);
+          if (deptComments.length === 0) return;
+          html += "<div style='font-weight: 900; font-size: 1.1rem; color: var(--if-orange); margin-top: 24px; margin-bottom: 8px; border-bottom: 2px solid var(--if-orange); padding-bottom: 4px; text-transform: uppercase;'>" + d + "</div>";
+          const grouped = {};
+          deptComments.forEach(c => { const cName = classifyComment(c.text); if(!grouped[cName]) grouped[cName] = []; grouped[cName].push(c); });
+          const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
+          sortedCats.forEach(cName => {
+              if (!cat) html += "<div style='font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+              html += grouped[cName].map(c => { const cleanText = c.text.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, ''); return "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + cleanText + "</div>"; }).join('');
+          });
       });
-    });
   } else {
-    const grouped = buildMultiCatMap(allValid);
-    Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length).forEach(cName => {
-      html += `<div style="font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;">${cName} (${grouped[cName].length})</div>`;
-      html += grouped[cName].map(c => `<div class="comment-item" style="--al:${deptColor(deptArr[0])}">${cleanText(c.text)}</div>`).join("");
-    });
+      const grouped = {};
+      filtered.forEach(c => { const cName = classifyComment(c.text); if(!grouped[cName]) grouped[cName] = []; grouped[cName].push(c); });
+      const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
+      sortedCats.forEach(cName => {
+        if (!cat) html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
+        html += grouped[cName].map(c => { const cleanText = c.text.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, ''); return "<div class='comment-item' style='--al:" + deptColor(deptArr[0]) + "'>" + cleanText + "</div>"; }).join('');
+      });
   }
   list.innerHTML = html;
 }
 
 function renderBarChart(orderedDepts){
-  const ctx=document.getElementById("barChart").getContext("2d");
+  const ctx=document.getElementById('barChart').getContext('2d');
   if(barChart) barChart.destroy();
   if(!orderedDepts.length) return;
   barChart = new Chart(ctx, {
-    type: "bar",
-    data: { labels: orderedDepts, datasets: [{ data: orderedDepts.map(d=>AVERAGES[DEPTS.indexOf(d)]), backgroundColor: orderedDepts.map(d=>deptColor(d)+"E6"), borderColor: orderedDepts.map(d=>deptColor(d)), borderWidth: 2, borderRadius: 8 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 10 }, x: { ticks: { callback: v => orderedDepts[v].length > 12 ? orderedDepts[v].substring(0, 10)+"…" : orderedDepts[v] } } } }
+    type: 'bar',
+    data: { labels: orderedDepts, datasets: [{ data: orderedDepts.map(d=>AVERAGES[DEPTS.indexOf(d)]), backgroundColor: orderedDepts.map(d=>deptColor(d)+'E6'), borderColor: orderedDepts.map(d=>deptColor(d)), borderWidth: 2, borderRadius: 8 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 10 }, x: { ticks: { callback: v => orderedDepts[v].length > 12 ? orderedDepts[v].substring(0, 10)+'…' : orderedDepts[v] } } } }
   });
 }
 
 const showValuesPlugin = {
-  id: "showValuesOnSelect",
+  id: 'showValuesOnSelect',
   afterDatasetsDraw(chart) {
     if (window.selectedLineIdx === null) return;
     const ctx = chart.ctx;
     const dataset = chart.data.datasets[window.selectedLineIdx];
     const meta = chart.getDatasetMeta(window.selectedLineIdx);
     ctx.save();
-    ctx.font = "bold 12px Inter, sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "bottom";
+    ctx.font = 'bold 12px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
     meta.data.forEach((point, index) => {
       const val = dataset.data[index];
       if (val !== null && val !== undefined && !isNaN(val)) {
-        ctx.shadowColor = "rgba(255,255,255,0.95)";
+        ctx.shadowColor = 'rgba(255,255,255,0.95)';
         ctx.shadowBlur = 6;
         ctx.fillStyle = dataset.borderColor; 
         ctx.fillText(val.toFixed(1), point.x, point.y - 12);
+        ctx.fillText(val.toFixed(1), point.x, point.y - 12); 
         ctx.shadowBlur = 0;
         ctx.fillText(val.toFixed(1), point.x, point.y - 12);
       }
@@ -1753,72 +1530,46 @@ const showValuesPlugin = {
   }
 };
 
-const donutLabelsPlugin = {
-  id: "donutLabels",
-  afterDatasetsDraw(chart) {
-    if (!window.showDonutData) return;
-    const ctx = chart.ctx;
-    chart.data.datasets.forEach((dataset, i) => {
-      const meta = chart.getDatasetMeta(i);
-      if (meta.type !== 'doughnut') return;
-      meta.data.forEach((element, index) => {
-        const val = dataset.data[index];
-        if (!val) return;
-        const pos = element.tooltipPosition();
-        ctx.save();
-        ctx.font = "bold 13px Inter, sans-serif";
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.shadowColor = "rgba(0,0,0,0.6)";
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 1;
-        ctx.shadowOffsetY = 1;
-        ctx.fillText(val, pos.x, pos.y);
-        ctx.restore();
-      });
-    });
-  }
-};
-
 function renderLineChart(orderedDepts, activeQIndices){
-  const ctx = document.getElementById("lineChart").getContext("2d");
+  const ctx = document.getElementById('lineChart').getContext('2d');
   if(lineChart) lineChart.destroy();
   if(!orderedDepts.length || !activeQIndices.length) return;
-  const labels = activeQIndices.map(qi => `P${qi+1}`);
-  window.selectedLineIdx = null;
+  
+  const labels = activeQIndices.map(qi => "P" + (qi+1));
+  window.selectedLineIdx = null; 
+  
   lineChart = new Chart(ctx, {
-    type: "line",
+    type: 'line',
     data: { 
       labels: labels, 
       datasets: orderedDepts.map(d => ({ 
         label: d, 
         data: activeQIndices.map(qi => SCORES[qi][DEPTS.indexOf(d)] ?? null), 
-        borderColor: deptColor(d), borderWidth: d.startsWith("PROM.") ? 4 : 2, tension: 0.4, spanGaps: true, pointRadius: d.startsWith("PROM.") ? 4 : 3, pointHoverRadius: 6
+        borderColor: deptColor(d), borderWidth: d.startsWith('PROM.') ? 4 : 2, tension: 0.4, spanGaps: true, pointRadius: d.startsWith('PROM.') ? 4 : 3, pointHoverRadius: 6
       })) 
     },
     plugins: [showValuesPlugin],
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { y: { min: 5, max: 10 } }, interaction: { mode: "nearest", intersect: true } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { y: { min: 5, max: 10 } }, interaction: { mode: 'nearest', intersect: true } }
   });
-  
-  const leg = document.getElementById("lineLegend");
-  leg.innerHTML = "";
+
+  const leg = document.getElementById('lineLegend');
+  leg.innerHTML = '';
   orderedDepts.forEach((d, i) => {
-    const chip = document.createElement("span");
-    chip.className = "rl-chip";
-    chip.style.cursor = "pointer";
-    chip.innerHTML = `<span class="rl-dot" style="background:${deptColor(d)}"></span><span class="chip-text">${d}</span>`;
+    const chip = document.createElement('span');
+    chip.className = 'rl-chip';
+    chip.style.cursor = 'pointer';
+    chip.innerHTML = "<span class='rl-dot' style='background:" + deptColor(d) + "'></span><span class='chip-text'>" + d + "</span>";
 
     const updateLineChartStyles = () => {
       lineChart.data.datasets.forEach((ds, dsIndex) => {
-        if (window.selectedLineIdx === null) { ds.borderWidth = ds.label.startsWith("PROM.") ? 4 : 2; ds.borderColor = deptColor(ds.label); ds.pointRadius = ds.label.startsWith("PROM.") ? 4 : 3; } 
+        if (window.selectedLineIdx === null) { ds.borderWidth = ds.label.startsWith('PROM.') ? 4 : 2; ds.borderColor = deptColor(ds.label); ds.pointRadius = ds.label.startsWith('PROM.') ? 4 : 3; } 
         else if (dsIndex === window.selectedLineIdx) { ds.borderWidth = 5; ds.borderColor = deptColor(ds.label); ds.pointRadius = 6; } 
-        else { ds.borderWidth = 1; ds.borderColor = `${deptColor(ds.label)}22`; ds.pointRadius = 0; }
+        else { ds.borderWidth = 1; ds.borderColor = deptColor(ds.label) + '22'; ds.pointRadius = 0; }
       });
-      document.querySelectorAll("#lineLegend .rl-chip").forEach((c, idx) => {
-         if (window.selectedLineIdx === null) { c.style.opacity = "1"; c.style.background = "transparent"; } 
-         else if (idx === window.selectedLineIdx) { c.style.opacity = "1"; c.style.background = "var(--surface2)"; } 
-         else { c.style.opacity = "0.4"; c.style.background = "transparent"; }
+      document.querySelectorAll('#lineLegend .rl-chip').forEach((c, idx) => {
+         if (window.selectedLineIdx === null) { c.style.opacity = '1'; c.style.background = 'transparent'; } 
+         else if (idx === window.selectedLineIdx) { c.style.opacity = '1'; c.style.background = 'var(--surface2)'; } 
+         else { c.style.opacity = '0.4'; c.style.background = 'transparent'; }
       });
       lineChart.update();
     };
@@ -1828,79 +1579,63 @@ function renderLineChart(orderedDepts, activeQIndices){
 }
 
 function renderRankingList(orderedDepts, activeQIndices){
-  const list = document.getElementById("rankList");
-  if(!orderedDepts.length || !activeQIndices.length) { list.innerHTML=""; return; }
+  const list = document.getElementById('rankList');
+  if(!orderedDepts.length || !activeQIndices.length) { list.innerHTML=''; return; }
 
-  const realDepts = orderedDepts.filter(d => !d.startsWith("PROM. "));
-  const isSingleExternoClient = appMode === "externo" && realDepts.length === 1;
-  const rankCard = list.closest(".chart-card");
-  const rankSub = rankCard ? rankCard.querySelector(".chart-sub") : null;
-  
+  // Para modo externo con un solo cliente: mostrar resultado único sin comparación mejor/peor
+  const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
+  const isSingleExternoClient = appMode === 'externo' && realDepts.length === 1;
+
+  // Actualizar subtítulo según el caso
+  const rankCard = list.closest('.chart-card');
+  const rankSub = rankCard ? rankCard.querySelector('.chart-sub') : null;
   if (rankSub) {
-    rankSub.textContent = isSingleExternoClient ? `Resultado de ${realDepts[0]} en cada pregunta` : "Mejor \u2191 y peor \u2193 evaluado en cada pregunta";
+    rankSub.textContent = isSingleExternoClient
+      ? 'Resultado de ' + realDepts[0] + ' en cada pregunta'
+      : 'Mejor \u2191 y peor \u2193 evaluado en cada pregunta';
   }
 
   list.innerHTML = activeQIndices.map(qi => {
     const q = QUESTIONS[qi];
     const vals = orderedDepts.map(d => ({d, v: SCORES[qi][DEPTS.indexOf(d)]})).filter(x=>x.v!==null && x.v!==undefined && !isNaN(x.v)).sort((a,b)=>b.v-a.v);
-    if(!vals.length) return "";
+    if(!vals.length) return '';
 
     if (isSingleExternoClient) {
       const sole = vals[0];
-      const scoreColor = sole.v >= 9 ? "var(--success)" : sole.v >= 7 ? "var(--if-orange)" : "var(--danger)";
-      return `
-        <div class="rank-item">
-          <div class="rank-q-wrap"><span class="rank-q-inner">${q}</span></div>
-          <div class="rank-badges">
-            <div class="rank-badge" style="background:rgba(0,0,0,0.03); border:1.5px solid var(--border); flex:1; justify-content:space-between;">
-              <div class="rb-name-wrap"><span class="rb-name-inner" style="color:var(--if-navy); font-weight:700;">${sole.d}</span></div>
-              <span style="font-weight:900; font-size:1.05rem; color:${scoreColor};">${sole.v.toFixed(1)}</span>
-            </div>
-          </div>
-        </div>`;
+      const scoreColor = sole.v >= 9 ? 'var(--success)' : sole.v >= 7 ? 'var(--if-orange)' : 'var(--danger)';
+      return "<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>" + q + "</span></div>" +
+        "<div class='rank-badges'><div class='rank-badge' style='background:rgba(0,0,0,0.03); border:1.5px solid var(--border); flex:1; justify-content:space-between;'>" +
+        "<div class='rb-name-wrap'><span class='rb-name-inner' style='color:var(--if-navy); font-weight:700;'>" + sole.d + "</span></div>" +
+        "<span style='font-weight:900; font-size:1.05rem; color:" + scoreColor + ";'>" + sole.v.toFixed(1) + "</span></div></div></div>";
     }
 
     const best = vals[0], worst = vals[vals.length-1];
-    return `
-      <div class="rank-item">
-        <div class="rank-q-wrap"><span class="rank-q-inner">${q}</span></div>
-        <div class="rank-badges">
-          <div class="rank-badge badge-best">
-            <span>\u2191</span>
-            <div class="rb-name-wrap"><span class="rb-name-inner">${best.d}</span></div>
-            <span>${best.v.toFixed(1)}</span>
-          </div>
-          <div class="rank-badge badge-worst">
-            <span>\u2193</span>
-            <div class="rb-name-wrap"><span class="rb-name-inner">${worst.d}</span></div>
-            <span>${worst.v.toFixed(1)}</span>
-          </div>
-        </div>
-      </div>`;
-  }).join("");
+    return "<div class='rank-item'><div class='rank-q-wrap'><span class='rank-q-inner'>" + q + "</span></div><div class='rank-badges'><div class='rank-badge badge-best'><span>\u2191</span><div class='rb-name-wrap'><span class='rb-name-inner'>" + best.d + "</span></div><span>" + best.v.toFixed(1) + "</span></div><div class='rank-badge badge-worst'><span>\u2193</span><div class='rb-name-wrap'><span class='rb-name-inner'>" + worst.d + "</span></div><span>" + worst.v.toFixed(1) + "</span></div></div></div>";
+  }).join('');
 }
 
 function renderDetailTable(orderedDepts, activeQIndices){
-  const tbl = document.getElementById("detailTable");
+  const tbl = document.getElementById('detailTable');
   if(!orderedDepts.length || !activeQIndices.length) return;
   const groups = getDeptsGroupedByDir(orderedDepts);
-  let h1 = `<tr><th rowspan="2" class="border-right-bold fixed-col">Pregunta</th>`;
-  let h2 = `<tr>`;
+  
+  let h1 = `<tr><th rowspan='2' class='border-right-bold fixed-col'>Pregunta</th>`;
+  let h2 = "<tr>";
   let flat = [];
   let dirEndIndices = new Set();
   let currentIndex = 0;
 
   for(const [dir, dList] of Object.entries(groups)){
-    h1 += `<th colspan="${dList.length}" class="border-right-bold">${dir}</th>`;
+    h1 += "<th colspan='" + dList.length + "' class='border-right-bold'>" + dir + "</th>";
     dList.forEach((d, index) => {
       flat.push(d);
       let isLast = index === (dList.length - 1);
       if(isLast) dirEndIndices.add(currentIndex);
-      h2 += `<th class="${isLast ? "border-right-bold" : ""}">${d.startsWith('PROM.')?'PROM.':d}</th>`;
+      h2 += "<th class='" + (isLast ? "border-right-bold" : "") + "'>" + (d.startsWith('PROM.')?'PROM.':d) + "</th>";
       currentIndex++;
     });
   }
-  tbl.querySelector("thead").innerHTML = `${h1}<th rowspan="2">Promedio</th></tr>${h2}</tr>`;
+  tbl.querySelector('thead').innerHTML = h1 + `<th rowspan='2'>Promedio</th></tr>` + h2 + "</tr>";
   
   let bodyHTML = activeQIndices.map(qi => {
     const q = QUESTIONS[qi];
@@ -1908,38 +1643,33 @@ function renderDetailTable(orderedDepts, activeQIndices){
     const avgVals = rowVals.filter(v=>v!==null && v!==undefined && !isNaN(v));
     const avg = avgVals.length ? avgVals.reduce((a,b)=>a+b,0)/avgVals.length : 0;
     
-    let rowStr = `<tr><td class="q-cell border-right-bold fixed-col">${q}</td>`;
-    rowVals.forEach((v, idx) => { 
-      let isLast = dirEndIndices.has(idx); 
-      rowStr += `<td class="${isLast ? "border-right-bold" : ""}"><span class="score-pill ${v>=9?'score-high':v>=8?'score-mid':'score-low'}">${v?v.toFixed(1):'—'}</span></td>`; 
-    });
-    rowStr += `<td><b>${avg?avg.toFixed(2):'—'}</b></td></tr>`;
+    let rowStr = "<tr><td class='q-cell border-right-bold fixed-col'>" + q + "</td>";
+    rowVals.forEach((v, idx) => { let isLast = dirEndIndices.has(idx); rowStr += "<td class='" + (isLast ? "border-right-bold" : "") + "'><span class='score-pill " + (v>=9?'score-high':v>=8?'score-mid':'score-low') + "'>" + (v?v.toFixed(1):'—') + "</span></td>"; });
+    rowStr += "<td><b>" + (avg?avg.toFixed(2):'—') + "</b></td></tr>";
     return rowStr;
-  }).join("");
+  }).join('');
 
-  bodyHTML += `<tr style="background:var(--surface2);font-weight:700"><td style="text-align:left;" class="border-right-bold fixed-col">Promedio General</td>`;
-  flat.forEach((d, idx) => { 
-    let isLast = dirEndIndices.has(idx); 
-    const avg = AVERAGES[DEPTS.indexOf(d)]; 
-    bodyHTML += `<td class="${isLast ? "border-right-bold" : ""}"><span class="score-pill ${avg>=9?'score-high':avg>=8?'score-mid':'score-low'}">${avg?avg.toFixed(2):'—'}</span></td>`; 
-  });
-  bodyHTML += `<td><span style="color:var(--primary); font-weight:800; font-size:1.1em;">${(flat.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/flat.length).toFixed(2)}</span></td></tr>`;
-  tbl.querySelector("tbody").innerHTML = bodyHTML;
+  bodyHTML += `<tr style='background:var(--surface2);font-weight:700'><td style='text-align:left;' class='border-right-bold fixed-col'>Promedio General</td>`;
+  flat.forEach((d, idx) => { let isLast = dirEndIndices.has(idx); const avg = AVERAGES[DEPTS.indexOf(d)]; bodyHTML += "<td class='" + (isLast ? "border-right-bold" : "") + "'><span class='score-pill " + (avg>=9?'score-high':avg>=8?'score-mid':'score-low') + "'>" + (avg?avg.toFixed(2):'—') + "</span></td>"; });
+  bodyHTML += "<td><span style='color:var(--primary); font-weight:800; font-size:1.1em;'>" + (flat.reduce((s,d)=>s+AVERAGES[DEPTS.indexOf(d)],0)/flat.length).toFixed(2) + "</span></td></tr>";
+  tbl.querySelector('tbody').innerHTML = bodyHTML;
 }
 
 function renderParticipation(orderedDepts) {
-  const card = document.getElementById("participationCard");
-  const tbl = document.getElementById("participationTable");
-  const isReader = document.body.classList.contains("reader-mode");
-  if(!orderedDepts.length || (isReader && Object.keys(PARTICIPATION).length === 0)) { card.style.display = "none"; return; }
-  card.style.display = "block";
-  const realDepts = orderedDepts.filter(d => !d.startsWith("PROM. "));
+  const card = document.getElementById('participationCard');
+  const tbl = document.getElementById('participationTable');
+  const isReader = document.body.classList.contains('reader-mode');
+  
+  if(!orderedDepts.length || (isReader && Object.keys(PARTICIPATION).length === 0)) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
   const groups = getDeptsGroupedByDir(realDepts);
   
-  let head = `<thead><tr><th style="text-align:left; border-top-left-radius:var(--rs);">Entidad</th><th style="text-align:center">Enviados</th><th style="text-align:center">Contestaron</th><th style="width:200px; text-align:left; border-top-right-radius:var(--rs);">Participación</th></tr></thead>`;
-  let body = `<tbody>`;
+  let head = `<thead><tr><th style='text-align:left; border-top-left-radius:var(--rs);'>Entidad</th><th style='text-align:center'>Enviados</th><th style='text-align:center'>Contestaron</th><th style='width:200px; text-align:left; border-top-right-radius:var(--rs);'>Participación</th></tr></thead>`;
+  let body = "<tbody>";
   let calcGlobalSent = 0, calcGlobalAns = 0, hasAnyData = false;
-  
+
   for (const [dirRaw, dList] of Object.entries(groups)) {
     const dir = String(dirRaw);
     const validDepts = isReader ? dList.filter(d => PARTICIPATION[d] && PARTICIPATION[d].sent > 0) : dList;
@@ -1948,7 +1678,7 @@ function renderParticipation(orderedDepts) {
     hasAnyData = true;
     let sumDirSent = 0, sumDirAns = 0;
     let deptRowsHtml = "";
-    
+
     validDepts.forEach(dRaw => {
        const d = String(dRaw); 
        if(!PARTICIPATION[d]) PARTICIPATION[d] = {sent:0, ans:0};
@@ -1958,67 +1688,42 @@ function renderParticipation(orderedDepts) {
        const p = PARTICIPATION[d];
        const pct = p.sent > 0 ? ((p.ans / p.sent) * 100).toFixed(1) : 0;
        const sentVal = p.sent || 0, ansVal = p.ans || 0;
-       
        const escD = d.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
        const sentCell = isReader ? sentVal : `<input type="number" class="part-input" data-dept="${escD}" data-type="sent" value="${sentVal}" min="0" onclick="event.stopPropagation()">`;
        const ansCell = isReader ? ansVal : `<input type="number" class="part-input" data-dept="${escD}" data-type="ans" value="${ansVal}" min="0" onclick="event.stopPropagation()">`;
-       const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, "-");
-       
-       deptRowsHtml += `
-         <tr class="dept-row row-${safeDirId}">
-           <td class="truncated" style="text-align:left; padding-left:32px; color:var(--muted); font-family:var(--font); font-weight:500;">↳ <span class="part-text">${d}</span></td>
-           <td style="text-align:center; font-family:var(--font); font-weight:500;">${sentCell}</td>
-           <td style="text-align:center; font-family:var(--font); font-weight:500;">${ansCell}</td>
-           <td>
-             <div style="display:flex; align-items:center; gap:10px; font-family:var(--font); font-weight:500;">
-               <span style="min-width:38px; text-align:right; font-size:.7rem;">${pct}%</span>
-               <div class="kpi-bar" style="flex-grow:1; margin:0; height:6px;">
-                 <div class="kpi-bar-fill" style="width:${pct}%; background:${deptColor(d)}"></div>
-               </div>
-             </div>
-           </td>
-         </tr>`;
+
+       const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, '-');
+       deptRowsHtml += "<tr class='dept-row row-" + safeDirId + "'>" +
+         "<td class='truncated' style='text-align:left; padding-left:32px; color:var(--muted); font-family:var(--font); font-weight:500;'>↳ <span class='part-text'>" + d + "</span></td>" +
+         "<td style='text-align:center; font-family:var(--font); font-weight:500;'>" + sentCell + "</td><td style='text-align:center; font-family:var(--font); font-weight:500;'>" + ansCell + "</td>" +
+         "<td><div style='display:flex; align-items:center; gap:10px; font-family:var(--font); font-weight:500;'><span style='min-width:38px; text-align:right; font-size:.7rem;'>" + pct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:6px;'><div class='kpi-bar-fill' style='width:" + pct + "%; background:" + deptColor(d) + "'></div></div></div></td></tr>";
     });
 
     calcGlobalSent += sumDirSent;
     calcGlobalAns += sumDirAns;
 
-    const dirKey = `__DIR__${dir}`;
+    const dirKey = '__DIR__' + dir;
     const dirSent = (PARTICIPATION[dirKey] && PARTICIPATION[dirKey].sent !== undefined) ? PARTICIPATION[dirKey].sent : sumDirSent;
     const dirAns = (PARTICIPATION[dirKey] && PARTICIPATION[dirKey].ans !== undefined) ? PARTICIPATION[dirKey].ans : sumDirAns;
     const dirPct = dirSent > 0 ? ((dirAns / dirSent) * 100).toFixed(1) : 0;
     
-    const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, "-");
+    const safeDirId = dir.replace(/[^a-zA-Z0-9]/g, '-');
     const escDirKey = dirKey.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
     
     const dirSentCell = isReader ? dirSent : `<input type="number" class="part-input" style="background:var(--surface2); border-color:var(--border);" data-dept="${escDirKey}" data-type="sent" value="${dirSent}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
     const dirAnsCell = isReader ? dirAns : `<input type="number" class="part-input" style="background:var(--surface2); border-color:var(--border);" data-dept="${escDirKey}" data-type="ans" value="${dirAns}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
 
-    body += `
-      <tr class="dir-row" onclick="toggleDir('${safeDirId}')" style="background:var(--surface2);">
-        <td class="truncated" style="text-align:left;">
-          <span class="toggle-arrow" id="arrow-${safeDirId}">▶</span> 
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:3px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg> 
-          <span class="part-text">${dir}</span>
-        </td>
-        <td style="text-align:center">${dirSentCell}</td>
-        <td style="text-align:center">${dirAnsCell}</td>
-        <td>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span style="min-width:38px; text-align:right; font-weight:700;">${dirPct}%</span>
-            <div class="kpi-bar" style="flex-grow:1; margin:0; height:8px;">
-              <div class="kpi-bar-fill" style="width:${dirPct}%; background:linear-gradient(90deg, var(--if-orange), var(--if-orange-light))"></div>
-            </div>
-          </div>
-        </td>
-      </tr>`;
-    
+    body += "<tr class='dir-row' onclick=\"toggleDir('" + safeDirId + "')\" style='background:var(--surface2);'>" +
+      "<td class='truncated' style='text-align:left;'><span class='toggle-arrow' id='arrow-" + safeDirId + "'>▶</span> <svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:3px'><path d='M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z'></path></svg> <span class='part-text'>" + dir + "</span></td>" +
+      "<td style='text-align:center'>" + dirSentCell + "</td><td style='text-align:center'>" + dirAnsCell + "</td>" +
+      "<td><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-weight:700;'>" + dirPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px;'><div class='kpi-bar-fill' style='width:" + dirPct + "%; background:linear-gradient(90deg, var(--if-orange), var(--if-orange-light))'></div></div></div></td></tr>";
+
     body += deptRowsHtml;
   }
 
-  if (!hasAnyData && isReader) { card.style.display = "none"; return; }
+  if (!hasAnyData && isReader) { card.style.display = 'none'; return; }
 
-  const globKey = "__GLOBAL__";
+  const globKey = '__GLOBAL__';
   const globalSent = (PARTICIPATION[globKey] && PARTICIPATION[globKey].sent !== undefined) ? PARTICIPATION[globKey].sent : calcGlobalSent;
   const globalAns = (PARTICIPATION[globKey] && PARTICIPATION[globKey].ans !== undefined) ? PARTICIPATION[globKey].ans : calcGlobalAns;
   const globalPct = globalSent > 0 ? ((globalAns / globalSent) * 100).toFixed(1) : 0;
@@ -2026,72 +1731,50 @@ function renderParticipation(orderedDepts) {
   const globSentCell = isReader ? globalSent : `<input type="number" class="part-input" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);" data-dept="${globKey}" data-type="sent" value="${globalSent}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
   const globAnsCell = isReader ? globalAns : `<input type="number" class="part-input" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);" data-dept="${globKey}" data-type="ans" value="${globalAns}" min="0" placeholder="Auto" onclick="event.stopPropagation()">`;
 
-  body += `
-    <tr style="background:#152130; font-family:var(--font-bold);">
-      <td class="truncated" style="text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;">
-        <span class="part-text"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path></svg> Total General</span>
-      </td>
-      <td style="text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;">${globSentCell}</td>
-      <td style="text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;">${globAnsCell}</td>
-      <td style="border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="min-width:38px; text-align:right; font-size:1.1em; font-weight: 700;">${globalPct}%</span>
-          <div class="kpi-bar" style="flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)">
-            <div class="kpi-bar-fill" style="width:${globalPct}%; background:#E07010"></div>
-          </div>
-        </div>
-      </td>
-    </tr></tbody>`;
-      
+  body += "<tr style='background:#152130; font-family:var(--font-bold);'>" +
+      `<td class='truncated' style='text-align:left; border:none; color:#fff !important; border-bottom-left-radius:var(--rs); background:#152130 !important;'><span class='part-text'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><rect x='2' y='7' width='20' height='15' rx='2' ry='2'></rect><path d='M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2'></path></svg> Total General</span></td>` +
+      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globSentCell + "</td>" +
+      "<td style='text-align:center; border:none; color:#fff !important; background:#152130 !important; font-weight: 700; font-size: 1.05em;'>" + globAnsCell + "</td>" +
+      "<td style='border:none; color:#fff !important; background:#152130 !important; border-bottom-right-radius:var(--rs);'><div style='display:flex; align-items:center; gap:10px;'><span style='min-width:38px; text-align:right; font-size:1.1em; font-weight: 700;'>" + globalPct + "%</span><div class='kpi-bar' style='flex-grow:1; margin:0; height:8px; background:rgba(255,255,255,0.15)'><div class='kpi-bar-fill' style='width:" + globalPct + "%; background:#E07010'></div></div></div></td></tr></tbody>";
   tbl.innerHTML = head + body;
 }
 
 function getDeptsGroupedByDir(list) {
-  const g = {}; list.forEach(d => { const dir = DEPT_TO_DIR[d] || "General"; if(!g[dir]) g[dir] = []; g[dir].push(d); }); return g;
+  const g = {}; list.forEach(d => { const dir = DEPT_TO_DIR[d] || 'General'; if(!g[dir]) g[dir] = []; g[dir].push(d); }); return g;
 }
 
 window.openInsights = async function() {
-  var modal = document.getElementById("insightModal");
-  var content = document.getElementById("insightContent");
-  var actions = document.getElementById("insightActions");
-  var loadingContainer = document.getElementById("insightLoading");
-  var currentFilterKey = Array.from(activeDirs).sort().join("|") + "_" + Array.from(activeDepts).sort().join("|");
+  var modal = document.getElementById('insightModal');
+  var content = document.getElementById('insightContent');
+  var actions = document.getElementById('insightActions');
+  var loadingContainer = document.getElementById('insightLoading');
+  var currentFilterKey = Array.from(activeDirs).sort().join('|') + "_" + Array.from(activeDepts).sort().join('|');
 
-  modal.classList.add("open");
-  if (window.cachedFilterKey === currentFilterKey && window.cachedAnalysisHTML !== "") { loadingContainer.style.display = "none"; content.innerHTML = window.cachedAnalysisHTML; content.style.display = "block"; actions.style.display = "flex"; return; }
+  modal.classList.add('open');
+  if (window.cachedFilterKey === currentFilterKey && window.cachedAnalysisHTML !== "") { loadingContainer.style.display = 'none'; content.innerHTML = window.cachedAnalysisHTML; content.style.display = 'block'; actions.style.display = 'flex'; return; }
 
-  actions.style.display = "none"; content.style.display = "none";
-  loadingContainer.style.display = "block";
+  actions.style.display = 'none'; content.style.display = 'none'; loadingContainer.style.display = 'block';
 
   var loadingTexts = ["Enviando datos a la IA...", "Analizando puntajes por departamento...", "Procesando comentarios cualitativos...", "Identificando brechas y fortalezas...", "Generando diagnóstico estratégico...", "Redactando plan de acción ejecutivo..."];
-  var ltIdx = 0; var textEl = document.getElementById("loadingText"); var progressEl = document.getElementById("insightProgress"); var timerEl = document.getElementById("loadingTimer");
-  if(textEl) textEl.textContent = loadingTexts[0];
-  if(progressEl) progressEl.style.width = "5%"; if(timerEl) timerEl.textContent = "Analizando...";
+  var ltIdx = 0; var textEl = document.getElementById('loadingText'); var progressEl = document.getElementById('insightProgress'); var timerEl = document.getElementById('loadingTimer');
+  if(textEl) textEl.textContent = loadingTexts[0]; if(progressEl) progressEl.style.width = "5%"; if(timerEl) timerEl.textContent = "Analizando...";
 
   var ltInterval = setInterval(function() {
     ltIdx = (ltIdx + 1) % loadingTexts.length; if(textEl) textEl.textContent = loadingTexts[ltIdx];
-    var fakePct = Math.min(90, 5 + (ltIdx / loadingTexts.length) * 85); if(progressEl) progressEl.style.width = `${fakePct}%`;
+    var fakePct = Math.min(90, 5 + (ltIdx / loadingTexts.length) * 85); if(progressEl) progressEl.style.width = fakePct + "%";
   }, 2500);
-  
-  var allowedDirs = activeDirs.has("Todas") ? DIRS : Array.from(activeDirs);
-  var filteredDepts = DEPTS.filter(function(d){ return allowedDirs.includes(DEPT_TO_DIR[d]); });
-  var realDepts = activeDepts.has("Todos") ? filteredDepts.filter(function(d){ return !d.startsWith("PROM. "); }) : filteredDepts.filter(function(d){ return activeDepts.has(d) && !d.startsWith("PROM. "); });
 
-  if(realDepts.length === 0) { 
-    clearInterval(ltInterval); 
-    loadingContainer.style.display = "none"; 
-    content.innerHTML = `<p style="color:var(--muted); text-align:center;">Selecciona al menos un departamento para generar el análisis.</p>`; 
-    content.style.display = "block"; 
-    actions.style.display = "flex"; 
-    return; 
-  }
+  var allowedDirs = activeDirs.has('Todas') ? DIRS : Array.from(activeDirs);
+  var filteredDepts = DEPTS.filter(function(d){ return allowedDirs.includes(DEPT_TO_DIR[d]); });
+  var realDepts = activeDepts.has('Todos') ? filteredDepts.filter(function(d){ return !d.startsWith('PROM. '); }) : filteredDepts.filter(function(d){ return activeDepts.has(d) && !d.startsWith('PROM. '); });
+
+  if(realDepts.length === 0) { clearInterval(ltInterval); loadingContainer.style.display = 'none'; content.innerHTML = "<p style='color:var(--muted); text-align:center;'>Selecciona al menos un departamento para generar el análisis.</p>"; content.style.display = 'block'; actions.style.display = 'flex'; return; }
 
   var globalAvgAll = 0, countAll = 0;
   realDepts.forEach(function(d){ var a = AVERAGES[DEPTS.indexOf(d)]; if(a>0){globalAvgAll+=a;countAll++;} });
-  var globalAvg = countAll > 0 ? (globalAvgAll/countAll).toFixed(2) : "N/A";
-  var deptAvgs = realDepts.map(function(d){ return {d:d, avg:AVERAGES[DEPTS.indexOf(d)]||0, dir:DEPT_TO_DIR[d]||"General"}; }).sort(function(a,b){return b.avg-a.avg;});
-  var deptRanking = deptAvgs.map(function(x,i){ return `#${i+1} ${x.d} [${x.dir}]: ${x.avg.toFixed(2)}/10`; }).join("\n");
-  
+  var globalAvg = countAll > 0 ? (globalAvgAll/countAll).toFixed(2) : 'N/A';
+  var deptAvgs = realDepts.map(function(d){ return {d:d, avg:AVERAGES[DEPTS.indexOf(d)]||0, dir:DEPT_TO_DIR[d]||'General'}; }).sort(function(a,b){return b.avg-a.avg;});
+  var deptRanking = deptAvgs.map(function(x,i){ return "#"+(i+1)+" "+x.d+" ["+x.dir+"]: "+x.avg.toFixed(2)+"/10"; }).join("\n");
   var qLines = QUESTIONS.map(function(q,qi){
     var vals = realDepts.map(function(d){ var v = SCORES[qi][DEPTS.indexOf(d)]; return (v!=null&&!isNaN(v)) ? {d:d,v:v} : null; }).filter(Boolean);
     if(!vals.length) return null;
@@ -2100,11 +1783,12 @@ window.openInsights = async function() {
     var sd = Math.sqrt(vals.reduce(function(s,x){return s+Math.pow(x.v-avg,2);},0)/vals.length);
     var best = vals[0], worst = vals[vals.length-1];
     var flag = sd>=1.5 ? " ~POLARIZADA" : (avg<8 ? " !CRÍTICA" : (avg>=9 ? " +FUERTE" : ""));
-    return `• "${q}": prom=${avg.toFixed(1)}${flag}\n  Mejor: ${best.d}(${best.v.toFixed(1)}) | Peor: ${worst.d}(${worst.v.toFixed(1)})`;
+    return "• \""+q+"\": prom="+avg.toFixed(1)+flag+"\n  Mejor: "+best.d+"("+best.v.toFixed(1)+") | Peor: "+worst.d+"("+worst.v.toFixed(1)+")";
   }).filter(Boolean).join("\n");
-  
+
   var tS=0,tA=0; realDepts.forEach(function(d){var p=PARTICIPATION[d];if(p&&p.sent>0){tS+=p.sent;tA+=p.ans;}});
-  var partGlobal = tS>0 ? `${tA}/${tS}, ${(tA/tS*100).toFixed(1)}% de respuesta` : "Sin datos";
+  var partGlobal = tS>0 ? (tA+"/"+tS+", "+( tA/tS*100).toFixed(1)+"% de respuesta") : "Sin datos";
+  var partLines = realDepts.map(function(d){ var p=PARTICIPATION[d]; if(!p||!p.sent) return null; return d+"("+(p.ans/p.sent*100).toFixed(0)+"%)"; }).filter(Boolean).join(", ");
   
   var fallas=[], polarizadas=[];
   QUESTIONS.forEach(function(q,qi){
@@ -2112,23 +1796,23 @@ window.openInsights = async function() {
     if(!vals.length) return;
     var avg=vals.reduce(function(a,b){return a+b;},0)/vals.length;
     var sd=Math.sqrt(vals.reduce(function(a,b){return a+Math.pow(b-avg,2);},0)/vals.length);
-    if(vals.filter(function(v){return v<8;}).length>=vals.length*0.4) fallas.push(`"${q}"(prom:${avg.toFixed(1)})`);
-    if(sd>=1.5) polarizadas.push(`"${q}"(SD:${sd.toFixed(1)})`);
+    if(vals.filter(function(v){return v<8;}).length>=vals.length*0.4) fallas.push('"'+q+'"(prom:'+avg.toFixed(1)+')');
+    if(sd>=1.5) polarizadas.push('"'+q+'"(SD:'+sd.toFixed(1)+')');
   });
-  
+
   var allComments=[];
-  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) { allComments.push({d:d,c:c.replace(/^\[PET_RES\]\s*/, "").replace(/^\[PET_NO_RES\]\s*/, "")}); } }); });
+  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) { allComments.push({d:d,c:c.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, '')}); } }); });
   allComments=allComments.slice(0,18);
-  
+
   var npsLines = realDepts.map(function(d){
-    if(NPS_DATA[d] && typeof NPS_DATA[d] === "object") {
+    if(NPS_DATA[d] && typeof NPS_DATA[d] === 'object') {
       var data = NPS_DATA[d]; var total = data.det + data.pas + data.pro;
-      if (total > 0) return `• ${d}: NPS ${Math.round(((data.pro - data.det) / total) * 100)} (Promotores: ${data.pro}, Pasivos: ${data.pas}, Detractores: ${data.det})`;
+      if (total > 0) return "• " + d + ": NPS " + Math.round(((data.pro - data.det) / total) * 100) + " (Promotores: " + data.pro + ", Pasivos: " + data.pas + ", Detractores: " + data.det + ")";
     } return null;
   }).filter(Boolean).join("\n");
-  
-  var prompt = `Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo.
-Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.
+
+  var prompt = `Eres el mejor analista de Servicio Interno y Clima Organizacional del mundo. Tu especialidad es interpretar evaluaciones donde unos departamentos califican el servicio que reciben de otros departamentos dentro de la misma empresa.
+
 CONTEXTO CLAVE:
 - Esto NO es una autoevaluación. Cada departamento fue calificado por las áreas con las que interactúa.
 - Un puntaje bajo significa que los clientes internos de ese departamento están frustrados.
@@ -2161,137 +1845,125 @@ COMENTARIOS DESTACADOS:
 ${allComments.map((x,i)=>`${i+1}. [${x.d}]: "${x.c}"`).join("\n")}
 
 ═══ ESTRUCTURA DEL ANÁLISIS ═══
-Formato: SOLO HTML con <div class="insight-section-title">, <div class="insight-p">, <div class="insight-p highlight">, <strong>, <b>, <br>.
-5 Secciones: [PANORAMA], [DESTACADOS], [URGENTE], [COMENTARIOS], [PLAN DE ACCION] (usa class highlight para este). Sin markdown.`;
-  
+Formato: SOLO HTML con <div class='insight-section-title'>, <div class='insight-p'>, <div class='insight-p highlight'>, <strong>, <b>, <br>. 5 Secciones: [PANORAMA], [DESTACADOS], [URGENTE], [COMENTARIOS], [PLAN DE ACCION] (usa class highlight para este). Sin markdown.`;
+
   try {
     var response = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 6000, messages: [{ role: "user", content: prompt }] }) });
     clearInterval(ltInterval);
-    if (!response.ok) throw new Error(`Error en la API: ${response.status}`);
+    if (!response.ok) throw new Error("Error en la API: " + response.status);
     var data = await response.json();
     var resultHTML = data.content && data.content[0] && data.content[0].text ? data.content[0].text : "";
-    resultHTML = resultHTML.replace(/```html?/gi, "").replace(/```/g, "").trim();
+    resultHTML = resultHTML.replace(/```html?/gi, '').replace(/```/g, '').trim();
     if (!resultHTML) throw new Error("La IA no devolvió contenido.");
 
     if(progressEl) progressEl.style.width = "100%";
     if(timerEl) timerEl.textContent = "100%";
 
-    window.cachedAnalysisHTML = resultHTML;
-    window.cachedFilterKey = currentFilterKey;
-    setTimeout(function() { loadingContainer.style.display = "none"; content.innerHTML = resultHTML; content.style.display = "block"; actions.style.display = "flex"; }, 400);
+    window.cachedAnalysisHTML = resultHTML; window.cachedFilterKey = currentFilterKey;
+    setTimeout(function() { loadingContainer.style.display = 'none'; content.innerHTML = resultHTML; content.style.display = 'block'; actions.style.display = 'flex'; }, 400);
+
   } catch(err) {
-    clearInterval(ltInterval); loadingContainer.style.display = "none";
-    content.innerHTML = `<div class="insight-p" style="border-color:var(--danger);"><strong style="color:var(--danger)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:4px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Error al generar el análisis:</strong><br><br>${err.message}<br><br>Verifica tu conexión e intenta nuevamente.</div>`;
-    content.style.display = "block"; actions.style.display = "flex";
+    clearInterval(ltInterval); loadingContainer.style.display = 'none';
+    content.innerHTML = "<div class='insight-p' style='border-color:var(--danger);'><strong style='color:var(--danger)'><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' style='display:inline;vertical-align:middle;margin-right:4px'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'></path><line x1='12' y1='9' x2='12' y2='13'></line><line x1='12' y1='17' x2='12.01' y2='17'></line></svg> Error al generar el análisis:</strong><br><br>" + err.message + "<br><br>Verifica tu conexión e intenta nuevamente.</div>";
+    content.style.display = 'block'; actions.style.display = 'flex';
   }
 };
 
+// ── Clasificador de 40 categorías para preguntas abiertas ──────────────────
 function classifyOpenResponse(text) {
-  if(!text || text.trim() === "") return "Sin clasificar";
-  const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+  if(!text || text.trim() === '') return 'Sin clasificar';
+  const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
   const r = text.toLowerCase();
 
-  const categories = {
-    "Precio y Costos": /precio|caro|barato|costo|tarifa|cobro|factura|pago|descuento|oferta|promocion|promo/g,
-    "Calidad del Producto/Servicio": /calidad|malo|defecto|daño|roto|falla|producto|durabilidad|material/g,
-    "Tiempos de Respuesta": /tiempo|tard|rapido|lento|espera|demora|urgente|agilidad|pronto/g,
-    "Atención al Cliente": /atencion|trato|amable|grosero|groser|empatia|actitud|disposicion|cordial|servicio al cliente/g,
-    "Entrega y Logística": /entrega|envio|transporte|logistica|ruta|chofer|paquete|pedido|llego|llegada/g,
-    "Plataforma y Tecnología": /sistema|plataforma|portal|app|aplicacion|pagina|web|software|tecnologia|internet|falla tecnica/g,
-    "Comunicación e Información": /comunicacion|informacion|aviso|notificacion|correo|llamada|contacto|respuesta|seguimiento/g,
-    "Variedad y Disponibilidad": /surtido|variedad|opciones|seleccion|catalogo|producto disponible|inventario|existencias/g,
-    "Instalaciones y Ubicación": /instalacion|sucursal|tienda|local|ubicacion|acceso|estacionamiento|ambiente|limpieza|espacio/g,
-    "Facilidad del Proceso": /facilidad|proceso|tramite|complicado|sencillo|rapido de hacer|paso|burocracia/g,
-    "Garantías y Devoluciones": /garantia|devolucion|cambio|reembolso|reclamacion|queja|reclamo/g,
-    "Personal y Colaboradores": /personal|staff|empleado|vendedor|cajero|asesor|agente|trabajador/g,
-    "Confianza y Seguridad": /confianza|seguro|seguridad|privacidad|datos|fraude|robo/g,
-    "Horarios y Disponibilidad": /horario|horarios|abierto|cerrado|disponibilidad|hora/g,
-    "Experiencia General": /experiencia|visita|compra|servicio|uso|utilizar|recibir/g,
-    "Fidelización y Recomendación": /recomendaria|recomendar|volveria|volver|regresaria|regresar|lealtad|fidelidad/g,
-    "Sugerencias de Mejora": /mejora|mejorar|sugerencia|propuesta|cambiar|oportunidad|deberian/g,
-    "Promoción y Marketing": /promocion|marketing|publicidad|anuncio|campaña|redes sociales/g,
-    "Innovación y Modernización": /innovacion|nuevo|tecnologia nueva|moderno|actualizar|renovar/g,
-    "Capacitación y Expertise": /capacitacion|conocimiento|experto|preparado|entrenamiento|saber/g,
-    "Comparativa con Competencia": /competencia|competidor|otra empresa|comparar|mejor que|peor que/g,
-    "Accesibilidad e Inclusión": /accesibilidad|discapacidad|especial|necesidad especial|rampas|inclusiv/g,
-    "Sostenibilidad y Medio Ambiente": /sostenibilidad|ecologico|ambiente|reciclaje|sustentable|verde|medio ambiente/g,
-    "Empaque y Presentación": /empaque|embalaje|presentacion|envoltorio|bolsa|caja/g,
-    "Servicio Postventa y Soporte": /postventa|soporte|asistencia|ayuda|apoyo|atencion post/g,
-    "Canales Digitales": /digital|en linea|online|virtual|electronico|movil|celular/g,
-    "Beneficios y Fidelización": /descuento|precio especial|beneficio|recompensa|puntos|programa de lealtad/g,
-    "Filas y Tiempos de Espera": /espera en caja|fila|cola|turno|numero/g,
-    "Características Sensoriales": /sabor|olor|aroma|textura|apariencia|presentacion del producto/g,
-    "Cumplimiento de Promesas": /cumplimiento|promesa|palabra|acuerdo|contrato|compromiso/g,
-    "Facturación y Comprobantes": /facturacion|comprobante|recibo|ticket|nota|fiscalmente/g,
-    "Flexibilidad y Personalización": /flexibilidad|adaptacion|personalizado|a medida|especifico/g,
-    "Relación y Calidez": /relacion|vinculo|trato personal|cercanía|calidez|humanizado/g,
-    "Satisfacción General": /nada|ninguno|ninguna|sin comentarios|todo bien|ok|bien|excelente|muy bien|todo correcto/g,
-    "Capacidad y Volumen": /capacidad|volumen|cantidad|carga|mas producto|mas opciones/g,
-    "Coordinación y Organización": /coordinacion|organizacion|planeacion|orden|estructura/g,
-    "Retrasos y Cancelaciones": /retraso|cancelacion|cancelar|no llego|no vino|no cumplió/g,
-    "Novedades y Lanzamientos": /novedad|estreno|lanzamiento|nuevo producto|nuevo servicio/g,
-    "Relación Calidad-Precio": /precio justo|valor|relacion calidad precio|vale la pena/g
-  };
-
-  let bestCategory = "Sin clasificar";
-  let maxScore = 0;
-
-  for (const [cat, regex] of Object.entries(categories)) {
-      const matches = r.match(regex);
-      if (matches) {
-          const score = matches.length;
-          if (score > maxScore) {
-              maxScore = score;
-              bestCategory = cat;
-          }
-      }
-  }
-
-  if (maxScore > 0) return bestCategory;
-  if (t.length > 3) return "Otras Observaciones";
-  return "Sin clasificar";
+  if(r.match(/precio|caro|barato|costo|tarifa|cobro|factura|pago|descuento|oferta|promocion|promo/)) return 'Precio y Costos';
+  if(r.match(/calidad|malo|defecto|daño|roto|falla|producto|durabilidad|material/)) return 'Calidad del Producto/Servicio';
+  if(r.match(/tiempo|tard|rapido|lento|espera|demora|urgente|agilidad|pronto/)) return 'Tiempos de Respuesta';
+  if(r.match(/atencion|trato|amable|grosero|groser|empatia|actitud|disposicion|cordial|servicio al cliente/)) return 'Atención al Cliente';
+  if(r.match(/entrega|envio|transporte|logistica|ruta|chofer|paquete|pedido|llego|llegada/)) return 'Entrega y Logística';
+  if(r.match(/sistema|plataforma|portal|app|aplicacion|pagina|web|software|tecnologia|internet|falla tecnica/)) return 'Plataforma y Tecnología';
+  if(r.match(/comunicacion|informacion|aviso|notificacion|correo|llamada|contacto|respuesta|seguimiento/)) return 'Comunicación e Información';
+  if(r.match(/surtido|variedad|opciones|seleccion|catalogo|producto disponible|inventario|existencias/)) return 'Variedad y Disponibilidad';
+  if(r.match(/instalacion|sucursal|tienda|local|ubicacion|acceso|estacionamiento|ambiente|limpieza|espacio/)) return 'Instalaciones y Ubicación';
+  if(r.match(/facilidad|proceso|tramite|complicado|sencillo|rapido de hacer|paso|burocracia/)) return 'Facilidad del Proceso';
+  if(r.match(/garantia|devolucion|cambio|reembolso|reclamacion|queja|reclamo/)) return 'Garantías y Devoluciones';
+  if(r.match(/personal|staff|empleado|vendedor|cajero|asesor|agente|trabajador/)) return 'Personal y Colaboradores';
+  if(r.match(/confianza|seguro|seguridad|privacidad|datos|fraude|robo/)) return 'Confianza y Seguridad';
+  if(r.match(/horario|horarios|abierto|cerrado|disponibilidad|hora/)) return 'Horarios y Disponibilidad';
+  if(r.match(/experiencia|visita|compra|servicio|uso|utilizar|recibir/)) return 'Experiencia General';
+  if(r.match(/recomendaria|recomendar|volveria|volver|regresaria|regresar|lealtad|fidelidad/)) return 'Fidelización y Recomendación';
+  if(r.match(/mejora|mejorar|sugerencia|propuesta|cambiar|oportunidad|deberian/)) return 'Sugerencias de Mejora';
+  if(r.match(/promocion|marketing|publicidad|anuncio|campaña|redes sociales/)) return 'Promoción y Marketing';
+  if(r.match(/innovacion|nuevo|tecnologia nueva|moderno|actualizar|renovar/)) return 'Innovación y Modernización';
+  if(r.match(/capacitacion|conocimiento|experto|preparado|entrenamiento|saber/)) return 'Capacitación y Expertise';
+  if(r.match(/competencia|competidor|otra empresa|comparar|mejor que|peor que/)) return 'Comparativa con Competencia';
+  if(r.match(/accesibilidad|discapacidad|especial|necesidad especial|rampas|inclusiv/)) return 'Accesibilidad e Inclusión';
+  if(r.match(/sostenibilidad|ecologico|ambiente|reciclaje|sustentable|verde|medio ambiente/)) return 'Sostenibilidad y Medio Ambiente';
+  if(r.match(/empaque|embalaje|presentacion|envoltorio|bolsa|caja/)) return 'Empaque y Presentación';
+  if(r.match(/postventa|soporte|asistencia|ayuda|apoyo|atencion post/)) return 'Servicio Postventa y Soporte';
+  if(r.match(/digital|en linea|online|virtual|electronico|movil|celular/)) return 'Canales Digitales';
+  if(r.match(/descuento|precio especial|beneficio|recompensa|puntos|programa de lealtad/)) return 'Beneficios y Fidelización';
+  if(r.match(/espera en caja|fila|cola|turno|numero/)) return 'Filas y Tiempos de Espera';
+  if(r.match(/sabor|olor|aroma|textura|apariencia|presentacion del producto/)) return 'Características Sensoriales';
+  if(r.match(/cumplimiento|promesa|palabra|acuerdo|contrato|compromiso/)) return 'Cumplimiento de Promesas';
+  if(r.match(/facturacion|comprobante|recibo|ticket|nota|fiscalmente/)) return 'Facturación y Comprobantes';
+  if(r.match(/flexibilidad|adaptacion|personalizado|a medida|especifico/)) return 'Flexibilidad y Personalización';
+  if(r.match(/relacion|vinculo|trato personal|cercanía|calidez|humanizado/)) return 'Relación y Calidez';
+  if(r.match(/nada|ninguno|ninguna|sin comentarios|todo bien|ok|bien|excelente|muy bien|todo correcto/)) return 'Satisfacción General';
+  if(r.match(/capacidad|volumen|cantidad|carga|mas producto|mas opciones/)) return 'Capacidad y Volumen';
+  if(r.match(/coordinacion|organizacion|planeacion|orden|estructura/)) return 'Coordinación y Organización';
+  if(r.match(/retraso|cancelacion|cancelar|no llego|no vino|no cumplió/)) return 'Retrasos y Cancelaciones';
+  if(r.match(/novedad|estreno|lanzamiento|nuevo producto|nuevo servicio/)) return 'Novedades y Lanzamientos';
+  if(r.match(/precio justo|valor|relacion calidad precio|vale la pena/)) return 'Relación Calidad-Precio';
+  if(t.length > 3) return 'Otras Observaciones';
+  return 'Sin clasificar';
 }
 
 function renderOpenQuestions(orderedDepts) {
-  const card = document.getElementById("openQuestionsCard");
-  const tabsEl = document.getElementById("openQTabs");
-  const contentEl = document.getElementById("openQContent");
-  const chartArea = document.getElementById("openQChartArea");
+  const card = document.getElementById('openQuestionsCard');
+  const tabsEl = document.getElementById('openQTabs');
+  const contentEl = document.getElementById('openQContent');
+  const chartArea = document.getElementById('openQChartArea');
+
   if (!OPEN_QUESTIONS || Object.keys(OPEN_QUESTIONS).length === 0) {
-    card.style.display = "none";
+    card.style.display = 'none';
     return;
   }
 
+  // Usar TODOS los deptos propios de cada pregunta, no el filtro de hoja 1
+  // porque los deptos de preguntas abiertas pueden ser distintos (ej: "dejaron de comprar")
   const activeQuestions = Object.keys(OPEN_QUESTIONS).filter(q =>
     Object.values(OPEN_QUESTIONS[q]).some(arr => arr.length > 0)
   );
-  
+
   if (activeQuestions.length === 0) {
-    card.style.display = "none";
+    card.style.display = 'none';
     return;
   }
 
-  card.style.display = "flex";
-  tabsEl.innerHTML = "";
-  
+  card.style.display = 'flex';
+  tabsEl.innerHTML = '';
+
   const showQuestion = (qLabel) => {
-    document.querySelectorAll(".open-q-tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".open-q-tab").forEach(t => { if(t.dataset.oq === qLabel) t.classList.add("active"); });
-    
+    document.querySelectorAll('.open-q-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.open-q-tab').forEach(t => { if(t.dataset.oq === qLabel) t.classList.add('active'); });
+
     const deptData = OPEN_QUESTIONS[qLabel] || {};
+    // Usar los deptos propios de esta pregunta
     const qDepts = Object.keys(deptData);
-    const allResponses = [];
-    
+
+    // Recopilar todas las respuestas
+    const allResponses = []; // { text, dept }
     qDepts.forEach(d => {
       (deptData[d] || []).forEach(txt => allResponses.push({ text: txt, dept: d }));
     });
-    
+
     if(allResponses.length === 0) {
-      chartArea.style.display = "none";
-      contentEl.innerHTML = `<div class="no-comments">Sin respuestas para la selección actual.</div>`;
+      chartArea.style.display = 'none';
+      contentEl.innerHTML = '<div class="no-comments">Sin respuestas para la selección actual.</div>';
       return;
     }
 
+    // ── Clasificar ─────────────────────────────────────────────────────
     const catCounts = {};
     allResponses.forEach(r => {
       const cat = classifyOpenResponse(r.text);
@@ -2299,30 +1971,18 @@ function renderOpenQuestions(orderedDepts) {
     });
     const sortedCats = Object.keys(catCounts).sort((a,b) => catCounts[b] - catCounts[a]);
 
-    chartArea.style.display = "block";
-    
-    const btnDona = document.getElementById("btnVerDatosDona");
-    if (btnDona) {
-      if (appMode === "externo") {
-        btnDona.textContent = window.showDonutData ? "Ocultar Datos" : "Ver Datos";
-        btnDona.onclick = window.toggleDonutData;
-      } else {
-        btnDona.textContent = "Ver Datos";
-        btnDona.onclick = () => document.getElementById("openQContent").scrollIntoView({behavior:"smooth"});
-      }
-    }
-    
+    // ── Gráfica de Dona ────────────────────────────────────────────────
+    chartArea.style.display = 'block';
     if(openQDonutChart) openQDonutChart.destroy();
-    const donutPalette = ["#E07010","#1E3347","#10B981","#F59E0B","#3B82F6","#8B5CF6","#EF4444","#06B6D4","#84CC16","#F97316","#2C4560","#D68940","#7A8D9E","#152130","#B8C4CE"];
-    const donutCtx = document.getElementById("openQDonutChart").getContext("2d");
-    
+    const donutPalette = ['#E07010','#1E3347','#10B981','#F59E0B','#3B82F6','#8B5CF6','#EF4444','#06B6D4','#84CC16','#F97316','#2C4560','#D68940','#7A8D9E','#152130','#B8C4CE'];
+    const donutCtx = document.getElementById('openQDonutChart').getContext('2d');
     openQDonutChart = new Chart(donutCtx, {
-      type: "doughnut",
+      type: 'doughnut',
       data: {
         labels: sortedCats,
         datasets: [{
           data: sortedCats.map(c => catCounts[c]),
-          backgroundColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length] + "CC"),
+          backgroundColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length] + 'CC'),
           borderColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length]),
           borderWidth: 2,
           hoverOffset: 8
@@ -2330,7 +1990,7 @@ function renderOpenQuestions(orderedDepts) {
       },
       options: {
         responsive: true,
-        cutout: "62%",
+        cutout: '62%',
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -2339,24 +1999,23 @@ function renderOpenQuestions(orderedDepts) {
             }
           }
         }
-      },
-      plugins: [donutLabelsPlugin]
+      }
     });
-    
-    const tbl = document.getElementById("openQClassTable");
+
+    // ── Tabla de clasificaciones ───────────────────────────────────────
+    const tbl = document.getElementById('openQClassTable');
     let tHead = `<thead><tr>
       <th style="text-align:left; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border);">Clasificación</th>
       <th style="text-align:center; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border);">Respuestas</th>
       <th style="text-align:left; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border); width:40%;">Distribución</th>
     </tr></thead>`;
-    
-    let tBody = "<tbody>";
+    const maxCount = catCounts[sortedCats[0]] || 1;
+    let tBody = '<tbody>';
     sortedCats.forEach((cat, i) => {
       const cnt = catCounts[cat];
       const pct = Math.round((cnt / allResponses.length) * 100);
       const barColor = donutPalette[i % donutPalette.length];
-      tBody += `
-      <tr>
+      tBody += `<tr>
         <td style="padding:10px 14px; font-weight:600; font-size:.8rem; color:var(--if-navy); border-bottom:1px solid var(--surface2); text-align:left;">
           <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${barColor}; margin-right:8px; flex-shrink:0;"></span>${cat}
         </td>
@@ -2371,10 +2030,11 @@ function renderOpenQuestions(orderedDepts) {
         </td>
       </tr>`;
     });
-    tBody += "</tbody>";
+    tBody += '</tbody>';
     tbl.innerHTML = tHead + tBody;
 
-    let listHtml = "";
+    // ── Lista de respuestas agrupadas por departamento ─────────────────
+    let listHtml = '';
     if(qDepts.length > 1) {
       qDepts.forEach(d => {
         const resps = deptData[d];
@@ -2383,8 +2043,7 @@ function renderOpenQuestions(orderedDepts) {
         listHtml += `<div style="font-weight:900; font-size:1rem; color:var(--if-orange); margin-top:20px; margin-bottom:8px; border-bottom:2px solid var(--if-orange); padding-bottom:4px; text-transform:uppercase;">${d}</div>`;
         resps.forEach(txt => {
           const cat = classifyOpenResponse(txt);
-          listHtml += `
-          <div class="open-q-response-item" style="--oq-col:${col};">
+          listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">
             <span style="display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:2px 8px; font-size:.68rem; font-weight:700; color:var(--muted); margin-bottom:6px;">${cat}</span>
             <div>${txt}</div>
           </div>`;
@@ -2393,6 +2052,7 @@ function renderOpenQuestions(orderedDepts) {
     } else {
       const d = qDepts[0];
       const resps = deptData[d] || [];
+      // Agrupar por categoría
       const grouped = {};
       resps.forEach(txt => {
         const cat = classifyOpenResponse(txt);
@@ -2405,46 +2065,48 @@ function renderOpenQuestions(orderedDepts) {
         grouped[cat].forEach(txt => {
           listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">${txt}</div>`;
         });
-       });
+      });
     }
-    contentEl.innerHTML = listHtml || `<div class="no-comments">Sin respuestas para la selección actual.</div>`;
+    contentEl.innerHTML = listHtml || '<div class="no-comments">Sin respuestas para la selección actual.</div>';
   };
 
+  // Crear tabs por cada pregunta activa
   activeQuestions.forEach((qLabel, i) => {
-    const btn = document.createElement("button");
-    btn.className = `open-q-tab ${i === 0 ? "active" : ""}`;
+    const btn = document.createElement('button');
+    btn.className = 'open-q-tab' + (i === 0 ? ' active' : '');
     btn.dataset.oq = qLabel;
     btn.textContent = qLabel;
     btn.onclick = () => showQuestion(qLabel);
     tabsEl.appendChild(btn);
   });
+
   showQuestion(activeQuestions[0]);
 }
 
 function handleFile(file){
-  showToast("⏳ Procesando..."); window.cachedAnalysisHTML = ""; window.cachedFilterKey = "";
+  showToast('⏳ Procesando...'); window.cachedAnalysisHTML = ""; window.cachedFilterKey = "";
   const reader = new FileReader();
   reader.onload = e => {
     try{
-      const wb = XLSX.read(new Uint8Array(e.target.result), {type:"array"});
+      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+
+      // Buscar hojas por nombre (insensible a mayúsculas y espacios)
       const findSheet = (name) => {
         const norm = n => n.toLowerCase().trim();
         const match = wb.SheetNames.find(sn => norm(sn) === norm(name));
         return match ? wb.Sheets[match] : null;
       };
-      
-      const sheetPct = findSheet("Pregunta porcentaje");
+
+      // ── HOJA "Pregunta porcentaje" ──────────────────────────────────────
+      const sheetPct = findSheet('Pregunta porcentaje');
       if(!sheetPct) throw new Error('No se encontró la hoja "Pregunta porcentaje".');
       const s1 = XLSX.utils.sheet_to_json(sheetPct, {header:1, raw:true});
-      const hDir = s1[0] || [], hDept = s1[1] || [];
-      const newDepts = [], newDirs = new Set(), newMap = {}, vCols = [];
+      const hDir = s1[0] || [], hDept = s1[1] || [], newDepts = [], newDirs = new Set(), newMap = {}, vCols = [];
       let curDir = "General";
-      
       for(let c=1; c<hDept.length; c++){
         if(hDir[c]) curDir = String(hDir[c]).trim();
         if(hDept[c]){ const d = String(hDept[c]).trim(); newDepts.push(d); newMap[d] = curDir; newDirs.add(curDir); vCols.push({c, d}); }
       }
-      
       const nQ = [], nSc = [];
       for(let r=2; r<s1.length; r++){
         const row = s1[r]; if(!row || !row[0]) continue;
@@ -2452,30 +2114,30 @@ function handleFile(file){
           const raw = row[vc.c];
           if(raw === undefined || raw === null) return null;
           const strVal = String(raw).trim().toUpperCase();
-          if(strVal === "NA" || strVal === "N/A" || strVal === "") return null;
-          const n = parseFloat(strVal.replace(",", "."));
+          if(strVal === 'NA' || strVal === 'N/A' || strVal === '') return null;
+          const n = parseFloat(strVal.replace(',', '.'));
           return isNaN(n) ? null : (n <= 1 ? n * 10 : n);
         });
         if(vals.some(v=>v!==null)){ nQ.push(String(row[0])); nSc.push(vals); }
       }
 
-      const nComm = {};
-      newDepts.forEach(d => nComm[d] = []);
-      const sheetComm = findSheet("Comentarios");
+      // ── HOJA "Comentarios" ──────────────────────────────────────────────
+      const nComm = {}; newDepts.forEach(d => nComm[d] = []);
+      const sheetComm = findSheet('Comentarios');
       if(sheetComm){
         const s2 = XLSX.utils.sheet_to_json(sheetComm, {header:1});
         const h2 = s2[1]||[];
         for(let r=2; r<s2.length; r++){
-          const row = s2[r];
-          if(!row) continue;
+          const row = s2[r]; if(!row) continue;
           for(let c=0; c<h2.length; c++){
             if(row[c] && h2[c]){ const d = String(h2[c]).trim(); const target=newDepts.find(x=>x.toLowerCase()===d.toLowerCase()); if(target) nComm[target].push(String(row[c])); }
           }
         }
       }
 
+      // ── HOJA "respuestas" (participación) ──────────────────────────────
       const nPart = {};
-      const sheetResp = findSheet("respuestas");
+      const sheetResp = findSheet('respuestas');
       if(sheetResp){
         const s3 = XLSX.utils.sheet_to_json(sheetResp, {header:1, defval:null});
         const hDept3 = s3[1] || [], rowSent = s3[2] || [], rowAns = s3[3] || [];
@@ -2488,10 +2150,16 @@ function handleFile(file){
         }
       }
 
+      // ── HOJA "preguntas abiertas" ───────────────────────────────────────
+      // Estructura real:
+      //   Fila 1: "Dirección >"  | NombreDir  (col B+)
+      //   Fila 2: "Departamento >"| NombreDepto (col B+)
+      //   Fila 3+: col A = nombre pregunta (solo en la primera fila de cada bloque)
+      //            Las siguientes filas tienen col A vacía, col B = respuesta
       const nOpenQ = {};
-      const sheetOpen = findSheet("preguntas abiertas");
+      const sheetOpen = findSheet('preguntas abiertas');
       if(sheetOpen){
-        const sOpen = XLSX.utils.sheet_to_json(sheetOpen, {header:1, raw:false, defval:""});
+        const sOpen = XLSX.utils.sheet_to_json(sheetOpen, {header:1, raw:false, defval:''});
         const hDeptOpen = sOpen[1] || [];
         const openCols = [];
         for(let c=1; c<hDeptOpen.length; c++){
@@ -2501,13 +2169,15 @@ function handleFile(file){
         let currentQ = null;
         for(let r=2; r<sOpen.length; r++){
           const row = sOpen[r] || [];
-          const cellA = String(row[0] || "").trim();
-          if(cellA && !cellA.startsWith("Direcci") && !cellA.startsWith("Departamento")){ currentQ = cellA; }
+          const cellA = String(row[0] || '').trim();
+          if(cellA && !cellA.startsWith('Direcci') && !cellA.startsWith('Departamento')){
+            currentQ = cellA;
+          }
           if(!currentQ) continue;
           if(!nOpenQ[currentQ]) nOpenQ[currentQ] = {};
           openCols.forEach(oc => {
             const val = row[oc.c];
-            if(val && String(val).trim() !== ""){
+            if(val && String(val).trim() !== ''){
               const txt = String(val).trim();
               if(!nOpenQ[currentQ][oc.d]) nOpenQ[currentQ][oc.d] = [];
               nOpenQ[currentQ][oc.d].push(txt);
@@ -2519,11 +2189,12 @@ function handleFile(file){
         });
       }
 
+      // ── Hojas de peticiones (mantener compatibilidad) ───────────────────
       wb.SheetNames.forEach(sheetName => {
         const snLower = sheetName.toLowerCase().trim();
         let prefix = null;
-        if (snLower === "peticiones resultas" || snLower === "peticiones resueltas") prefix = "[PET_RES] ";
-        else if (snLower === "peticiones no resultas" || snLower === "peticiones no resueltas") prefix = "[PET_NO_RES] ";
+        if (snLower === 'peticiones resultas' || snLower === 'peticiones resueltas') prefix = '[PET_RES] ';
+        else if (snLower === 'peticiones no resultas' || snLower === 'peticiones no resueltas') prefix = '[PET_NO_RES] ';
         if (prefix) {
           const sPet = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {header:1});
           const hDeptPet = sPet[1] || [];
@@ -2539,43 +2210,39 @@ function handleFile(file){
           }
         }
       });
-      document.getElementById("importModal").classList.remove("open");
+
+      document.getElementById('importModal').classList.remove('open');
       rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name, nOpenQ);
-      showToast("Datos cargados con éxito", "ok");
-    } catch(err){ 
-      console.error(err);
-      showToast(`Error: ${err.message}`, "err"); 
-    }
+      showToast('Datos cargados con éxito','ok');
+    } catch(err){ console.error(err); showToast('Error: ' + err.message, 'err'); }
   };
   reader.readAsArrayBuffer(file);
 }
 
 function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname, nOpenQ){
-  DIRS = nDirs;
-  DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart;
-  NPS_DATA = {}; OPEN_QUESTIONS = nOpenQ || {};
+  DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {}; OPEN_QUESTIONS = nOpenQ || {};
   REPORT_DATE = new Date();
   injectDirectionAverages(); 
-  document.getElementById("dashTitle").textContent = appMode === "externo" ? "Evaluación a Cliente Externo" : "Servicio Interno";
-  activeDirs.clear(); activeDirs.add("Todas"); activeDepts.clear(); activeDepts.add("Todos");
+  document.getElementById('dashTitle').textContent = appMode === 'externo' ? "Evaluación a Cliente Externo" : "Servicio Interno";
+  activeDirs.clear(); activeDirs.add('Todas'); activeDepts.clear(); activeDepts.add('Todos');
   saveState();
-  initDashboard();
+  initDashboard(); 
 }
 
 async function generateReaderLink(){
-  const rawId = document.getElementById("customIdInput").value.trim();
-  if(!rawId) { showToast("Escribe un nombre para el enlace", "err"); return; }
+  const rawId = document.getElementById('customIdInput').value.trim();
+  if(!rawId) { showToast('Escribe un nombre para el enlace', 'err'); return; }
   
-  const customId = rawId.replace(/[^a-zA-Z0-9_-]/g, "");
-  if(!customId) { showToast("Usa letras o números válidos", "err"); return; }
+  const customId = rawId.replace(/[^a-zA-Z0-9_-]/g, '');
+  if(!customId) { showToast('Usa letras o números válidos', 'err'); return; }
 
   if (!firebase.auth().currentUser) {
-      showToast("Tu sesión expiró. Recarga la página e ingresa de nuevo.", "err");
+      showToast('Tu sesión expiró. Recarga la página e ingresa de nuevo.', 'err');
       return;
   }
 
-  const btn = document.getElementById("btnOpenReader");
-  btn.textContent="Subiendo a la nube…"; btn.disabled=true;
+  const btn = document.getElementById('btnOpenReader');
+  btn.textContent='Subiendo a la nube…'; btn.disabled=true;
 
   try {
     saveState();
@@ -2588,41 +2255,38 @@ async function generateReaderLink(){
     
     await window.db.collection("reportes").doc(customId).set(payload);
     
-    const baseURL = window.location.href.split("?")[0];
-    const link = `${baseURL}?mode=reader&id=${customId}`;
+    const baseURL = window.location.href.split('?')[0];
+    const link = baseURL + '?mode=reader&id=' + customId;
     
-    document.getElementById("linkInput").value = link;
-    btn.textContent="Abrir →"; btn.disabled=false; btn.onclick=()=>window.open(link,"_blank");
+    document.getElementById('linkInput').value = link;
+    btn.textContent='Abrir →'; btn.disabled=false; btn.onclick=()=>window.open(link,'_blank');
     navigator.clipboard.writeText(link).catch(()=>{});
-    showToast("Actualizado en la nube y copiado", "ok");
+    showToast('Actualizado en la nube y copiado','ok');
   } catch(err){ 
     console.error("Error detallado de Firebase:", err);
-    btn.textContent="Guardar en la nube →"; btn.disabled=false; 
-    alert(`DETALLE DEL ERROR DE FIREBASE:\n\n${err.message}\n\nSi el problema persiste, toma captura de esta ventana.`);
-    showToast("Revisa la alerta con el error", "err"); 
+    btn.textContent='Guardar en la nube →'; btn.disabled=false; 
+    alert("DETALLE DEL ERROR DE FIREBASE:\n\n" + err.message + "\n\nSi el problema persiste, toma captura de esta ventana.");
+    showToast('Revisa la alerta con el error', 'err'); 
   }
 }
 
 async function tryLoadFromURL(){
   const params = new URLSearchParams(window.location.search);
-  if(params.get("mode") !== "reader") return false;
-  const reportId = params.get("id");
+  if(params.get('mode') !== 'reader') return false;
+  const reportId = params.get('id');
   if(!reportId) return false;
 
-  document.body.classList.add("reader-mode");
-  const loader = document.createElement("div");
-  loader.style.cssText = "position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;";
-  loader.innerHTML = `
-    <div class="share-spinner"></div>
-    <p style="font-family:var(--font);font-weight:500;font-size:.85rem;color:var(--muted);">
-      Descargando reporte seguro…
-    </p>`;
+  document.body.classList.add('reader-mode');
+  const loader = document.createElement('div');
+  loader.style.cssText = 'position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;';
+  loader.innerHTML = '<div class="share-spinner"></div><p style="font-family:var(--font);font-weight:500;font-size:.85rem;color:var(--muted);">Descargando reporte seguro…</p>';
   document.body.appendChild(loader);
 
   try {
     const docSnap = await window.db.collection("reportes").doc(reportId).get();
     if(docSnap.exists){
       const raw = docSnap.data();
+      
       if(raw.store) {
           store = JSON.parse(raw.store);
           if(store.interno.REPORT_DATE) store.interno.REPORT_DATE = new Date(store.interno.REPORT_DATE);
@@ -2630,26 +2294,26 @@ async function tryLoadFromURL(){
           if(!store.interno.OPEN_QUESTIONS) store.interno.OPEN_QUESTIONS = {};
           if(!store.externo.OPEN_QUESTIONS) store.externo.OPEN_QUESTIONS = {};
       } else {
-          let oldDirs = ["General"];
+          let oldDirs = ['General'];
           let oldDeptMap = {};
-          let oldDepts = typeof raw.depts === "string" ? JSON.parse(raw.depts) : raw.depts;
+          let oldDepts = typeof raw.depts === 'string' ? JSON.parse(raw.depts) : raw.depts;
           if(raw.dirs && raw.deptMap) {
-              oldDirs = typeof raw.dirs === "string" ? JSON.parse(raw.dirs) : raw.dirs;
-              oldDeptMap = typeof raw.deptMap === "string" ? JSON.parse(raw.deptMap) : raw.deptMap;
+              oldDirs = typeof raw.dirs === 'string' ? JSON.parse(raw.dirs) : raw.dirs;
+              oldDeptMap = typeof raw.deptMap === 'string' ? JSON.parse(raw.deptMap) : raw.deptMap;
           } else {
-              if(oldDepts) oldDepts.forEach(d => oldDeptMap[d] = "General");
+              if(oldDepts) oldDepts.forEach(d => oldDeptMap[d] = 'General');
           }
           
           store.interno = {
               DIRS: oldDirs,
               DEPTS: oldDepts || [],
               DEPT_TO_DIR: oldDeptMap,
-              QUESTIONS: typeof raw.qs === "string" ? JSON.parse(raw.qs) : (raw.qs || []),
-              SCORES: typeof raw.scores === "string" ? JSON.parse(raw.scores) : (raw.scores || []),
+              QUESTIONS: typeof raw.qs === 'string' ? JSON.parse(raw.qs) : (raw.qs || []),
+              SCORES: typeof raw.scores === 'string' ? JSON.parse(raw.scores) : (raw.scores || []),
               AVERAGES: [], 
-              COMMENTS: typeof raw.comments === "string" ? JSON.parse(raw.comments) : (raw.comments || {}),
-              PARTICIPATION: typeof raw.participation === "string" ? JSON.parse(raw.participation) : (raw.participation || {}),
-              NPS_DATA: typeof raw.nps === "string" ? JSON.parse(raw.nps) : (raw.nps || {}),
+              COMMENTS: typeof raw.comments === 'string' ? JSON.parse(raw.comments) : (raw.comments || {}),
+              PARTICIPATION: typeof raw.participation === 'string' ? JSON.parse(raw.participation) : (raw.participation || {}),
+              NPS_DATA: typeof raw.nps === 'string' ? JSON.parse(raw.nps) : (raw.nps || {}),
               REPORT_DATE: raw.timestamp ? new Date(raw.timestamp) : new Date(),
               fileName: raw.title || "Servicio Interno"
           };
@@ -2671,14 +2335,9 @@ async function tryLoadFromURL(){
       loader.remove(); 
       initDashboard(); 
       return true;
-    } else { 
-      throw new Error("No existe");
-    }
+    } else { throw new Error("No existe"); }
   } catch(err){ 
-      loader.innerHTML = `
-        <p style="font-family:var(--font);font-weight:600;color:var(--danger);font-size:.9rem;padding:20px;text-align:center;">
-          No se pudo cargar el dashboard. El enlace puede estar roto o expirado.
-        </p>`; 
+      loader.innerHTML = '<p style="font-family:var(--font);font-weight:600;color:var(--danger);font-size:.9rem;padding:20px;text-align:center;">No se pudo cargar el dashboard. El enlace puede estar roto o expirado.</p>'; 
       return true; 
   }
 }
@@ -2688,41 +2347,49 @@ function renderPeticiones(depts) {
   let resueltas = [];
   let noResueltas = [];
   const isMeaningful = (text) => {
-      const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+      const t = text.toLowerCase()
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+          .replace(/[^a-z0-9\s]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
       if (t.length <= 1) return false; 
-      const junk = ["na", "n a", "no aplica", "sin comentario", "sin comentarios", "sin observacion", "sin observaciones", "desconozco", "ignoro", "ningun comentario", "no tengo comentarios"];
+      
+      const junk = [
+          'na', 'n a', 'no aplica', 'sin comentario', 'sin comentarios', 
+          'sin observacion', 'sin observaciones', 'desconozco', 'ignoro', 
+          'ningun comentario', 'no tengo comentarios'
+      ];
       if (junk.includes(t)) return false;
       return true;
   };
 
   deptArr.forEach(d => {
       (COMMENTS[d]||[]).forEach(c => {
-          if (c.startsWith("[PET_RES]")) {
-              const text = c.replace(/^\[PET_RES\]\s*/, "");
+          if (c.startsWith('[PET_RES]')) {
+              const text = c.replace(/^\[PET_RES\]\s*/, '');
               if (isMeaningful(text)) resueltas.push({text, dept: d});
           }
-          else if (c.startsWith("[PET_NO_RES]")) {
-              const text = c.replace(/^\[PET_NO_RES\]\s*/, "");
+          else if (c.startsWith('[PET_NO_RES]')) {
+              const text = c.replace(/^\[PET_NO_RES\]\s*/, '');
               if (isMeaningful(text)) noResueltas.push({text, dept: d});
           }
       });
   });
-  
-  const card = document.getElementById("peticionesCard");
+  const card = document.getElementById('peticionesCard');
   if (resueltas.length === 0 && noResueltas.length === 0) {
-      card.style.display = "none";
+      card.style.display = 'none';
       return;
   }
-  card.style.display = "flex";
+  card.style.display = 'flex';
 
   const isPositive = (text) => {
-      const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
-      if (t.includes("todo bien") || t.includes("todo en orden") || t.includes("todo super") || t.includes("todo al 100") || t.includes("todo perfecto") || t.includes("excelente") || t.includes("todo excelente") || t.includes("bien")) return true;
-      if (t.includes("todas resueltas") || t.includes("han sido resueltas") || t.includes("todo se resuelve") || t.includes("siempre resuelven") || t.includes("siempre se resuelven") || t.includes("todo lo resuelven") || t.includes("siempre atienden") || t.includes("mayoria")) return true;
-      if (t.includes("sin problema") || t.includes("ningun problema") || t.includes("ninguna queja") || t.includes("sin inconveniente") || t.includes("ningun inconveniente")) return true;
+      const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+      if (t.includes('todo bien') || t.includes('todo en orden') || t.includes('todo super') || t.includes('todo al 100') || t.includes('todo perfecto') || t.includes('excelente') || t.includes('todo excelente') || t.includes('bien')) return true;
+      if (t.includes('todas resueltas') || t.includes('han sido resueltas') || t.includes('todo se resuelve') || t.includes('siempre resuelven') || t.includes('siempre se resuelven') || t.includes('todo lo resuelven') || t.includes('siempre atienden') || t.includes('mayoria')) return true;
+      if (t.includes('sin problema') || t.includes('ningun problema') || t.includes('ninguna queja') || t.includes('sin inconveniente') || t.includes('ningun inconveniente')) return true;
       if (t.match(/^(ninguna|ninguno|nada)( por el momento| hasta el momento| hasta ahorita| al momento)?$/)) return true;
-      if (t === "ninguna" || t === "ninguno" || t === "nada") return true;
-      if (t.includes("hasta ahorita ninguna") || t.includes("al momento se han atendido") || t.includes("se le ha dado seguimiento") || t.includes("se le a dado seguimiento")) return true;
+      if (t === 'ninguna' || t === 'ninguno' || t === 'nada') return true;
+      if (t.includes('hasta ahorita ninguna') || t.includes('al momento se han atendido') || t.includes('se le ha dado seguimiento') || t.includes('se le a dado seguimiento')) return true;
       return false;
   };
   
@@ -2734,130 +2401,31 @@ function renderPeticiones(depts) {
   
   const pct = total > 0 ? Math.round((favorables / total) * 100) : 0;
   
-  const subtitle = document.getElementById("petSubtitle");
+  const subtitle = document.getElementById('petSubtitle');
   if (subtitle) {
-      let clientText = appMode === "externo" ? "clientes" : "clientes internos";
+      let clientText = appMode === 'externo' ? 'clientes' : 'clientes internos';
       subtitle.innerHTML = `De <b>${total}</b> respuestas de ${clientText}, <b>${favorables}</b> son favorables (indican qué resuelven o que no hay quejas), logrando un <b><span style="color:var(--if-orange);">${pct}%</span> de resolución percibida</b>. <span style="font-size:0.7rem; color:var(--muted); font-weight:normal;">(Se excluyeron N/A o sin comentarios)</span>`;
   }
   
   const renderList = (arr) => {
-      if (arr.length === 0) return `<div class="no-comments" style="padding:24px;">Ninguna respuesta registrada.</div>`;
-      return arr.map(c => `
-        <div class="comment-item" style="--al:${deptColor(c.dept)}; margin-bottom:12px;">
-          ${deptArr.length > 1 ? `<strong style="display:block; margin-bottom:4px; font-size:0.75rem; text-transform:uppercase; color:var(--muted);">${c.dept}</strong>` : ""}
-          ${c.text}
-        </div>`).join("");
+      if (arr.length === 0) return '<div class="no-comments" style="padding:24px;">Ninguna respuesta registrada.</div>';
+      return arr.map(c => "<div class='comment-item' style='--al:" + deptColor(c.dept) + "; margin-bottom:12px;'>" + (deptArr.length > 1 ? "<strong style='display:block; margin-bottom:4px; font-size:0.75rem; text-transform:uppercase; color:var(--muted);'>" + c.dept + "</strong>" : "") + c.text + "</div>").join('');
   };
 
-  document.getElementById("petResList").innerHTML = renderList(resueltas);
-  document.getElementById("petNoResList").innerHTML = renderList(noResueltas);
-}
-
-function toggleInlineTable(chartType) {
-  if (chartType !== 'bar') return;
-  const tableDiv = document.getElementById('barInlineTable');
-  const chartWrap = document.getElementById('barChartWrap');
-  const btn = document.getElementById('btnToggleBar');
-
-  const isVisible = tableDiv.style.display !== 'none';
-  if (isVisible) {
-    tableDiv.style.display = 'none';
-    chartWrap.style.display = 'block';
-    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg> Comparar`;
-    return;
-  }
-
-  const allowedDirs = activeDirs.has("Todas") ? DIRS : Array.from(activeDirs);
-  const filteredDepts = DEPTS.filter(d => allowedDirs.includes(DEPT_TO_DIR[d]));
-  const orderedDepts = (activeDepts.has("Todos")
-    ? filteredDepts.filter(d => !d.startsWith("PROM. "))
-    : filteredDepts.filter(d => activeDepts.has(d)))
-    .filter(d => !isNaN(AVERAGES[DEPTS.indexOf(d)]) && AVERAGES[DEPTS.indexOf(d)] > 0);
-
-  if (!orderedDepts.length) { showToast("Sin datos para mostrar", "warn"); return; }
-
-  const getAvg = d => AVERAGES[DEPTS.indexOf(d)] || 0;
-  const globalAvg = orderedDepts.reduce((s,d)=>s+getAvg(d),0)/orderedDepts.length;
-  const sorted = [...orderedDepts].sort((a,b)=>getAvg(b)-getAvg(a));
-  const maxVal = getAvg(sorted[0]);
-  const BAR_MAX = Math.max(maxVal, 10);
-
-  // Para cada dept: fuertes (top 3 preguntas) y débiles (bottom 3 preguntas)
-  const getTopBottom = (d) => {
-    const di = DEPTS.indexOf(d);
-    const activeQs = QUESTIONS.map((q,qi)=>({ q, v: SCORES[qi][di] }))
-      .filter(x => x.v !== null && x.v !== undefined && !isNaN(x.v));
-    const byScore = [...activeQs].sort((a,b)=>b.v-a.v);
-    return {
-      top: byScore.slice(0,2),
-      bottom: byScore.slice(-2).reverse()
-    };
-  };
-
-  let html = `
-    <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px; flex-wrap:wrap;">
-      <div style="display:flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; color:var(--muted);">
-        <span style="display:inline-block;width:32px;height:3px;background:var(--if-orange);border-radius:2px;"></span>
-        Promedio general: <b style="color:var(--if-navy); font-size:.85rem; margin-left:2px;">${globalAvg.toFixed(2)}</b>
-      </div>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:8px;">
-  `;
-
-  sorted.forEach((d, i) => {
-    const avg = getAvg(d);
-    const delta = avg - globalAvg;
-    const deltaStr = (delta >= 0 ? '+' : '') + delta.toFixed(2);
-    const deltaColor = delta >= 0.3 ? '#065F46' : delta <= -0.3 ? '#991B1B' : '#92400E';
-    const deltaBg = delta >= 0.3 ? '#D1FAE5' : delta <= -0.3 ? '#FEE2E2' : '#FEF3C7';
-    const barW = (avg / BAR_MAX * 100).toFixed(1);
-    const barColor = delta >= 0.3 ? '#10B981' : delta <= -0.3 ? '#EF4444' : '#F59E0B';
-    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
-    const { top, bottom } = getTopBottom(d);
-
-    html += `
-      <div style="border:1px solid var(--border); border-radius:8px; padding:12px 14px; background:var(--surface);">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-          <span style="font-size:.85rem; min-width:24px; text-align:center;">${medal}</span>
-          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${deptColor(d)};flex-shrink:0;"></span>
-          <span style="font-weight:700; font-size:.88rem; color:var(--if-navy); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${d}</span>
-          <span style="font-weight:900; font-size:1.05rem; color:var(--if-navy); margin-left:auto;">${avg.toFixed(2)}</span>
-          <span style="font-size:.72rem; font-weight:700; padding:2px 8px; border-radius:50px; background:${deltaBg}; color:${deltaColor}; flex-shrink:0;">${deltaStr} vs prom.</span>
-        </div>
-        <div style="background:var(--surface2); border-radius:6px; height:8px; overflow:hidden; margin-bottom:10px;">
-          <div style="height:100%; width:${barW}%; background:${barColor}; border-radius:6px; transition:width .4s;"></div>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-          <div style="background:#F0FDF4; border-radius:6px; padding:6px 8px;">
-            <div style="font-size:.65rem; font-weight:700; color:#065F46; margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em;">↑ Fortalezas</div>
-            ${top.map(x=>`<div style="font-size:.68rem; color:#1F2937; line-height:1.3; margin-bottom:2px;">• ${x.q.length>45?x.q.substring(0,43)+'…':x.q} <b style="color:#065F46;">(${x.v.toFixed(1)})</b></div>`).join('')}
-          </div>
-          <div style="background:#FFF7F7; border-radius:6px; padding:6px 8px;">
-            <div style="font-size:.65rem; font-weight:700; color:#991B1B; margin-bottom:4px; text-transform:uppercase; letter-spacing:.05em;">↓ Oportunidades</div>
-            ${bottom.map(x=>`<div style="font-size:.68rem; color:#1F2937; line-height:1.3; margin-bottom:2px;">• ${x.q.length>45?x.q.substring(0,43)+'…':x.q} <b style="color:#991B1B;">(${x.v.toFixed(1)})</b></div>`).join('')}
-          </div>
-        </div>
-      </div>`;
-  });
-
-  html += `</div>`;
-
-  tableDiv.innerHTML = html;
-  tableDiv.style.display = 'block';
-  chartWrap.style.display = 'none';
-  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Ver gráfica`;
+  document.getElementById('petResList').innerHTML = renderList(resueltas);
+  document.getElementById('petNoResList').innerHTML = renderList(noResueltas);
 }
 
 (async ()=>{
   while(!window.db) { await new Promise(r => setTimeout(r, 50)); }
   const loaded = await tryLoadFromURL();
   if(!loaded){
-    if(document.body.classList.contains("reader-mode")){
-      const ls=document.getElementById("loginScreen"); if(ls) { ls.style.display = "none"; ls.remove(); }
+    if(document.body.classList.contains('reader-mode')){
+      const ls=document.getElementById('loginScreen'); if(ls) { ls.style.display = 'none'; ls.remove(); }
       try { initDashboard(); } catch(e) { console.error(e); }
     } else {
-      const lp=document.getElementById("loginPwd"); if(lp) { lp.focus(); lp.onkeydown = (e) => { if(e.key==="Enter") doLogin(); }; }
-      const btn = document.getElementById("loginBtn"); if(btn) btn.onclick = doLogin;
+      const lp=document.getElementById('loginPwd'); if(lp) { lp.focus(); lp.onkeydown = (e) => { if(e.key==='Enter') doLogin(); }; }
+      const btn = document.getElementById('loginBtn'); if(btn) btn.onclick = doLogin;
     }
   }
 })();
