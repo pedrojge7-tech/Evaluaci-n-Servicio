@@ -825,7 +825,8 @@ Devuelve SOLO este JSON (sin markdown):
 async function _clasificarChunk(textos, offsetGlobal, catalogo, onProgress) {
   if (onProgress) onProgress('chunk', offsetGlobal, textos.length);
   const catalogoStr = catalogo.map(c => `"${c}"`).join(', ');
-  const entradas = textos.map((t, i) => `[${offsetGlobal + i}] ${t}`);
+  // Usamos índices locales 0..N-1 en el prompt para que el modelo sea consistente
+  const entradas = textos.map((t, i) => `[${i}] ${t}`);
 
   const prompt = `Clasifica cada texto usando SOLO las categorías del catálogo.
 
@@ -841,16 +842,20 @@ REGLAS:
 Textos:
 ${JSON.stringify(entradas)}
 
-Devuelve SOLO JSON:
+Devuelve SOLO JSON donde cada clave es el índice numérico del texto (0, 1, 2…):
 {"mapeo": {"0": ["Cat A"], "1": ["Cat A", "Cat B"], "2": ["[SKIP]"]}}`;
 
   const resultado = await _groqCall(prompt);
-  // Normalizar claves: el modelo puede devolver "0" o "texto_0"
+  // Normalizar claves locales (0, 1, …) → claves globales (texto_N)
+  // El modelo devuelve índices locales 0..chunk.length-1; sumamos offsetGlobal para obtener el índice global
   const raw = resultado?.mapeo || {};
   const normalized = {};
   Object.entries(raw).forEach(([k, v]) => {
-    const num = k.replace('texto_', '');
-    normalized[`texto_${num}`] = v;
+    // Soportar "0", "texto_0", etc.
+    const localNum = parseInt(k.replace('texto_', ''), 10);
+    if (!isNaN(localNum)) {
+      normalized[`texto_${offsetGlobal + localNum}`] = Array.isArray(v) ? v : [v];
+    }
   });
   return normalized;
 }
@@ -2434,18 +2439,22 @@ function handleFile(file){
             Object.assign(mapeoComm, parcial);
           }
           // Fallback: textos sin mapear
-          const catDefault = catalogoComm[0] || "Sin clasificar";
+          const catDefaultComm = catalogoComm[0] || "Sin clasificar";
           commCrudos.forEach((_, idx) => {
-            if (!mapeoComm[`texto_${idx}`]) mapeoComm[`texto_${idx}`] = [catDefault];
+            const key = `texto_${idx}`;
+            if (!mapeoComm[key] || !Array.isArray(mapeoComm[key]) || mapeoComm[key].length === 0) {
+              mapeoComm[key] = [catDefaultComm];
+            }
           });
-          // Aplicar al objeto nComm
+          // Aplicar usando índice posicional de commRefs (evita errores con textos duplicados)
           const newNComm = {};
           Object.keys(nComm).forEach(d => newNComm[d] = []);
+          let commIdx = 0;
           Object.keys(nComm).forEach(dept => {
             nComm[dept].forEach(txt => {
               if (txt.startsWith('[PET_')) { newNComm[dept].push(txt); return; }
-              const refIdx = commRefs.findIndex(r => r.dept === dept && r.txt === txt);
-              const cats = mapeoComm[`texto_${refIdx}`] || [catDefault];
+              const cats = mapeoComm[`texto_${commIdx}`] || [catDefaultComm];
+              commIdx++;
               if (cats.length === 1 && cats[0] === "[SKIP]") return;
               cats.forEach(cat => { if (cat !== "[SKIP]") newNComm[dept].push(`[CAT:${cat}] ${txt}`); });
             });
@@ -2465,17 +2474,22 @@ function handleFile(file){
             const parcial = await _clasificarChunk(chunk, inicio, catalogoOpen);
             Object.assign(mapeoOpen, parcial);
           }
-          const catDefault = catalogoOpen[0] || "Sin clasificar";
+          const catDefaultOpen = catalogoOpen[0] || "Sin clasificar";
           openCrudos.forEach((_, idx) => {
-            if (!mapeoOpen[`texto_${idx}`]) mapeoOpen[`texto_${idx}`] = [catDefault];
+            const key = `texto_${idx}`;
+            if (!mapeoOpen[key] || !Array.isArray(mapeoOpen[key]) || mapeoOpen[key].length === 0) {
+              mapeoOpen[key] = [catDefaultOpen];
+            }
           });
+          // Aplicar usando índice posicional de openRefs
           const newNOpenQ = {};
           Object.keys(nOpenQ).forEach(q => { newNOpenQ[q] = {}; Object.keys(nOpenQ[q]).forEach(dept => newNOpenQ[q][dept] = []); });
+          let openIdx = 0;
           Object.keys(nOpenQ).forEach(q => {
             Object.keys(nOpenQ[q]).forEach(dept => {
               nOpenQ[q][dept].forEach(txt => {
-                const refIdx = openRefs.findIndex(r => r.q === q && r.dept === dept && r.txt === txt);
-                const cats = mapeoOpen[`texto_${refIdx}`] || [catDefault];
+                const cats = mapeoOpen[`texto_${openIdx}`] || [catDefaultOpen];
+                openIdx++;
                 if (cats.length === 1 && cats[0] === "[SKIP]") return;
                 cats.forEach(cat => { if (cat !== "[SKIP]") newNOpenQ[q][dept].push(`[CAT:${cat}] ${txt}`); });
               });
