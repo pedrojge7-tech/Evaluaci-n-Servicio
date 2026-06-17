@@ -801,13 +801,13 @@ ${JSON.stringify(muestra)}
 
 CÓMO GENERAR LAS CATEGORÍAS:
 - Lee cada texto y detecta el tema central que expresa.
-- Agrupa textos que hablan de lo mismo bajo una sola categoría (ej: "tardaron mucho" y "los tiempos son malos" → "Tiempos de Respuesta").
+- Agrupa textos que hablan de lo mismo bajo una sola categoría.
 - Si varios textos solo dicen cosas vagas como "todo bien", "excelente", "sin comentarios" sin mencionar un tema → crea "Satisfacción General" ÚNICAMENTE si esos textos realmente están en la lista.
 - Textos basura ("na", "nada", "-", una sola palabra sin contexto) → ignóralos, no crean categoría.
 
 RESTRICCIONES:
 - Entre 3 y 15 categorías.
-- Cada nombre: 2 a 5 palabras, español, formato título (ej: "Calidad del Servicio", "Tiempos de Respuesta").
+- Cada nombre: 2 a 5 palabras, español, formato título.
 - PROHIBIDO inventar categorías que no correspondan a los textos reales.
 - PROHIBIDO: "Otros", "Misceláneos", "Sin Categoría".
 
@@ -818,7 +818,7 @@ Devuelve SOLO este JSON (sin markdown):
   if (resultado && Array.isArray(resultado.catalogo) && resultado.catalogo.length > 0) {
     return resultado.catalogo;
   }
-  return ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación"];
+  return null; // Groq falló — el llamador reintentará
 }
 
 // ── PASO 2: Clasificar un chunk usando el catálogo inferido ───────────────
@@ -2425,6 +2425,7 @@ function handleFile(file){
         if (hasComm) {
           advanceStep(); // paso catálogo
           const catalogoComm = await _inferirCatalogo(commCrudos, 'sugerencias');
+          if (!catalogoComm) throw new Error('No se pudo generar el catálogo de comentarios. Verifica tu API key de Groq e intenta de nuevo.');
           const mapeoComm = {};
           for (let inicio = 0; inicio < commCrudos.length; inicio += GROQ_CHUNK_SIZE) {
             advanceStep();
@@ -2456,6 +2457,7 @@ function handleFile(file){
         if (hasOpen) {
           advanceStep(); // paso catálogo
           const catalogoOpen = await _inferirCatalogo(openCrudos, 'preguntas');
+          if (!catalogoOpen) throw new Error('No se pudo generar el catálogo de preguntas abiertas. Verifica tu API key de Groq e intenta de nuevo.');
           const mapeoOpen = {};
           for (let inicio = 0; inicio < openCrudos.length; inicio += GROQ_CHUNK_SIZE) {
             advanceStep();
