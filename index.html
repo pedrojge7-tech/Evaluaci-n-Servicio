@@ -307,6 +307,13 @@ tbody td:first-child { text-align: left; }
 .open-q-dept-count { font-weight: 600; font-size: .7rem; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); padding: 2px 9px; border-radius: 50px; margin-left: auto; }
 .open-q-responses { display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; }
 .open-q-response-item { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--oq-col, var(--primary)); border-radius: var(--rs); padding: 12px 16px; font-weight: 500; font-size: .85rem; line-height: 1.6; color: var(--text); animation: fadeIn .3s ease; }
+.open-q-cat-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; padding: 14px 18px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--rs); align-items: center; }
+.open-q-cat-label { font-weight: 700; font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-right: 4px; white-space: nowrap; }
+.open-q-cat-chip { padding: 6px 14px; border-radius: 50px; border: 1.5px solid var(--border); background: var(--surface); font-family: var(--font); font-weight: 600; font-size: .75rem; color: var(--muted); cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.open-q-cat-chip:hover { border-color: var(--if-navy); color: var(--if-navy); transform: translateY(-1px); }
+.open-q-cat-chip.active { background: var(--if-navy); color: #fff; border-color: var(--if-navy); box-shadow: 0 3px 8px rgba(21,33,48,0.15); }
+.open-q-cat-chip .chip-cnt { background: rgba(255,255,255,0.2); border-radius: 50px; padding: 1px 7px; font-size: .68rem; font-weight: 700; }
+.open-q-cat-chip:not(.active) .chip-cnt { background: var(--surface2); color: var(--if-navy); }
 
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(21, 33, 48, .7);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
 .modal-overlay.open{display:flex;}
@@ -688,6 +695,7 @@ tbody td:first-child { text-align: left; }
       </div>
     </div>
     <div id="openQTabs" class="open-q-tabs"></div>
+    <div id="openQCatBar" class="open-q-cat-bar" style="display:none;"></div>
     <div id="openQChartArea" style="display:none; margin-bottom:28px;">
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;">
         <div>
@@ -756,26 +764,31 @@ async function _inferirCatalogo(listaTextos, tipoAnalisis) {
     ? 'comentarios y sugerencias de mejora de servicio/clima organizacional'
     : 'respuestas directas a preguntas abiertas de una encuesta';
 
-  const prompt = `Eres un experto analista cualitativo. Analiza esta muestra de ${contexto} y genera un catálogo de categorías temáticas compartidas.
+  const prompt = `Eres un experto analista cualitativo. Analiza esta muestra de ${contexto} y genera un catálogo de categorías temáticas emergentes.
 
-REGLAS:
-- Máximo 18 categorías. Mínimo 3.
-- Cada categoría: 2 a 4 palabras, en español, en formato título (ej: "Tiempos de Respuesta").
-- No uses "Otros", "Misceláneos", "General" ni similares como categorías.
-- Si un tema es muy aislado, agrúpalo con el concepto más afín.
-- Las categorías deben cubrir la mayoría de los textos proporcionados.
+REGLAS DEL CATÁLOGO:
+- Máximo 18 categorías temáticas. Mínimo 3.
+- Cada categoría: 2 a 4 palabras, en español, en formato título (ej: "Tiempos de Respuesta", "Atención al Cliente").
+- PROHIBIDO usar: "Otros", "Misceláneos", "General", "Sin Categoría" como categorías comodín.
+- Si un tema es muy aislado (aparece en un solo texto), agrúpalo con el concepto más afín del lote.
+- SIEMPRE incluye "Satisfacción General" para capturar comentarios vagamente positivos como "todo bien", "excelente", "ok", "muy bien", "todo me gusta", "sin quejas", "sin comentarios negativos".
+- Los textos tipo "na", "n/a", "ninguna", "no", "nada", ilegibles o sin sentido real NO forman categoría propia, se filtran con la etiqueta especial [SKIP].
 
 Textos de muestra:
 ${JSON.stringify(muestra)}
 
 Devuelve SOLO JSON con esta estructura exacta (sin markdown):
-{"catalogo": ["Categoría A", "Categoría B", "Categoría C"]}`;
+{"catalogo": ["Categoría A", "Categoría B", "Satisfacción General"]}`;
 
   const resultado = await _groqCall(prompt);
   if (resultado && Array.isArray(resultado.catalogo) && resultado.catalogo.length > 0) {
+    // Asegurar que Satisfacción General siempre esté
+    if (!resultado.catalogo.includes("Satisfacción General")) {
+      resultado.catalogo.push("Satisfacción General");
+    }
     return resultado.catalogo;
   }
-  return ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación", "Infraestructura"];
+  return ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación", "Satisfacción General"];
 }
 
 // ── PASO 2: Clasificar un chunk usando el catálogo fijo ───────────────────
@@ -783,20 +796,23 @@ async function _clasificarChunk(textos, offsetGlobal, catalogo) {
   const catalogoStr = catalogo.map(c => `"${c}"`).join(", ");
   const entradas = textos.map((t, i) => `texto_${offsetGlobal + i}: ${t}`);
 
-  const prompt = `Clasifica cada texto usando ÚNICAMENTE las categorías del catálogo. Un texto puede pertenecer a más de una categoría si trata varios temas.
+  const prompt = `Eres un clasificador temático preciso. Clasifica cada texto usando el catálogo proporcionado.
 
 CATÁLOGO DISPONIBLE: [${catalogoStr}]
 
-REGLAS:
-- Usa EXACTAMENTE los nombres del catálogo (respeta mayúsculas/acentos).
-- Si el texto es vago, muy corto o no encaja en ninguna, asígnale la categoría más cercana del catálogo.
-- No inventes categorías nuevas.
+REGLAS DE CLASIFICACIÓN:
+1. MULTI-CATEGORÍA: Si un texto toca varios temas, asígnale TODAS las categorías relevantes. Ej: si habla de calidad Y de tiempos, asígnale ambas.
+2. SATISFACCIÓN GENERAL: Usa esta categoría para textos vagamente positivos sin tema concreto: "todo bien", "excelente", "ok", "muy bien", "todo me gusta", "ninguna queja", "sin observaciones", "sin comentarios", etc.
+3. SKIP: Usa ["[SKIP]"] para textos sin valor real: "na", "n/a", "ninguna", "no", "nada", "-", ".", textos ilegibles, o frases de una sola palabra sin contexto.
+4. USA EXACTAMENTE los nombres del catálogo (respeta mayúsculas, acentos, espacios).
+5. NO inventes categorías nuevas fuera del catálogo.
+6. Analiza el SIGNIFICADO REAL del texto, no solo palabras clave.
 
 Textos a clasificar:
 ${JSON.stringify(entradas)}
 
 Devuelve SOLO JSON sin markdown:
-{"mapeo": {"texto_0": ["Categoría X"], "texto_1": ["Categoría X", "Categoría Y"]}}`;
+{"mapeo": {"texto_0": ["Categoría X"], "texto_1": ["Categoría X", "Categoría Y"], "texto_2": ["[SKIP]"]}}`;
 
   const resultado = await _groqCall(prompt);
   return resultado?.mapeo || {};
@@ -817,11 +833,12 @@ async function clasificarLoteConIA(listaTextos, tipoAnalisis) {
     Object.assign(mapeoFinal, parcial);
   }
 
-  // Garantizar que cada texto tenga al menos una categoría
+  // Garantizar que cada texto tenga al menos una categoría; si no fue mapeado → Satisfacción General o primera cat
+  const catDefault = catalogo.includes("Satisfacción General") ? "Satisfacción General" : catalogo[0];
   listaTextos.forEach((_, idx) => {
     const key = `texto_${idx}`;
     if (!mapeoFinal[key] || !Array.isArray(mapeoFinal[key]) || mapeoFinal[key].length === 0) {
-      mapeoFinal[key] = [catalogo[0]];
+      mapeoFinal[key] = [catDefault];
     }
   });
 
@@ -1962,51 +1979,119 @@ function classifyOpenResponse(text) {
 function renderOpenQuestions(orderedDepts) {
   const card = document.getElementById('openQuestionsCard');
   const tabsEl = document.getElementById('openQTabs');
+  const catBarEl = document.getElementById('openQCatBar');
   const contentEl = document.getElementById('openQContent');
   const chartArea = document.getElementById('openQChartArea');
 
-  if (!OPEN_QUESTIONS || Object.keys(OPEN_QUESTIONS).length === 0) {
-    card.style.display = 'none';
-    return;
-  }
+  if (!OPEN_QUESTIONS || Object.keys(OPEN_QUESTIONS).length === 0) { card.style.display = 'none'; return; }
 
   const activeQuestions = Object.keys(OPEN_QUESTIONS).filter(q =>
     Object.values(OPEN_QUESTIONS[q]).some(arr => arr.length > 0)
   );
-
-  if (activeQuestions.length === 0) {
-    card.style.display = 'none';
-    return;
-  }
+  if (activeQuestions.length === 0) { card.style.display = 'none'; return; }
 
   card.style.display = 'flex';
   tabsEl.innerHTML = '';
 
-  const showQuestion = (qLabel) => {
+  // ── Renderiza la lista de respuestas filtrada por categoría ──────────────
+  const renderResponseList = (deptData, activeCat) => {
+    const qDepts = Object.keys(deptData);
+    let listHtml = '';
+
+    // Recopilar todas las respuestas visibles (multi-cat: cada respuesta puede tener varias)
+    const getResponseCats = (txt) => {
+      const matches = [...txt.matchAll(/\[CAT:(.*?)\]/g)];
+      return matches.length > 0 ? matches.map(m => m[1].trim()) : ['Sin clasificar'];
+    };
+
+    const matchesCat = (txt) => {
+      if (!activeCat) return true;
+      return getResponseCats(txt).includes(activeCat);
+    };
+
+    qDepts.forEach(d => {
+      const resps = (deptData[d] || []).filter(txt => matchesCat(txt));
+      if (resps.length === 0) return;
+      const col = deptColor(d);
+      if (qDepts.length > 1) {
+        listHtml += `<div style="font-weight:900; font-size:1rem; color:var(--if-orange); margin-top:20px; margin-bottom:8px; border-bottom:2px solid var(--if-orange); padding-bottom:4px; text-transform:uppercase;">${d}</div>`;
+      }
+      resps.forEach(txt => {
+        const cats = getResponseCats(txt);
+        const cleanTxt = txt.replace(/\[CAT:.*?\]\s*/g, '').trim();
+        const catTags = cats.map(c => `<span style="display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:2px 8px; font-size:.65rem; font-weight:700; color:var(--muted); margin-right:4px;">${c}</span>`).join('');
+        listHtml += `<div class="open-q-response-item" style="--oq-col:${col};"><div style="margin-bottom:6px;">${catTags}</div><div>${cleanTxt}</div></div>`;
+      });
+    });
+
+    contentEl.innerHTML = listHtml || '<div class="no-comments">Sin respuestas para esta clasificación.</div>';
+  };
+
+  // ── Renderiza chips de categorías para una pregunta ──────────────────────
+  const renderCatChipsOQ = (deptData, activeCat, onSelect) => {
+    const catCounts = {};
+    let totalVisible = 0;
+    Object.values(deptData).forEach(arr => {
+      (arr || []).forEach(txt => {
+        totalVisible++;
+        const matches = [...txt.matchAll(/\[CAT:(.*?)\]/g)];
+        if (matches.length > 0) {
+          matches.forEach(m => {
+            const c = m[1].trim();
+            catCounts[c] = (catCounts[c] || 0) + 1;
+          });
+        } else {
+          catCounts['Sin clasificar'] = (catCounts['Sin clasificar'] || 0) + 1;
+        }
+      });
+    });
+    const sorted = Object.keys(catCounts).sort((a,b) => catCounts[b] - catCounts[a]);
+    if (sorted.length === 0) { catBarEl.style.display = 'none'; return; }
+
+    catBarEl.style.display = 'flex';
+    catBarEl.innerHTML = '<span class="open-q-cat-label">Filtrar:</span>';
+
+    const makeChip = (label, count, isActive) => {
+      const chip = document.createElement('button');
+      chip.className = 'open-q-cat-chip' + (isActive ? ' active' : '');
+      chip.innerHTML = `${label}<span class="chip-cnt">${count}</span>`;
+      chip.onclick = () => onSelect(isActive ? null : label);
+      return chip;
+    };
+
+    catBarEl.appendChild(makeChip('Todas', totalVisible, !activeCat));
+    sorted.forEach(cat => catBarEl.appendChild(makeChip(cat, catCounts[cat], activeCat === cat)));
+  };
+
+  // ── Muestra una pregunta completa con su gráfica y chips ─────────────────
+  const showQuestion = (qLabel, activeCat = null) => {
     document.querySelectorAll('.open-q-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.open-q-tab').forEach(t => { if(t.dataset.oq === qLabel) t.classList.add('active'); });
 
     const deptData = OPEN_QUESTIONS[qLabel] || {};
-    const qDepts = Object.keys(deptData);
+    const allResponses = [];
+    Object.keys(deptData).forEach(d => (deptData[d] || []).forEach(txt => allResponses.push({ text: txt, dept: d })));
 
-    const allResponses = []; 
-    qDepts.forEach(d => {
-      (deptData[d] || []).forEach(txt => allResponses.push({ text: txt, dept: d }));
-    });
-
-    if(allResponses.length === 0) {
+    if (allResponses.length === 0) {
       chartArea.style.display = 'none';
+      catBarEl.style.display = 'none';
       contentEl.innerHTML = '<div class="no-comments">Sin respuestas para la selección actual.</div>';
       return;
     }
 
+    // Conteo de categorías (multi-cat)
     const catCounts = {};
     allResponses.forEach(r => {
-      const cat = classifyOpenResponse(r.text);
-      catCounts[cat] = (catCounts[cat] || 0) + 1;
+      const matches = [...r.text.matchAll(/\[CAT:(.*?)\]/g)];
+      if (matches.length > 0) {
+        matches.forEach(m => { const c = m[1].trim(); catCounts[c] = (catCounts[c] || 0) + 1; });
+      } else {
+        catCounts['Sin clasificar'] = (catCounts['Sin clasificar'] || 0) + 1;
+      }
     });
     const sortedCats = Object.keys(catCounts).sort((a,b) => catCounts[b] - catCounts[a]);
 
+    // Gráfica donut
     chartArea.style.display = 'block';
     if(openQDonutChart) openQDonutChart.destroy();
     const donutPalette = ['#E07010','#1E3347','#10B981','#F59E0B','#3B82F6','#8B5CF6','#EF4444','#06B6D4','#84CC16','#F97316','#2C4560','#D68940','#7A8D9E','#152130','#B8C4CE'];
@@ -2015,45 +2100,29 @@ function renderOpenQuestions(orderedDepts) {
       type: 'doughnut',
       data: {
         labels: sortedCats,
-        datasets: [{
-          data: sortedCats.map(c => catCounts[c]),
-          backgroundColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length] + 'CC'),
-          borderColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length]),
-          borderWidth: 2,
-          hoverOffset: 8
-        }]
+        datasets: [{ data: sortedCats.map(c => catCounts[c]), backgroundColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length] + 'CC'), borderColor: sortedCats.map((_, i) => donutPalette[i % donutPalette.length]), borderWidth: 2, hoverOffset: 8 }]
       },
-      options: {
-        responsive: true,
-        cutout: '62%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx => ` ${ctx.label}: ${ctx.parsed} respuesta${ctx.parsed !== 1 ? 's' : ''}`
-            }
-          }
-        }
-      }
+      options: { responsive: true, cutout: '62%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} respuesta${ctx.parsed !== 1 ? 's' : ''}` } } } }
     });
 
+    // Tabla de clasificaciones
     const tbl = document.getElementById('openQClassTable');
     let tHead = `<thead><tr>
       <th style="text-align:left; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border);">Clasificación</th>
       <th style="text-align:center; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border);">Respuestas</th>
       <th style="text-align:left; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border); width:40%;">Distribución</th>
     </tr></thead>`;
-    const maxCount = catCounts[sortedCats[0]] || 1;
     let tBody = '<tbody>';
     sortedCats.forEach((cat, i) => {
       const cnt = catCounts[cat];
       const pct = Math.round((cnt / allResponses.length) * 100);
       const barColor = donutPalette[i % donutPalette.length];
-      tBody += `<tr>
-        <td style="padding:10px 14px; font-weight:600; font-size:.8rem; color:var(--if-navy); border-bottom:1px solid var(--surface2); text-align:left;">
-          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${barColor}; margin-right:8px; flex-shrink:0;"></span>${cat}
+      const isActive = activeCat === cat;
+      tBody += `<tr style="cursor:pointer; ${isActive ? 'background:var(--primary-light);' : ''}" onclick="window._oqFilterCat('${qLabel}', '${isActive ? '' : cat.replace(/'/g,"\'")}')">
+        <td style="padding:10px 14px; font-weight:600; font-size:.8rem; color:${isActive ? 'var(--primary)' : 'var(--if-navy)'}; border-bottom:1px solid var(--surface2); text-align:left;">
+          <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${barColor}; margin-right:8px;"></span>${cat}${isActive ? ' ✕' : ''}
         </td>
-        <td style="padding:10px 14px; font-weight:700; text-align:center; border-bottom:1px solid var(--surface2); color:var(--if-navy);">${cnt}</td>
+        <td style="padding:10px 14px; font-weight:700; text-align:center; border-bottom:1px solid var(--surface2);">${cnt}</td>
         <td style="padding:10px 14px; border-bottom:1px solid var(--surface2);">
           <div style="display:flex; align-items:center; gap:8px;">
             <div style="flex-grow:1; height:6px; background:var(--surface2); border-radius:10px; overflow:hidden;">
@@ -2067,42 +2136,15 @@ function renderOpenQuestions(orderedDepts) {
     tBody += '</tbody>';
     tbl.innerHTML = tHead + tBody;
 
-    let listHtml = '';
-    if(qDepts.length > 1) {
-      qDepts.forEach(d => {
-        const resps = deptData[d];
-        if(!resps || resps.length === 0) return;
-        const col = deptColor(d);
-        listHtml += `<div style="font-weight:900; font-size:1rem; color:var(--if-orange); margin-top:20px; margin-bottom:8px; border-bottom:2px solid var(--if-orange); padding-bottom:4px; text-transform:uppercase;">${d}</div>`;
-        resps.forEach(txt => {
-          const cat = classifyOpenResponse(txt);
-          const cleanTxt = txt.replace(/^\[CAT:.*?\]\s*/, '');
-          listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">
-            <span style="display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:2px 8px; font-size:.68rem; font-weight:700; color:var(--muted); margin-bottom:6px;">${cat}</span>
-            <div>${cleanTxt}</div>
-          </div>`;
-        });
-      });
-    } else {
-      const d = qDepts[0];
-      const resps = deptData[d] || [];
-      const grouped = {};
-      resps.forEach(txt => {
-        const cat = classifyOpenResponse(txt);
-        if(!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(txt);
-      });
-      const col = deptColor(d);
-      Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length).forEach(cat => {
-        listHtml += `<div style="font-weight:800; font-size:.82rem; color:var(--if-navy); text-transform:uppercase; letter-spacing:.05em; margin-top:16px; border-bottom:2px solid var(--surface2); padding-bottom:4px; margin-bottom:8px;">${cat} (${grouped[cat].length})</div>`;
-        grouped[cat].forEach(txt => {
-          const cleanTxt = txt.replace(/^\[CAT:.*?\]\s*/, '');
-          listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">${cleanTxt}</div>`;
-        });
-      });
-    }
-    contentEl.innerHTML = listHtml || '<div class="no-comments">Sin respuestas para la selección actual.</div>';
+    // Chips de filtro
+    renderCatChipsOQ(deptData, activeCat, (newCat) => showQuestion(qLabel, newCat));
+
+    // Lista de respuestas
+    renderResponseList(deptData, activeCat);
   };
+
+  // Exponer para el onclick de la tabla
+  window._oqFilterCat = (qLabel, cat) => showQuestion(qLabel, cat || null);
 
   activeQuestions.forEach((qLabel, i) => {
     const btn = document.createElement('button');
@@ -2256,9 +2298,11 @@ function handleFile(file){
                       newNComm[dept].push(txt);
                   } else {
                       const refIdx = commRefs.findIndex(r => r.dept === dept && r.txt === txt);
-                      const cats = resCom.mapeo[`texto_${refIdx}`] || ["General"];
+                      const cats = resCom.mapeo[`texto_${refIdx}`] || ["Satisfacción General"];
+                      // [SKIP] = la IA detectó que no aporta valor → omitir
+                      if (cats.length === 1 && cats[0] === "[SKIP]") return;
                       cats.forEach(cat => {
-                          newNComm[dept].push(`[CAT:${cat}] ${txt}`);
+                          if (cat !== "[SKIP]") newNComm[dept].push(`[CAT:${cat}] ${txt}`);
                       });
                   }
               });
@@ -2294,9 +2338,11 @@ function handleFile(file){
               Object.keys(nOpenQ[q]).forEach(dept => {
                   nOpenQ[q][dept].forEach(txt => {
                       const refIdx = openRefs.findIndex(r => r.q === q && r.dept === dept && r.txt === txt);
-                      const cats = resOpen.mapeo[`texto_${refIdx}`] || ["Sin clasificar"];
+                      const cats = resOpen.mapeo[`texto_${refIdx}`] || ["Satisfacción General"];
+                      // [SKIP] = sin valor → omitir
+                      if (cats.length === 1 && cats[0] === "[SKIP]") return;
                       cats.forEach(cat => {
-                          newNOpenQ[q][dept].push(`[CAT:${cat}] ${txt}`);
+                          if (cat !== "[SKIP]") newNOpenQ[q][dept].push(`[CAT:${cat}] ${txt}`);
                       });
                   });
               });
