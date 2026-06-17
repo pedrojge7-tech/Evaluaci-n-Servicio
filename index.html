@@ -764,31 +764,32 @@ async function _inferirCatalogo(listaTextos, tipoAnalisis) {
     ? 'comentarios y sugerencias de mejora de servicio/clima organizacional'
     : 'respuestas directas a preguntas abiertas de una encuesta';
 
-  const prompt = `Eres un experto analista cualitativo. Analiza esta muestra de ${contexto} y genera un catálogo de categorías temáticas emergentes.
+  const prompt = `Eres un analista cualitativo experto. Tu tarea es leer una muestra de ${contexto} e identificar los TEMAS REALES que los encuestados mencionan.
 
-REGLAS DEL CATÁLOGO:
-- Máximo 18 categorías temáticas. Mínimo 3.
-- Cada categoría: 2 a 4 palabras, en español, en formato título (ej: "Tiempos de Respuesta", "Atención al Cliente").
-- PROHIBIDO usar: "Otros", "Misceláneos", "General", "Sin Categoría" como categorías comodín.
-- Si un tema es muy aislado (aparece en un solo texto), agrúpalo con el concepto más afín del lote.
-- SIEMPRE incluye "Satisfacción General" para capturar comentarios vagamente positivos como "todo bien", "excelente", "ok", "muy bien", "todo me gusta", "sin quejas", "sin comentarios negativos".
-- Los textos tipo "na", "n/a", "ninguna", "no", "nada", ilegibles o sin sentido real NO forman categoría propia, se filtran con la etiqueta especial [SKIP].
+INSTRUCCIONES:
+1. Lee todos los textos con atención.
+2. Identifica los temas concretos que se repiten o que son importantes (ej: "Tiempos de Respuesta", "Amabilidad del Personal", "Equipos e Infraestructura", "Claridad en Comunicación").
+3. Agrupa temas muy similares en una sola categoría.
+4. Si hay varios textos que solo expresan satisfacción sin mencionar un tema concreto ("todo bien", "muy bien", "excelente en general"), crea la categoría "Satisfacción General" — SOLO si realmente existen esos textos en la muestra.
+5. Ignora completamente los textos basura: "na", "n/a", "ninguna", "nada", "-", textos de 1-2 caracteres.
 
-Textos de muestra:
+RESTRICCIONES:
+- Entre 3 y 15 categorías en total.
+- Cada categoría: 2 a 5 palabras, en español, formato título.
+- PROHIBIDO: "Otros", "Misceláneos", "General", "Sin Categoría", "Sin Clasificar".
+- NO añadas "Satisfacción General" a menos que la muestra realmente tenga comentarios vagamente positivos sin tema.
+
+Muestra de textos:
 ${JSON.stringify(muestra)}
 
-Devuelve SOLO JSON con esta estructura exacta (sin markdown):
-{"catalogo": ["Categoría A", "Categoría B", "Satisfacción General"]}`;
+Devuelve SOLO JSON (sin markdown, sin texto extra):
+{"catalogo": ["Tema Real A", "Tema Real B", "Tema Real C"]}`;
 
   const resultado = await _groqCall(prompt);
   if (resultado && Array.isArray(resultado.catalogo) && resultado.catalogo.length > 0) {
-    // Asegurar que Satisfacción General siempre esté
-    if (!resultado.catalogo.includes("Satisfacción General")) {
-      resultado.catalogo.push("Satisfacción General");
-    }
     return resultado.catalogo;
   }
-  return ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación", "Satisfacción General"];
+  return ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación"];
 }
 
 // ── PASO 2: Clasificar un chunk usando el catálogo fijo ───────────────────
@@ -796,23 +797,35 @@ async function _clasificarChunk(textos, offsetGlobal, catalogo) {
   const catalogoStr = catalogo.map(c => `"${c}"`).join(", ");
   const entradas = textos.map((t, i) => `texto_${offsetGlobal + i}: ${t}`);
 
-  const prompt = `Eres un clasificador temático preciso. Clasifica cada texto usando el catálogo proporcionado.
+  const prompt = `Eres un clasificador temático. Debes asignar categorías del catálogo a cada texto según su contenido real.
 
-CATÁLOGO DISPONIBLE: [${catalogoStr}]
+CATÁLOGO: [${catalogoStr}]
 
-REGLAS DE CLASIFICACIÓN:
-1. MULTI-CATEGORÍA: Si un texto toca varios temas, asígnale TODAS las categorías relevantes. Ej: si habla de calidad Y de tiempos, asígnale ambas.
-2. SATISFACCIÓN GENERAL: Usa esta categoría para textos vagamente positivos sin tema concreto: "todo bien", "excelente", "ok", "muy bien", "todo me gusta", "ninguna queja", "sin observaciones", "sin comentarios", etc.
-3. SKIP: Usa ["[SKIP]"] para textos sin valor real: "na", "n/a", "ninguna", "no", "nada", "-", ".", textos ilegibles, o frases de una sola palabra sin contexto.
-4. USA EXACTAMENTE los nombres del catálogo (respeta mayúsculas, acentos, espacios).
-5. NO inventes categorías nuevas fuera del catálogo.
-6. Analiza el SIGNIFICADO REAL del texto, no solo palabras clave.
+REGLAS — léelas en orden de prioridad:
 
-Textos a clasificar:
+PRIORIDAD 1 — SKIP (textos sin valor):
+Usa ["[SKIP]"] si el texto es: "na", "n/a", "ninguna", "nada", "no", "-", ".", un solo carácter, o cualquier texto que no aporte información real. Estos NO se muestran en el dashboard.
+
+PRIORIDAD 2 — MULTI-CATEGORÍA (lo más importante):
+Si el texto menciona dos o más temas distintos, asígnale UNA categoría por cada tema que mencione.
+Ejemplo: "El servicio es bueno pero los tiempos son lentos y la comunicación falla" → ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación"]
+NO reduzcas a una sola categoría cuando el texto claramente habla de varios temas.
+
+PRIORIDAD 3 — CATEGORÍA ESPECÍFICA:
+Busca la categoría del catálogo que mejor describe el tema principal del texto.
+Lee el texto completo, no solo palabras sueltas.
+
+PRIORIDAD 4 — SATISFACCIÓN GENERAL (solo si existe en el catálogo):
+Úsala únicamente para textos que expresan satisfacción sin mencionar ningún tema concreto: "todo bien", "excelente", "muy bien todo", "sin quejas".
+NO la uses si el texto menciona algo específico aunque sea positivo.
+
+REGLA ABSOLUTA: Usa EXACTAMENTE los nombres del catálogo (mayúsculas, acentos, espacios). No inventes categorías.
+
+Textos:
 ${JSON.stringify(entradas)}
 
-Devuelve SOLO JSON sin markdown:
-{"mapeo": {"texto_0": ["Categoría X"], "texto_1": ["Categoría X", "Categoría Y"], "texto_2": ["[SKIP]"]}}`;
+Devuelve SOLO JSON (sin markdown):
+{"mapeo": {"texto_0": ["Categoría A"], "texto_1": ["Categoría A", "Categoría B"], "texto_2": ["[SKIP]"]}}`;
 
   const resultado = await _groqCall(prompt);
   return resultado?.mapeo || {};
