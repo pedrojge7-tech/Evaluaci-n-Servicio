@@ -854,7 +854,12 @@ Devuelve SOLO este JSON (sin markdown):
     try {
       const resultado = await _groqCall(prompt);
       if (resultado && Array.isArray(resultado.catalogo) && resultado.catalogo.length > 0) {
-        return resultado.catalogo;
+        // Normalizar a Formato Título y deduplicar (por si el modelo repite con distinto casing)
+        const seen = new Set();
+        const catalogo = resultado.catalogo
+          .map(c => _toTitleCase(String(c).trim()))
+          .filter(c => { const k = c.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; });
+        return catalogo;
       }
       // Respuesta vacía o malformada → reintentar
       console.warn(`_inferirCatalogo: respuesta vacía en intento ${intento}`);
@@ -867,11 +872,19 @@ Devuelve SOLO este JSON (sin markdown):
   return null;
 }
 
+// ── Normaliza texto a Formato Título ─────────────────────────────────────
+function _toTitleCase(str) {
+  return str.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
 // ── PASO 2: Clasificar un chunk usando el catálogo inferido ───────────────
 async function _clasificarChunk(textos, offsetGlobal, catalogo, onProgress) {
   if (onProgress) onProgress('chunk', offsetGlobal, textos.length);
   const catalogoStr = catalogo.map(c => `"${c}"`).join(', ');
-  // Truncar textos largos para reducir tokens
+  // Mapa de búsqueda case-insensitive → nombre canónico del catálogo
+  const canonicalMap = {};
+  catalogo.forEach(c => { canonicalMap[c.toLowerCase().trim()] = c; });
+
   const entradas = textos.map((t, i) => {
     const txt = String(t).length > 200 ? String(t).slice(0, 200) + '…' : String(t);
     return `[${i}] ${txt}`;
@@ -900,7 +913,12 @@ Devuelve SOLO JSON donde cada clave es el índice numérico del texto (0, 1, 2�
   Object.entries(raw).forEach(([k, v]) => {
     const localNum = parseInt(k.replace('texto_', ''), 10);
     if (!isNaN(localNum)) {
-      normalized[`texto_${offsetGlobal + localNum}`] = Array.isArray(v) ? v : [v];
+      const cats = (Array.isArray(v) ? v : [v]).map(cat => {
+        if (cat === '[SKIP]') return cat;
+        // Buscar nombre canónico primero exacto, luego case-insensitive
+        return canonicalMap[cat.toLowerCase().trim()] || _toTitleCase(cat.trim());
+      });
+      normalized[`texto_${offsetGlobal + localNum}`] = cats;
     }
   });
   return normalized;
