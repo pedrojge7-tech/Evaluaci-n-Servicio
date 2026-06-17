@@ -744,12 +744,27 @@ tbody td:first-child { text-align: left; }
 // =========================================================================
 // ── CONFIGURACIÓN DE GROQ API ─────────────────────────────────────────────
 // =========================================================================
-const GROQ_API_KEY = "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";
+const GROQ_API_KEY = "TU_API_KEY_DE_GROQ_AQUI";
 const GROQ_MODEL   = "llama-3.3-70b-versatile";
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_CHUNK_SIZE  = 40;  // máximo de textos por llamada de clasificación
-const GROQ_SAMPLE_SIZE = 80;  // máximo de textos para inferir el catálogo global
+const GROQ_CHUNK_SIZE  = 50;  // textos por chunk
+const GROQ_SAMPLE_SIZE = 40;  // muestra para inferir catálogo
+const GROQ_CONCURRENCY = 3;   // chunks en paralelo simultáneos
+
+// ── Ejecuta hasta `limit` promesas en paralelo ────────────────────────────
+async function _parallelLimit(tasks, limit) {
+  const results = [];
+  let i = 0;
+  async function worker() {
+    while (i < tasks.length) {
+      const idx = i++;
+      results[idx] = await tasks[idx]();
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker));
+  return results;
+}
 
 // ── Llamada base a Groq ───────────────────────────────────────────────────
 async function _groqCall(promptText, intentoActual = 1, maxIntentos = 5) {
@@ -869,8 +884,11 @@ Devuelve SOLO este JSON (sin markdown):
 async function _clasificarChunk(textos, offsetGlobal, catalogo, onProgress) {
   if (onProgress) onProgress('chunk', offsetGlobal, textos.length);
   const catalogoStr = catalogo.map(c => `"${c}"`).join(', ');
-  // Usamos índices locales 0..N-1 en el prompt para que el modelo sea consistente
-  const entradas = textos.map((t, i) => `[${i}] ${t}`);
+  // Truncar textos largos para reducir tokens
+  const entradas = textos.map((t, i) => {
+    const txt = String(t).length > 200 ? String(t).slice(0, 200) + '…' : String(t);
+    return `[${i}] ${txt}`;
+  });
 
   const prompt = `Clasifica cada texto usando SOLO las categorías del catálogo.
 
@@ -878,7 +896,7 @@ CATÁLOGO DISPONIBLE: [${catalogoStr}]
 
 REGLAS:
 1. SKIP → Si el texto es basura: "na", "n/a", "nada", "ninguna", "no", "-", una palabra sin contexto. Devuelve ["[SKIP]"].
-2. MULTI-CATEGORÍA → Si el texto habla de varios temas distintos, asígnale TODAS las categorías que apliquen. Ejemplo: "el servicio es bueno pero tardan mucho" → dos categorías.
+2. MULTI-CATEGORÍA → Si el texto habla de varios temas distintos, asígnale TODAS las categorías que apliquen.
 3. CATEGORÍA EXACTA → Usa siempre el nombre EXACTO del catálogo (mayúsculas, tildes, espacios).
 4. UNA CATEGORÍA → Si el texto toca un solo tema, devuelve solo esa categoría.
 5. SATISFACCIÓN GENERAL → Solo si existe en el catálogo y el texto es vagamente positivo sin mencionar ningún tema concreto.
@@ -890,12 +908,9 @@ Devuelve SOLO JSON donde cada clave es el índice numérico del texto (0, 1, 2�
 {"mapeo": {"0": ["Cat A"], "1": ["Cat A", "Cat B"], "2": ["[SKIP]"]}}`;
 
   const resultado = await _groqCall(prompt);
-  // Normalizar claves locales (0, 1, …) → claves globales (texto_N)
-  // El modelo devuelve índices locales 0..chunk.length-1; sumamos offsetGlobal para obtener el índice global
   const raw = resultado?.mapeo || {};
   const normalized = {};
   Object.entries(raw).forEach(([k, v]) => {
-    // Soportar "0", "texto_0", etc.
     const localNum = parseInt(k.replace('texto_', ''), 10);
     if (!isNaN(localNum)) {
       normalized[`texto_${offsetGlobal + localNum}`] = Array.isArray(v) ? v : [v];
@@ -2476,12 +2491,16 @@ function handleFile(file){
           const catalogoComm = await _inferirCatalogo(commCrudos, 'sugerencias');
           if (!catalogoComm) throw new Error('No se pudo generar el catálogo de comentarios. Verifica tu API key de Groq en la línea GROQ_API_KEY del archivo HTML.');
           const mapeoComm = {};
+          const chunksComm2 = [];
           for (let inicio = 0; inicio < commCrudos.length; inicio += GROQ_CHUNK_SIZE) {
+            chunksComm2.push({ inicio, chunk: commCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE) });
+          }
+          const tareasComm = chunksComm2.map(({ inicio, chunk }) => async () => {
             advanceStep();
-            const chunk = commCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE);
             const parcial = await _clasificarChunk(chunk, inicio, catalogoComm);
             Object.assign(mapeoComm, parcial);
-          }
+          });
+          await _parallelLimit(tareasComm, GROQ_CONCURRENCY);
           // Fallback: textos sin mapear
           const catDefaultComm = catalogoComm[0] || "Sin clasificar";
           commCrudos.forEach((_, idx) => {
@@ -2512,12 +2531,16 @@ function handleFile(file){
           const catalogoOpen = await _inferirCatalogo(openCrudos, 'preguntas');
           if (!catalogoOpen) throw new Error('No se pudo generar el catálogo de preguntas abiertas. Verifica tu API key de Groq e intenta de nuevo.');
           const mapeoOpen = {};
+          const chunksOpen2 = [];
           for (let inicio = 0; inicio < openCrudos.length; inicio += GROQ_CHUNK_SIZE) {
+            chunksOpen2.push({ inicio, chunk: openCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE) });
+          }
+          const tareasOpen = chunksOpen2.map(({ inicio, chunk }) => async () => {
             advanceStep();
-            const chunk = openCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE);
             const parcial = await _clasificarChunk(chunk, inicio, catalogoOpen);
             Object.assign(mapeoOpen, parcial);
-          }
+          });
+          await _parallelLimit(tareasOpen, GROQ_CONCURRENCY);
           const catDefaultOpen = catalogoOpen[0] || "Sin clasificar";
           openCrudos.forEach((_, idx) => {
             const key = `texto_${idx}`;
