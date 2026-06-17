@@ -708,18 +708,15 @@ tbody td:first-child { text-align: left; }
 
 <script>
 // =========================================================================
-// ── CONFIGURACIÓN DE GEMINI 1.5 FLASH VIA API ────────────────────────────
+// ── CONFIGURACIÓN DE GROQ API ─────────────────────────────────────────────
 // =========================================================================
-const GEMINI_API_KEY = "AQ.Ab8RN6IbzfSAAl49_EHYAyJ0V_vdc1Ilp1veTM-NSkhy8x2Otg";
+const GROQ_API_KEY = "TU_API_KEY_DE_GROQ_AQUI";
+const GROQ_MODEL   = "llama-3.3-70b-versatile";
 
 async function clasificarLoteConIA(listaTextos, tipoAnalisis) {
   if (!listaTextos || listaTextos.length === 0) return { catalogo_creado: [], mapeo: {} };
-  
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-  
-  const contexto = tipoAnalisis === 'sugerencias' 
-    ? 'comentarios generales y sugerencias de mejora de clima/servicio' 
-    : 'respuestas directas a preguntas abiertas específicas';
+
+  const url = "https://api.groq.com/openai/v1/chat/completions";
 
   const prompt = `Actúa como un experto analista cualitativo de Clima Organizacional y Auditoría de Servicio Interno. 
 Te proporcionaré una lista de textos (comentarios o respuestas) extraídos de una encuesta. Tu objetivo es realizar un análisis temático automatizado de este lote completo bajo los siguientes dos pasos rigurosos:
@@ -749,17 +746,22 @@ ${JSON.stringify(listaTextos.map((t, idx) => `texto_${idx}: ${t}`))}`;
   try {
     const response = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${GROQ_API_KEY}`
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: "application/json" }
+        model: GROQ_MODEL,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.3,
+        response_format: { type: "json_object" }
       })
     });
     const json = await response.json();
-    const rawText = json.candidates[0].content.parts[0].text;
+    const rawText = json.choices[0].message.content;
     return JSON.parse(rawText);
   } catch (error) {
-    console.error("Error llamando a Gemini:", error);
+    console.error("Error llamando a Groq:", error);
     return { catalogo_creado: ["General"], mapeo: {} };
   }
 }
