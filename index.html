@@ -744,7 +744,7 @@ tbody td:first-child { text-align: left; }
 // =========================================================================
 // ── CONFIGURACIÓN DE GROQ API ─────────────────────────────────────────────
 // =========================================================================
-const GROQ_API_KEY = "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";
+const GROQ_API_KEY = "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";
 const GROQ_MODEL   = "llama-3.1-8b-instant";  // más rápido y con mayor rate limit que 70b
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -2329,6 +2329,8 @@ function renderOpenQuestions(orderedDepts) {
 
 function handleFile(file){
   showToast('⏳ Procesando...'); window.cachedAnalysisHTML = ""; window.cachedFilterKey = "";
+  // Capturar el modo activo AL INICIO — el usuario puede cambiar de tab mientras corre el análisis de IA
+  const targetMode = appMode;
   const reader = new FileReader();
   reader.onload = async e => {
     try{
@@ -2570,14 +2572,20 @@ function handleFile(file){
 
       aiProgress.hide();
       document.getElementById('importModal').classList.remove('open');
-      rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name, nOpenQ);
+      rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name, nOpenQ, targetMode);
       showToast('Datos cargados con éxito','ok');
     } catch(err){ console.error(err); showToast('Error: ' + err.message, 'err'); aiProgress.hide(); }
   };
   reader.readAsArrayBuffer(file);
 }
 
-function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname, nOpenQ){
+function rebuildDashboard(nDirs, nDepts, nMap, nQ, nSc, nComm, nPart, fname, nOpenQ, targetMode){
+  // Si el usuario cambió de tab mientras el análisis corría, regresar al tab correcto
+  if (targetMode && targetMode !== appMode) {
+    appMode = targetMode;
+    document.getElementById('modeInterno').classList.toggle('active', appMode === 'interno');
+    document.getElementById('modeExterno').classList.toggle('active', appMode === 'externo');
+  }
   DIRS = nDirs; DEPTS = nDepts; DEPT_TO_DIR = nMap; QUESTIONS = nQ; SCORES = nSc; COMMENTS = nComm; PARTICIPATION = nPart; NPS_DATA = {}; OPEN_QUESTIONS = nOpenQ || {};
   REPORT_DATE = new Date();
   injectDirectionAverages(); 
