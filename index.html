@@ -340,6 +340,21 @@ tbody td:first-child { text-align: left; }
 .dropzone strong{display:block;font-weight:700;font-size:.9rem;color:var(--if-navy);margin-bottom:4px;}
 .dropzone small{font-weight:500;font-size:.75rem;color:var(--muted);}
 .share-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
+.ai-progress-panel { display:none; margin-top:20px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--rs); padding:20px 22px; }
+.ai-progress-panel.show { display:block; }
+.ai-progress-title { font-weight:800; font-size:.9rem; color:var(--if-navy); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.ai-progress-title .mini-spin { width:16px; height:16px; border:2px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
+.ai-step { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); font-size:.82rem; font-weight:500; color:var(--muted); transition:color .3s; }
+.ai-step:last-child { border-bottom:none; }
+.ai-step.active { color:var(--if-navy); font-weight:700; }
+.ai-step.done { color:var(--success); }
+.ai-step .step-icon { width:20px; height:20px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:.65rem; font-weight:900; background:var(--border); color:var(--muted); transition:all .3s; }
+.ai-step.active .step-icon { background:var(--primary); color:#fff; animation:pulse-neon .8s infinite; }
+.ai-step.done .step-icon { background:var(--success); color:#fff; }
+.ai-progress-bar-wrap { margin-top:14px; }
+.ai-progress-bar-track { height:7px; background:var(--border); border-radius:10px; overflow:hidden; }
+.ai-progress-bar-fill { height:100%; background:linear-gradient(90deg,var(--if-orange),#ff8a24); border-radius:10px; transition:width .5s ease; width:0%; }
+.ai-progress-pct { font-size:.72rem; font-weight:700; color:var(--primary); margin-top:5px; text-align:right; }
 @keyframes spin{to{transform:rotate(360deg);}}
 .toast{position:fixed;bottom:32px;right:32px;background:var(--if-navy);color:#fff;padding:14px 24px;border-radius:50px;font-family:var(--font);font-weight:600;font-size:.85rem;box-shadow:var(--shadow-md);z-index:1100;opacity:0;transform:translateY(12px);transition:all .3s cubic-bezier(0.16, 1, 0.3, 1);pointer-events:none;}
 .toast.show{opacity:1;transform:translateY(0);}
@@ -524,6 +539,17 @@ tbody td:first-child { text-align: left; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
       <strong>Arrastra tu archivo aquí o haz clic</strong>
       <small>Formatos soportados: .xlsx, .xls</small>
+    </div>
+    <div id="aiProgressPanel" class="ai-progress-panel">
+      <div class="ai-progress-title">
+        <span class="mini-spin"></span>
+        <span id="aiProgressTitle">Analizando con Inteligencia Artificial…</span>
+      </div>
+      <div id="aiStepsList"></div>
+      <div class="ai-progress-bar-wrap">
+        <div class="ai-progress-bar-track"><div class="ai-progress-bar-fill" id="aiProgressFill"></div></div>
+        <div class="ai-progress-pct" id="aiProgressPct">0%</div>
+      </div>
     </div>
     <div class="modal-actions"><button class="btn-cancel" id="btnCloseImport">Cancelar</button></div>
   </div>
@@ -754,36 +780,39 @@ async function _groqCall(promptText, intento = 1) {
   }
 }
 
-// ── PASO 1: Generar catálogo global a partir de una muestra ──────────────
-async function _inferirCatalogo(listaTextos, tipoAnalisis) {
+// ── PASO 1: Inferir catálogo 100% emergente de los datos ─────────────────
+async function _inferirCatalogo(listaTextos, tipoAnalisis, onProgress) {
   const muestra = listaTextos.length > GROQ_SAMPLE_SIZE
     ? listaTextos.filter((_, i) => i % Math.ceil(listaTextos.length / GROQ_SAMPLE_SIZE) === 0).slice(0, GROQ_SAMPLE_SIZE)
     : listaTextos;
 
+  if (onProgress) onProgress('catalogo');
+
   const contexto = tipoAnalisis === 'sugerencias'
-    ? 'comentarios y sugerencias de mejora de servicio/clima organizacional'
-    : 'respuestas directas a preguntas abiertas de una encuesta';
+    ? 'sugerencias y comentarios de mejora de una encuesta de servicio'
+    : 'respuestas abiertas a preguntas específicas de una encuesta';
 
-  const prompt = `Eres un analista cualitativo experto. Tu tarea es leer una muestra de ${contexto} e identificar los TEMAS REALES que los encuestados mencionan.
+  const prompt = `Eres un analista cualitativo. Lee esta lista de ${contexto} e identifica qué temas reales mencionan los encuestados.
 
-INSTRUCCIONES:
-1. Lee todos los textos con atención.
-2. Identifica los temas concretos que se repiten o que son importantes (ej: "Tiempos de Respuesta", "Amabilidad del Personal", "Equipos e Infraestructura", "Claridad en Comunicación").
-3. Agrupa temas muy similares en una sola categoría.
-4. Si hay varios textos que solo expresan satisfacción sin mencionar un tema concreto ("todo bien", "muy bien", "excelente en general"), crea la categoría "Satisfacción General" — SOLO si realmente existen esos textos en la muestra.
-5. Ignora completamente los textos basura: "na", "n/a", "ninguna", "nada", "-", textos de 1-2 caracteres.
+Tu única tarea: generar categorías que representen los temas que REALMENTE aparecen en los textos.
 
-RESTRICCIONES:
-- Entre 3 y 15 categorías en total.
-- Cada categoría: 2 a 5 palabras, en español, formato título.
-- PROHIBIDO: "Otros", "Misceláneos", "General", "Sin Categoría", "Sin Clasificar".
-- NO añadas "Satisfacción General" a menos que la muestra realmente tenga comentarios vagamente positivos sin tema.
-
-Muestra de textos:
+Textos a analizar:
 ${JSON.stringify(muestra)}
 
-Devuelve SOLO JSON (sin markdown, sin texto extra):
-{"catalogo": ["Tema Real A", "Tema Real B", "Tema Real C"]}`;
+CÓMO GENERAR LAS CATEGORÍAS:
+- Lee cada texto y detecta el tema central que expresa.
+- Agrupa textos que hablan de lo mismo bajo una sola categoría (ej: "tardaron mucho" y "los tiempos son malos" → "Tiempos de Respuesta").
+- Si varios textos solo dicen cosas vagas como "todo bien", "excelente", "sin comentarios" sin mencionar un tema → crea "Satisfacción General" ÚNICAMENTE si esos textos realmente están en la lista.
+- Textos basura ("na", "nada", "-", una sola palabra sin contexto) → ignóralos, no crean categoría.
+
+RESTRICCIONES:
+- Entre 3 y 15 categorías.
+- Cada nombre: 2 a 5 palabras, español, formato título (ej: "Calidad del Servicio", "Tiempos de Respuesta").
+- PROHIBIDO inventar categorías que no correspondan a los textos reales.
+- PROHIBIDO: "Otros", "Misceláneos", "Sin Categoría".
+
+Devuelve SOLO este JSON (sin markdown):
+{"catalogo": ["Categoría emergente A", "Categoría emergente B"]}`;
 
   const resultado = await _groqCall(prompt);
   if (resultado && Array.isArray(resultado.catalogo) && resultado.catalogo.length > 0) {
@@ -792,43 +821,38 @@ Devuelve SOLO JSON (sin markdown, sin texto extra):
   return ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación"];
 }
 
-// ── PASO 2: Clasificar un chunk usando el catálogo fijo ───────────────────
-async function _clasificarChunk(textos, offsetGlobal, catalogo) {
-  const catalogoStr = catalogo.map(c => `"${c}"`).join(", ");
-  const entradas = textos.map((t, i) => `texto_${offsetGlobal + i}: ${t}`);
+// ── PASO 2: Clasificar un chunk usando el catálogo inferido ───────────────
+async function _clasificarChunk(textos, offsetGlobal, catalogo, onProgress) {
+  if (onProgress) onProgress('chunk', offsetGlobal, textos.length);
+  const catalogoStr = catalogo.map(c => `"${c}"`).join(', ');
+  const entradas = textos.map((t, i) => `[${offsetGlobal + i}] ${t}`);
 
-  const prompt = `Eres un clasificador temático. Debes asignar categorías del catálogo a cada texto según su contenido real.
+  const prompt = `Clasifica cada texto usando SOLO las categorías del catálogo.
 
-CATÁLOGO: [${catalogoStr}]
+CATÁLOGO DISPONIBLE: [${catalogoStr}]
 
-REGLAS — léelas en orden de prioridad:
-
-PRIORIDAD 1 — SKIP (textos sin valor):
-Usa ["[SKIP]"] si el texto es: "na", "n/a", "ninguna", "nada", "no", "-", ".", un solo carácter, o cualquier texto que no aporte información real. Estos NO se muestran en el dashboard.
-
-PRIORIDAD 2 — MULTI-CATEGORÍA (lo más importante):
-Si el texto menciona dos o más temas distintos, asígnale UNA categoría por cada tema que mencione.
-Ejemplo: "El servicio es bueno pero los tiempos son lentos y la comunicación falla" → ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación"]
-NO reduzcas a una sola categoría cuando el texto claramente habla de varios temas.
-
-PRIORIDAD 3 — CATEGORÍA ESPECÍFICA:
-Busca la categoría del catálogo que mejor describe el tema principal del texto.
-Lee el texto completo, no solo palabras sueltas.
-
-PRIORIDAD 4 — SATISFACCIÓN GENERAL (solo si existe en el catálogo):
-Úsala únicamente para textos que expresan satisfacción sin mencionar ningún tema concreto: "todo bien", "excelente", "muy bien todo", "sin quejas".
-NO la uses si el texto menciona algo específico aunque sea positivo.
-
-REGLA ABSOLUTA: Usa EXACTAMENTE los nombres del catálogo (mayúsculas, acentos, espacios). No inventes categorías.
+REGLAS:
+1. SKIP → Si el texto es basura: "na", "n/a", "nada", "ninguna", "no", "-", una palabra sin contexto. Devuelve ["[SKIP]"].
+2. MULTI-CATEGORÍA → Si el texto habla de varios temas distintos, asígnale TODAS las categorías que apliquen. Ejemplo: "el servicio es bueno pero tardan mucho" → dos categorías.
+3. CATEGORÍA EXACTA → Usa siempre el nombre EXACTO del catálogo (mayúsculas, tildes, espacios).
+4. UNA CATEGORÍA → Si el texto toca un solo tema, devuelve solo esa categoría.
+5. SATISFACCIÓN GENERAL → Solo si existe en el catálogo y el texto es vagamente positivo sin mencionar ningún tema concreto.
 
 Textos:
 ${JSON.stringify(entradas)}
 
-Devuelve SOLO JSON (sin markdown):
-{"mapeo": {"texto_0": ["Categoría A"], "texto_1": ["Categoría A", "Categoría B"], "texto_2": ["[SKIP]"]}}`;
+Devuelve SOLO JSON:
+{"mapeo": {"0": ["Cat A"], "1": ["Cat A", "Cat B"], "2": ["[SKIP]"]}}`;
 
   const resultado = await _groqCall(prompt);
-  return resultado?.mapeo || {};
+  // Normalizar claves: el modelo puede devolver "0" o "texto_0"
+  const raw = resultado?.mapeo || {};
+  const normalized = {};
+  Object.entries(raw).forEach(([k, v]) => {
+    const num = k.replace('texto_', '');
+    normalized[`texto_${num}`] = v;
+  });
+  return normalized;
 }
 
 // ── Función principal exportada al resto del dashboard ────────────────────
@@ -846,17 +870,80 @@ async function clasificarLoteConIA(listaTextos, tipoAnalisis) {
     Object.assign(mapeoFinal, parcial);
   }
 
-  // Garantizar que cada texto tenga al menos una categoría; si no fue mapeado → Satisfacción General o primera cat
-  const catDefault = catalogo.includes("Satisfacción General") ? "Satisfacción General" : catalogo[0];
+  // Si algún texto no fue mapeado, asignar la primera categoría del catálogo
   listaTextos.forEach((_, idx) => {
     const key = `texto_${idx}`;
     if (!mapeoFinal[key] || !Array.isArray(mapeoFinal[key]) || mapeoFinal[key].length === 0) {
-      mapeoFinal[key] = [catDefault];
+      mapeoFinal[key] = [catalogo[0]];
     }
   });
 
   return { catalogo_creado: catalogo, mapeo: mapeoFinal };
 }
+
+// ── UI de progreso IA ────────────────────────────────────────────────────
+const aiProgress = {
+  steps: [],
+  total: 0,
+  done: 0,
+  init(stepLabels, totalLotes) {
+    this.steps = stepLabels;
+    this.total = totalLotes;
+    this.done = 0;
+    const panel = document.getElementById('aiProgressPanel');
+    const list  = document.getElementById('aiStepsList');
+    if (!panel || !list) return;
+    panel.classList.add('show');
+    list.innerHTML = stepLabels.map((s, i) =>
+      `<div class="ai-step" id="aiStep_${i}">
+        <span class="step-icon">${i+1}</span>
+        <span>${s}</span>
+      </div>`
+    ).join('');
+    this._setFill(0);
+  },
+  setStep(idx) {
+    document.querySelectorAll('.ai-step').forEach((el, i) => {
+      el.classList.remove('active','done');
+      if (i < idx)  el.classList.add('done');
+      if (i === idx) el.classList.add('active');
+      const icon = el.querySelector('.step-icon');
+      if (i < idx)  icon.innerHTML = '✓';
+      if (i === idx) icon.innerHTML = `${i+1}`;
+    });
+    this._setFill(Math.round((idx / Math.max(this.steps.length - 1, 1)) * 100));
+  },
+  tickLote() {
+    this.done++;
+    const pct = Math.round((this.done / this.total) * 100);
+    this._setFill(pct);
+  },
+  finish() {
+    document.querySelectorAll('.ai-step').forEach(el => {
+      el.classList.remove('active'); el.classList.add('done');
+      el.querySelector('.step-icon').innerHTML = '✓';
+    });
+    this._setFill(100);
+    const title = document.getElementById('aiProgressTitle');
+    if (title) { title.innerHTML = '✓ Clasificación completada'; title.style.color = 'var(--success)'; }
+    const spin = document.querySelector('#aiProgressPanel .mini-spin');
+    if (spin) spin.style.display = 'none';
+  },
+  hide() {
+    const panel = document.getElementById('aiProgressPanel');
+    if (panel) panel.classList.remove('show');
+    const title = document.getElementById('aiProgressTitle');
+    if (title) { title.innerHTML = 'Analizando con Inteligencia Artificial…'; title.style.color = ''; }
+    const spin = document.querySelector('#aiProgressPanel .mini-spin');
+    if (spin) spin.style.display = '';
+  },
+  _setFill(pct) {
+    const fill = document.getElementById('aiProgressFill');
+    const label = document.getElementById('aiProgressPct');
+    if (fill)  fill.style.width = pct + '%';
+    if (label) label.textContent = pct + '%';
+  }
+};
 
 Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
 Chart.defaults.color = '#7A8D9E'; 
@@ -2288,87 +2375,120 @@ function handleFile(file){
         }
       });
 
-      showToast("Analizando sugerencias con IA…", "info");
-      let commCrudos = [];
-      let commRefs = [];
+      // ── Recopilar comentarios ──────────────────────────────────────────────
+      let commCrudos = [], commRefs = [];
       Object.keys(nComm).forEach(dept => {
-          nComm[dept].forEach((txt, idx) => {
-              if(!txt.startsWith('[PET_')) {
-                  commCrudos.push(txt);
-                  commRefs.push({dept, idx, txt});
-              }
-          });
+        nComm[dept].forEach(txt => {
+          if (!txt.startsWith('[PET_')) { commCrudos.push(txt); commRefs.push({dept, txt}); }
+        });
       });
 
-      if(commCrudos.length > 0) {
-          const resCom = await clasificarLoteConIA(commCrudos, 'sugerencias');
-          let newNComm = {};
-          Object.keys(nComm).forEach(d => newNComm[d] = []);
-          
-          Object.keys(nComm).forEach(dept => {
-              nComm[dept].forEach(txt => {
-                  if(txt.startsWith('[PET_')) {
-                      newNComm[dept].push(txt);
-                  } else {
-                      const refIdx = commRefs.findIndex(r => r.dept === dept && r.txt === txt);
-                      const cats = resCom.mapeo[`texto_${refIdx}`] || ["Satisfacción General"];
-                      // [SKIP] = la IA detectó que no aporta valor → omitir
-                      if (cats.length === 1 && cats[0] === "[SKIP]") return;
-                      cats.forEach(cat => {
-                          if (cat !== "[SKIP]") newNComm[dept].push(`[CAT:${cat}] ${txt}`);
-                      });
-                  }
-              });
-          });
-          
-          Object.keys(nComm).forEach(d => {
-              nComm[d].length = 0;
-              nComm[d].push(...newNComm[d]);
-          });
-      }
-
-      showToast("Analizando preguntas abiertas con IA…", "info");
-      let openCrudos = [];
-      let openRefs = [];
+      // ── Recopilar preguntas abiertas ───────────────────────────────────────
+      let openCrudos = [], openRefs = [];
       Object.keys(nOpenQ).forEach(q => {
-          Object.keys(nOpenQ[q]).forEach(dept => {
-              nOpenQ[q][dept].forEach((txt, idx) => {
-                  openCrudos.push(txt);
-                  openRefs.push({q, dept, txt});
-              });
-          });
+        Object.keys(nOpenQ[q]).forEach(dept => {
+          nOpenQ[q][dept].forEach(txt => { openCrudos.push(txt); openRefs.push({q, dept, txt}); });
+        });
       });
 
-      if(openCrudos.length > 0) {
-          const resOpen = await clasificarLoteConIA(openCrudos, 'preguntas');
-          let newNOpenQ = {};
-          Object.keys(nOpenQ).forEach(q => {
-              newNOpenQ[q] = {};
-              Object.keys(nOpenQ[q]).forEach(dept => newNOpenQ[q][dept] = []);
-          });
+      const hasComm = commCrudos.length > 0;
+      const hasOpen = openCrudos.length > 0;
 
-          Object.keys(nOpenQ).forEach(q => {
-              Object.keys(nOpenQ[q]).forEach(dept => {
-                  nOpenQ[q][dept].forEach(txt => {
-                      const refIdx = openRefs.findIndex(r => r.q === q && r.dept === dept && r.txt === txt);
-                      const cats = resOpen.mapeo[`texto_${refIdx}`] || ["Satisfacción General"];
-                      // [SKIP] = sin valor → omitir
-                      if (cats.length === 1 && cats[0] === "[SKIP]") return;
-                      cats.forEach(cat => {
-                          if (cat !== "[SKIP]") newNOpenQ[q][dept].push(`[CAT:${cat}] ${txt}`);
-                      });
-                  });
-              });
+      // ── Calcular pasos para el panel de progreso ───────────────────────────
+      if (hasComm || hasOpen) {
+        const chunksComm = hasComm ? Math.ceil(commCrudos.length / GROQ_CHUNK_SIZE) : 0;
+        const chunksOpen = hasOpen ? Math.ceil(openCrudos.length / GROQ_CHUNK_SIZE) : 0;
+        const steps = [];
+        if (hasComm) {
+          steps.push(`Leyendo ${commCrudos.length} comentarios y definiendo categorías…`);
+          for (let i = 0; i < chunksComm; i++) {
+            const desde = i * GROQ_CHUNK_SIZE + 1;
+            const hasta = Math.min((i + 1) * GROQ_CHUNK_SIZE, commCrudos.length);
+            steps.push(`Clasificando comentarios ${desde}–${hasta} de ${commCrudos.length}`);
+          }
+        }
+        if (hasOpen) {
+          steps.push(`Leyendo ${openCrudos.length} resp. abiertas y definiendo categorías…`);
+          for (let i = 0; i < chunksOpen; i++) {
+            const desde = i * GROQ_CHUNK_SIZE + 1;
+            const hasta = Math.min((i + 1) * GROQ_CHUNK_SIZE, openCrudos.length);
+            steps.push(`Clasificando respuestas ${desde}–${hasta} de ${openCrudos.length}`);
+          }
+        }
+        const totalSteps = steps.length;
+        let currentStep = 0;
+        const advanceStep = () => { aiProgress.setStep(currentStep); currentStep++; };
+        aiProgress.init(steps, totalSteps);
+        aiProgress.setStep(0);
+
+        // ── Clasificar comentarios ─────────────────────────────────────────
+        if (hasComm) {
+          advanceStep(); // paso catálogo
+          const catalogoComm = await _inferirCatalogo(commCrudos, 'sugerencias');
+          const mapeoComm = {};
+          for (let inicio = 0; inicio < commCrudos.length; inicio += GROQ_CHUNK_SIZE) {
+            advanceStep();
+            const chunk = commCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE);
+            const parcial = await _clasificarChunk(chunk, inicio, catalogoComm);
+            Object.assign(mapeoComm, parcial);
+          }
+          // Fallback: textos sin mapear
+          const catDefault = catalogoComm[0] || "Sin clasificar";
+          commCrudos.forEach((_, idx) => {
+            if (!mapeoComm[`texto_${idx}`]) mapeoComm[`texto_${idx}`] = [catDefault];
           });
-          
-          Object.keys(nOpenQ).forEach(q => {
-              Object.keys(nOpenQ[q]).forEach(dept => {
-                  nOpenQ[q][dept].length = 0;
-                  nOpenQ[q][dept].push(...newNOpenQ[q][dept]);
-              });
+          // Aplicar al objeto nComm
+          const newNComm = {};
+          Object.keys(nComm).forEach(d => newNComm[d] = []);
+          Object.keys(nComm).forEach(dept => {
+            nComm[dept].forEach(txt => {
+              if (txt.startsWith('[PET_')) { newNComm[dept].push(txt); return; }
+              const refIdx = commRefs.findIndex(r => r.dept === dept && r.txt === txt);
+              const cats = mapeoComm[`texto_${refIdx}`] || [catDefault];
+              if (cats.length === 1 && cats[0] === "[SKIP]") return;
+              cats.forEach(cat => { if (cat !== "[SKIP]") newNComm[dept].push(`[CAT:${cat}] ${txt}`); });
+            });
           });
+          Object.keys(nComm).forEach(d => { nComm[d].length = 0; nComm[d].push(...newNComm[d]); });
+        }
+
+        // ── Clasificar preguntas abiertas ──────────────────────────────────
+        if (hasOpen) {
+          advanceStep(); // paso catálogo
+          const catalogoOpen = await _inferirCatalogo(openCrudos, 'preguntas');
+          const mapeoOpen = {};
+          for (let inicio = 0; inicio < openCrudos.length; inicio += GROQ_CHUNK_SIZE) {
+            advanceStep();
+            const chunk = openCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE);
+            const parcial = await _clasificarChunk(chunk, inicio, catalogoOpen);
+            Object.assign(mapeoOpen, parcial);
+          }
+          const catDefault = catalogoOpen[0] || "Sin clasificar";
+          openCrudos.forEach((_, idx) => {
+            if (!mapeoOpen[`texto_${idx}`]) mapeoOpen[`texto_${idx}`] = [catDefault];
+          });
+          const newNOpenQ = {};
+          Object.keys(nOpenQ).forEach(q => { newNOpenQ[q] = {}; Object.keys(nOpenQ[q]).forEach(dept => newNOpenQ[q][dept] = []); });
+          Object.keys(nOpenQ).forEach(q => {
+            Object.keys(nOpenQ[q]).forEach(dept => {
+              nOpenQ[q][dept].forEach(txt => {
+                const refIdx = openRefs.findIndex(r => r.q === q && r.dept === dept && r.txt === txt);
+                const cats = mapeoOpen[`texto_${refIdx}`] || [catDefault];
+                if (cats.length === 1 && cats[0] === "[SKIP]") return;
+                cats.forEach(cat => { if (cat !== "[SKIP]") newNOpenQ[q][dept].push(`[CAT:${cat}] ${txt}`); });
+              });
+            });
+          });
+          Object.keys(nOpenQ).forEach(q => {
+            Object.keys(nOpenQ[q]).forEach(dept => { nOpenQ[q][dept].length = 0; nOpenQ[q][dept].push(...newNOpenQ[q][dept]); });
+          });
+        }
+
+        aiProgress.finish();
+        await new Promise(r => setTimeout(r, 800));
       }
 
+      aiProgress.hide();
       document.getElementById('importModal').classList.remove('open');
       rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name, nOpenQ);
       showToast('Datos cargados con éxito','ok');
