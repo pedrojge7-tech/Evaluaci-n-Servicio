@@ -707,6 +707,63 @@ tbody td:first-child { text-align: left; }
 </main>
 
 <script>
+// =========================================================================
+// ── CONFIGURACIÓN DE GEMINI 1.5 FLASH VIA API ────────────────────────────
+// =========================================================================
+const GEMINI_API_KEY = "AQ.Ab8RN6IbzfSAAl49_EHYAyJ0V_vdc1Ilp1veTM-NSkhy8x2Otg";
+
+async function clasificarLoteConIA(listaTextos, tipoAnalisis) {
+  if (!listaTextos || listaTextos.length === 0) return { catalogo_creado: [], mapeo: {} };
+  
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  
+  const contexto = tipoAnalisis === 'sugerencias' 
+    ? 'comentarios generales y sugerencias de mejora de clima/servicio' 
+    : 'respuestas directas a preguntas abiertas específicas';
+
+  const prompt = `Actúa como un experto analista cualitativo de Clima Organizacional y Auditoría de Servicio Interno. 
+Te proporcionaré una lista de textos (comentarios o respuestas) extraídos de una encuesta. Tu objetivo es realizar un análisis temático automatizado de este lote completo bajo los siguientes dos pasos rigurosos:
+
+PASO 1: GENERACIÓN DEL CATÁLOGO EMERGENTE (MÁXIMO 20 CATEGORÍAS)
+- Examina todos los comentarios juntos y define un catálogo de categorías compartidas dinámicamente.
+- Las categorías deben ser ultra-concisas (de 2 a 4 palabras, ej: "Tiempos de Respuesta", "Calidad del Servicio", "Falta de Personal").
+- REGLA CRÍTICA: No permitas más de DOS categorías que terminen teniendo un único comentario asignado. Si un tema es muy aislado, fuérzalo a agruparse en conceptos más amplios basados en afinidad contextual.
+- Queda estrictamente PROHIBIDO usar la palabra "Otros", "Misceláneos" o similares.
+
+PASO 2: ASIGNACIÓN MULTI-CATEGORÍA
+- Clasifica cada elemento usando EXCLUSIVAMENTE los nombres exactos de las categorías generadas en el Paso 1.
+- Si un comentario aborda más de un tema, asígnale múltiples categorías en un arreglo de cadenas (ej: ["Tema A", "Tema B"]).
+
+Devuelve ÚNICAMENTE un objeto JSON con la siguiente estructura exacta, sin textos adicionales, preámbulos ni marcas markdown (\`\`\`json):
+{
+  "catalogo_creado": ["Categoría A", "Categoría B"],
+  "mapeo": {
+    "texto_0": ["Categoría A"],
+    "texto_1": ["Categoría A", "Categoría B"]
+  }
+}
+
+Aquí está la lista de textos a analizar:
+${JSON.stringify(listaTextos.map((t, idx) => `texto_${idx}: ${t}`))}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
+      })
+    });
+    const json = await response.json();
+    const rawText = json.candidates[0].content.parts[0].text;
+    return JSON.parse(rawText);
+  } catch (error) {
+    console.error("Error llamando a Gemini:", error);
+    return { catalogo_creado: ["General"], mapeo: {} };
+  }
+}
+
 Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
 Chart.defaults.color = '#7A8D9E'; 
 Chart.defaults.scale.grid.color = 'rgba(184, 196, 206, 0.3)'; 
@@ -732,7 +789,7 @@ let AVERAGES = [];
 let COMMENTS = {};
 let PARTICIPATION = {}; 
 let NPS_DATA = {};
-let OPEN_QUESTIONS = {}; // { "Texto de pregunta": { "NombreDepto": ["respuesta1","respuesta2",...] } }
+let OPEN_QUESTIONS = {}; 
 
 let CUSTOM_LOGO_LEFT = null;
 let CUSTOM_LOGO_RIGHT = null;
@@ -772,7 +829,6 @@ function showToast(msg, type='') {
   setTimeout(() => t.className = 'toast', 3500);
 }
 
-// Funciones para guardar y cargar desde el "store" dual
 function saveState() {
   store[appMode] = {
     DIRS: DIRS, DEPTS: DEPTS, DEPT_TO_DIR: DEPT_TO_DIR, QUESTIONS: QUESTIONS, 
@@ -910,12 +966,10 @@ function updateHamburgerVisibility() {
   const isReader = document.body.classList.contains('reader-mode');
 
   if (!isReader) {
-    // Modo admin: hamburguesa siempre visible
     hamburger.style.display = '';
     return;
   }
 
-  // Modo lector: ocultar si solo un módulo tiene datos y forzar ese modo
   if (hasInterno && hasExterno) {
     hamburger.style.display = '';
   } else {
@@ -994,7 +1048,6 @@ function wireButtons(){
       if(file) { const r = new FileReader(); r.onload = ev => { CUSTOM_LOGO_RIGHT = ev.target.result; applyCustomLogos(); }; r.readAsDataURL(file); }
   };
 
-  // Menú Hamburguesa
   document.getElementById('btnHamburger').onclick = () => {
     document.getElementById('sidebarOverlay').classList.add('show');
     document.getElementById('sidebar').classList.add('open');
@@ -1321,43 +1374,10 @@ function classifyComment(text){
   if(text.startsWith('[PET_RES]')) return 'Peticiones resueltas';
   if(text.startsWith('[PET_NO_RES]')) return 'Peticiones no resueltas';
   
-  const t = text.toLowerCase().replace(/[.,!¡?¿()"']/g, '').trim();
-  if(t.length < 5 && !t.match(/mal|peor|pago|falla|lento/)) return 'Ignorar';
+  const match = text.match(/^\[CAT:(.*?)\]/);
+  if(match) return match[1].trim();
   
-  const uselessStarts = ['na', 'n/a', 'ningun', 'nada', 'todo ok', 'ok', 'todo bien', 'sin observaci', 'no tengo comentario', 'no hay comentario', 'sin comentario', 'todo excelente', 'excelente', 'muy bien', 'bien', 'sin detalle', 'desconozco', 'no conozco', 'ignoro', 'no aplica', 'todo en orden', 'sin queja', 'ninguna sugerencia'];
-  for(let start of uselessStarts){ if(t.startsWith(start) || t === start) return 'Ignorar'; }
-  if(/^(ok|bien|bueno|excelente|malo|pesimo|regular|na|n\/a|ninguno|ninguna|nada|x|todo bien|sin comentarios|sin observaciones|todo muy bien)$/.test(t)) return 'Ignorar';
-
-  const raw = text.toLowerCase();
-  if(raw.match(/sistema|software|portal|plataforma|red|conexi.n|aplicaci.n|computadora|laptop|mouse|teclado|monitor|pantalla|impresora|internet|falla|error de sistema|tecnolog/)) return 'Sistemas, Equipo y Tecnología';
-  if(raw.match(/tiempo|rapidez|rápida|rápido|urgente|tard|agilizar|demora|retraso|lento|espera|agilidad/)) return 'Tiempos de Respuesta';
-  if(raw.match(/comunicaci|avisar|claro|transparencia|informaci|notificar|respuesta|contestar|seguimiento|aviso|correo|llamada|mensaje|junta|feedback/)) return 'Comunicación y Seguimiento';
-  if(raw.match(/proceso|burocracia|tr.mite|papelo|firma|autorizaci|pol.tica/)) return 'Procesos y Burocracia';
-  if(raw.match(/abasto|mercanc.a|proveedor|merma|desabasto|material|surtido|faltante|insumo/)) return 'Abasto y Proveedores';
-  if(raw.match(/log.stica|ruta|entrega|env.o|transporte|chofer|camiones|veh.culo/)) return 'Logística y Entregas';
-  if(raw.match(/capacitaci|entrenamiento|enseñar|curso|aprender|gu.a|induccion|desarrollo/)) return 'Capacitación y Desarrollo';
-  if(raw.match(/costo|cotizaci.n|precio|cara|caro|presupuesto|gasto|ahorro/)) return 'Costos y Presupuestos';
-  if(raw.match(/necesidad|negocio|beneficio|sucursal|rendimiento|ventas|mercado/)) return 'Visión de Negocio';
-  if(raw.match(/atenci.n|trato|empat.a|amable|actitud|disposici.n|apoyo|servicio al cliente|groser|prepotente|resoluci/)) return 'Actitud y Trato al Cliente';
-  if(raw.match(/calidad|exactitud|precisi.n|error|equivocaci.n|correcto|detalle|revisi/)) return 'Calidad y Precisión';
-  if(raw.match(/personal|plantilla|recursos humanos|gente|vacante|contrataci.n|rotaci.n|falta de personal/)) return 'Gestión de Personal';
-  if(raw.match(/mantenimiento|limpieza|instalaci|reparaci|obra|construcci|baño|aire|luz|espacio|estacionamiento|comedor|oficina|silla|escritorio/)) return 'Infraestructura y Mantenimiento';
-  if(raw.match(/n.mina|pago|sueldo|salario|compensaci|bono|deducci|finiquito|prestaci|quincena|aguinaldo|fondo de ahorro|vales/)) return 'Nómina y Prestaciones';
-  if(raw.match(/innovaci|nuevo|creativo|idea|mejora continua/)) return 'Innovación y Mejora Continua';
-  if(raw.match(/seguridad|riesgo|peligro|accidente|protecci/)) return 'Seguridad y Riesgos';
-  if(raw.match(/organizaci|planeaci|orden|coordinaci|estructura/)) return 'Planeación y Organización';
-  if(raw.match(/liderazgo|jefe|gerente|direcci.n|coordinador|supervisor|mando/)) return 'Liderazgo y Gestión';
-  if(raw.match(/soluci.n|resolver|problema|conflicto/)) return 'Resolución de Problemas';
-  if(raw.match(/document|archivo|papel|expediente|formato/)) return 'Documentación y Archivo';
-  if(raw.match(/horario|turno|hora|salida|entrada|comida|permiso|vacaciones/)) return 'Horarios, Turnos y Permisos';
-  if(raw.match(/carga|mucho trabajo|saturad|estr.s|presi|exceso|pesad/)) return 'Carga de Trabajo y Estrés';
-  if(raw.match(/ambiente|clima|compañer|chisme|rumor|respeto|valores|cultura|equipo|integraci/)) return 'Clima Laboral y Compañerismo';
-  if(raw.match(/falta|necesita|requiere|ocupamos|deber.an|sugerencia|recomiendo|mejorar|oportunidad/)) return 'Sugerencias de Mejora';
-  
-  // SOLUCIÓN: Atrapa cualquier comentario largo que no haya encajado en lo anterior.
-  if(t.length >= 8) return 'Otras Observaciones';
-  
-  return 'Ignorar'; 
+  return 'General';
 }
 
 function renderDeptTabs(orderedDepts){
@@ -1477,7 +1497,7 @@ function renderComments(depts, cat){
           const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
           sortedCats.forEach(cName => {
               if (!cat) html += "<div style='font-weight: 700; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 12px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
-              html += grouped[cName].map(c => { const cleanText = c.text.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, ''); return "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + cleanText + "</div>"; }).join('');
+              html += grouped[cName].map(c => { const cleanText = c.text.replace(/^\[CAT:.*?\]\s*/, '').replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, ''); return "<div class='comment-item' style='--al:" + deptColor(d) + "'>" + cleanText + "</div>"; }).join('');
           });
       });
   } else {
@@ -1486,7 +1506,7 @@ function renderComments(depts, cat){
       const sortedCats = Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length);
       sortedCats.forEach(cName => {
         if (!cat) html += "<div style='font-weight: 800; font-size: .85rem; color: var(--if-navy); text-transform: uppercase; letter-spacing: .05em; margin-top: 16px; border-bottom: 2px solid var(--surface2); padding-bottom: 4px; margin-bottom: 8px;'>" + cName + " (" + grouped[cName].length + ")</div>";
-        html += grouped[cName].map(c => { const cleanText = c.text.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, ''); return "<div class='comment-item' style='--al:" + deptColor(deptArr[0]) + "'>" + cleanText + "</div>"; }).join('');
+        html += grouped[cName].map(c => { const cleanText = c.text.replace(/^\[CAT:.*?\]\s*/, '').replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, ''); return "<div class='comment-item' style='--al:" + deptColor(deptArr[0]) + "'>" + cleanText + "</div>"; }).join('');
       });
   }
   list.innerHTML = html;
@@ -1582,11 +1602,9 @@ function renderRankingList(orderedDepts, activeQIndices){
   const list = document.getElementById('rankList');
   if(!orderedDepts.length || !activeQIndices.length) { list.innerHTML=''; return; }
 
-  // Para modo externo con un solo cliente: mostrar resultado único sin comparación mejor/peor
   const realDepts = orderedDepts.filter(d => !d.startsWith('PROM. '));
   const isSingleExternoClient = appMode === 'externo' && realDepts.length === 1;
 
-  // Actualizar subtítulo según el caso
   const rankCard = list.closest('.chart-card');
   const rankSub = rankCard ? rankCard.querySelector('.chart-sub') : null;
   if (rankSub) {
@@ -1801,7 +1819,7 @@ window.openInsights = async function() {
   });
 
   var allComments=[];
-  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) { allComments.push({d:d,c:c.replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, '')}); } }); });
+  realDepts.forEach(function(d){ (COMMENTS[d]||[]).forEach(function(c){ if(c&&c.length>10&&c.length<180) { allComments.push({d:d,c:c.replace(/^\[CAT:.*?\]\s*/, '').replace(/^\[PET_RES\]\s*/, '').replace(/^\[PET_NO_RES\]\s*/, '')}); } }); });
   allComments=allComments.slice(0,18);
 
   var npsLines = realDepts.map(function(d){
@@ -1869,52 +1887,11 @@ Formato: SOLO HTML con <div class='insight-section-title'>, <div class='insight-
   }
 };
 
-// ── Clasificador de 40 categorías para preguntas abiertas ──────────────────
 function classifyOpenResponse(text) {
   if(!text || text.trim() === '') return 'Sin clasificar';
-  const t = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
-  const r = text.toLowerCase();
-
-  if(r.match(/precio|caro|barato|costo|tarifa|cobro|factura|pago|descuento|oferta|promocion|promo/)) return 'Precio y Costos';
-  if(r.match(/calidad|malo|defecto|daño|roto|falla|producto|durabilidad|material/)) return 'Calidad del Producto/Servicio';
-  if(r.match(/tiempo|tard|rapido|lento|espera|demora|urgente|agilidad|pronto/)) return 'Tiempos de Respuesta';
-  if(r.match(/atencion|trato|amable|grosero|groser|empatia|actitud|disposicion|cordial|servicio al cliente/)) return 'Atención al Cliente';
-  if(r.match(/entrega|envio|transporte|logistica|ruta|chofer|paquete|pedido|llego|llegada/)) return 'Entrega y Logística';
-  if(r.match(/sistema|plataforma|portal|app|aplicacion|pagina|web|software|tecnologia|internet|falla tecnica/)) return 'Plataforma y Tecnología';
-  if(r.match(/comunicacion|informacion|aviso|notificacion|correo|llamada|contacto|respuesta|seguimiento/)) return 'Comunicación e Información';
-  if(r.match(/surtido|variedad|opciones|seleccion|catalogo|producto disponible|inventario|existencias/)) return 'Variedad y Disponibilidad';
-  if(r.match(/instalacion|sucursal|tienda|local|ubicacion|acceso|estacionamiento|ambiente|limpieza|espacio/)) return 'Instalaciones y Ubicación';
-  if(r.match(/facilidad|proceso|tramite|complicado|sencillo|rapido de hacer|paso|burocracia/)) return 'Facilidad del Proceso';
-  if(r.match(/garantia|devolucion|cambio|reembolso|reclamacion|queja|reclamo/)) return 'Garantías y Devoluciones';
-  if(r.match(/personal|staff|empleado|vendedor|cajero|asesor|agente|trabajador/)) return 'Personal y Colaboradores';
-  if(r.match(/confianza|seguro|seguridad|privacidad|datos|fraude|robo/)) return 'Confianza y Seguridad';
-  if(r.match(/horario|horarios|abierto|cerrado|disponibilidad|hora/)) return 'Horarios y Disponibilidad';
-  if(r.match(/experiencia|visita|compra|servicio|uso|utilizar|recibir/)) return 'Experiencia General';
-  if(r.match(/recomendaria|recomendar|volveria|volver|regresaria|regresar|lealtad|fidelidad/)) return 'Fidelización y Recomendación';
-  if(r.match(/mejora|mejorar|sugerencia|propuesta|cambiar|oportunidad|deberian/)) return 'Sugerencias de Mejora';
-  if(r.match(/promocion|marketing|publicidad|anuncio|campaña|redes sociales/)) return 'Promoción y Marketing';
-  if(r.match(/innovacion|nuevo|tecnologia nueva|moderno|actualizar|renovar/)) return 'Innovación y Modernización';
-  if(r.match(/capacitacion|conocimiento|experto|preparado|entrenamiento|saber/)) return 'Capacitación y Expertise';
-  if(r.match(/competencia|competidor|otra empresa|comparar|mejor que|peor que/)) return 'Comparativa con Competencia';
-  if(r.match(/accesibilidad|discapacidad|especial|necesidad especial|rampas|inclusiv/)) return 'Accesibilidad e Inclusión';
-  if(r.match(/sostenibilidad|ecologico|ambiente|reciclaje|sustentable|verde|medio ambiente/)) return 'Sostenibilidad y Medio Ambiente';
-  if(r.match(/empaque|embalaje|presentacion|envoltorio|bolsa|caja/)) return 'Empaque y Presentación';
-  if(r.match(/postventa|soporte|asistencia|ayuda|apoyo|atencion post/)) return 'Servicio Postventa y Soporte';
-  if(r.match(/digital|en linea|online|virtual|electronico|movil|celular/)) return 'Canales Digitales';
-  if(r.match(/descuento|precio especial|beneficio|recompensa|puntos|programa de lealtad/)) return 'Beneficios y Fidelización';
-  if(r.match(/espera en caja|fila|cola|turno|numero/)) return 'Filas y Tiempos de Espera';
-  if(r.match(/sabor|olor|aroma|textura|apariencia|presentacion del producto/)) return 'Características Sensoriales';
-  if(r.match(/cumplimiento|promesa|palabra|acuerdo|contrato|compromiso/)) return 'Cumplimiento de Promesas';
-  if(r.match(/facturacion|comprobante|recibo|ticket|nota|fiscalmente/)) return 'Facturación y Comprobantes';
-  if(r.match(/flexibilidad|adaptacion|personalizado|a medida|especifico/)) return 'Flexibilidad y Personalización';
-  if(r.match(/relacion|vinculo|trato personal|cercanía|calidez|humanizado/)) return 'Relación y Calidez';
-  if(r.match(/nada|ninguno|ninguna|sin comentarios|todo bien|ok|bien|excelente|muy bien|todo correcto/)) return 'Satisfacción General';
-  if(r.match(/capacidad|volumen|cantidad|carga|mas producto|mas opciones/)) return 'Capacidad y Volumen';
-  if(r.match(/coordinacion|organizacion|planeacion|orden|estructura/)) return 'Coordinación y Organización';
-  if(r.match(/retraso|cancelacion|cancelar|no llego|no vino|no cumplió/)) return 'Retrasos y Cancelaciones';
-  if(r.match(/novedad|estreno|lanzamiento|nuevo producto|nuevo servicio/)) return 'Novedades y Lanzamientos';
-  if(r.match(/precio justo|valor|relacion calidad precio|vale la pena/)) return 'Relación Calidad-Precio';
-  if(t.length > 3) return 'Otras Observaciones';
+  const match = text.match(/^\[CAT:(.*?)\]/);
+  if(match) return match[1].trim();
+  
   return 'Sin clasificar';
 }
 
@@ -1929,8 +1906,6 @@ function renderOpenQuestions(orderedDepts) {
     return;
   }
 
-  // Usar TODOS los deptos propios de cada pregunta, no el filtro de hoja 1
-  // porque los deptos de preguntas abiertas pueden ser distintos (ej: "dejaron de comprar")
   const activeQuestions = Object.keys(OPEN_QUESTIONS).filter(q =>
     Object.values(OPEN_QUESTIONS[q]).some(arr => arr.length > 0)
   );
@@ -1948,11 +1923,9 @@ function renderOpenQuestions(orderedDepts) {
     document.querySelectorAll('.open-q-tab').forEach(t => { if(t.dataset.oq === qLabel) t.classList.add('active'); });
 
     const deptData = OPEN_QUESTIONS[qLabel] || {};
-    // Usar los deptos propios de esta pregunta
     const qDepts = Object.keys(deptData);
 
-    // Recopilar todas las respuestas
-    const allResponses = []; // { text, dept }
+    const allResponses = []; 
     qDepts.forEach(d => {
       (deptData[d] || []).forEach(txt => allResponses.push({ text: txt, dept: d }));
     });
@@ -1963,7 +1936,6 @@ function renderOpenQuestions(orderedDepts) {
       return;
     }
 
-    // ── Clasificar ─────────────────────────────────────────────────────
     const catCounts = {};
     allResponses.forEach(r => {
       const cat = classifyOpenResponse(r.text);
@@ -1971,7 +1943,6 @@ function renderOpenQuestions(orderedDepts) {
     });
     const sortedCats = Object.keys(catCounts).sort((a,b) => catCounts[b] - catCounts[a]);
 
-    // ── Gráfica de Dona ────────────────────────────────────────────────
     chartArea.style.display = 'block';
     if(openQDonutChart) openQDonutChart.destroy();
     const donutPalette = ['#E07010','#1E3347','#10B981','#F59E0B','#3B82F6','#8B5CF6','#EF4444','#06B6D4','#84CC16','#F97316','#2C4560','#D68940','#7A8D9E','#152130','#B8C4CE'];
@@ -2002,7 +1973,6 @@ function renderOpenQuestions(orderedDepts) {
       }
     });
 
-    // ── Tabla de clasificaciones ───────────────────────────────────────
     const tbl = document.getElementById('openQClassTable');
     let tHead = `<thead><tr>
       <th style="text-align:left; background:var(--surface2); padding:10px 14px; font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); border-bottom:1px solid var(--border);">Clasificación</th>
@@ -2033,7 +2003,6 @@ function renderOpenQuestions(orderedDepts) {
     tBody += '</tbody>';
     tbl.innerHTML = tHead + tBody;
 
-    // ── Lista de respuestas agrupadas por departamento ─────────────────
     let listHtml = '';
     if(qDepts.length > 1) {
       qDepts.forEach(d => {
@@ -2043,16 +2012,16 @@ function renderOpenQuestions(orderedDepts) {
         listHtml += `<div style="font-weight:900; font-size:1rem; color:var(--if-orange); margin-top:20px; margin-bottom:8px; border-bottom:2px solid var(--if-orange); padding-bottom:4px; text-transform:uppercase;">${d}</div>`;
         resps.forEach(txt => {
           const cat = classifyOpenResponse(txt);
+          const cleanTxt = txt.replace(/^\[CAT:.*?\]\s*/, '');
           listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">
             <span style="display:inline-block; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:2px 8px; font-size:.68rem; font-weight:700; color:var(--muted); margin-bottom:6px;">${cat}</span>
-            <div>${txt}</div>
+            <div>${cleanTxt}</div>
           </div>`;
         });
       });
     } else {
       const d = qDepts[0];
       const resps = deptData[d] || [];
-      // Agrupar por categoría
       const grouped = {};
       resps.forEach(txt => {
         const cat = classifyOpenResponse(txt);
@@ -2063,14 +2032,14 @@ function renderOpenQuestions(orderedDepts) {
       Object.keys(grouped).sort((a,b) => grouped[b].length - grouped[a].length).forEach(cat => {
         listHtml += `<div style="font-weight:800; font-size:.82rem; color:var(--if-navy); text-transform:uppercase; letter-spacing:.05em; margin-top:16px; border-bottom:2px solid var(--surface2); padding-bottom:4px; margin-bottom:8px;">${cat} (${grouped[cat].length})</div>`;
         grouped[cat].forEach(txt => {
-          listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">${txt}</div>`;
+          const cleanTxt = txt.replace(/^\[CAT:.*?\]\s*/, '');
+          listHtml += `<div class="open-q-response-item" style="--oq-col:${col};">${cleanTxt}</div>`;
         });
       });
     }
     contentEl.innerHTML = listHtml || '<div class="no-comments">Sin respuestas para la selección actual.</div>';
   };
 
-  // Crear tabs por cada pregunta activa
   activeQuestions.forEach((qLabel, i) => {
     const btn = document.createElement('button');
     btn.className = 'open-q-tab' + (i === 0 ? ' active' : '');
@@ -2086,18 +2055,16 @@ function renderOpenQuestions(orderedDepts) {
 function handleFile(file){
   showToast('⏳ Procesando...'); window.cachedAnalysisHTML = ""; window.cachedFilterKey = "";
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     try{
       const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
 
-      // Buscar hojas por nombre (insensible a mayúsculas y espacios)
       const findSheet = (name) => {
         const norm = n => n.toLowerCase().trim();
         const match = wb.SheetNames.find(sn => norm(sn) === norm(name));
         return match ? wb.Sheets[match] : null;
       };
 
-      // ── HOJA "Pregunta porcentaje" ──────────────────────────────────────
       const sheetPct = findSheet('Pregunta porcentaje');
       if(!sheetPct) throw new Error('No se encontró la hoja "Pregunta porcentaje".');
       const s1 = XLSX.utils.sheet_to_json(sheetPct, {header:1, raw:true});
@@ -2121,8 +2088,7 @@ function handleFile(file){
         if(vals.some(v=>v!==null)){ nQ.push(String(row[0])); nSc.push(vals); }
       }
 
-      // ── HOJA "Comentarios" ──────────────────────────────────────────────
-      const nComm = {}; newDepts.forEach(d => nComm[d] = []);
+      let nComm = {}; newDepts.forEach(d => nComm[d] = []);
       const sheetComm = findSheet('Comentarios');
       if(sheetComm){
         const s2 = XLSX.utils.sheet_to_json(sheetComm, {header:1});
@@ -2135,7 +2101,6 @@ function handleFile(file){
         }
       }
 
-      // ── HOJA "respuestas" (participación) ──────────────────────────────
       const nPart = {};
       const sheetResp = findSheet('respuestas');
       if(sheetResp){
@@ -2150,13 +2115,7 @@ function handleFile(file){
         }
       }
 
-      // ── HOJA "preguntas abiertas" ───────────────────────────────────────
-      // Estructura real:
-      //   Fila 1: "Dirección >"  | NombreDir  (col B+)
-      //   Fila 2: "Departamento >"| NombreDepto (col B+)
-      //   Fila 3+: col A = nombre pregunta (solo en la primera fila de cada bloque)
-      //            Las siguientes filas tienen col A vacía, col B = respuesta
-      const nOpenQ = {};
+      let nOpenQ = {};
       const sheetOpen = findSheet('preguntas abiertas');
       if(sheetOpen){
         const sOpen = XLSX.utils.sheet_to_json(sheetOpen, {header:1, raw:false, defval:''});
@@ -2189,7 +2148,6 @@ function handleFile(file){
         });
       }
 
-      // ── Hojas de peticiones (mantener compatibilidad) ───────────────────
       wb.SheetNames.forEach(sheetName => {
         const snLower = sheetName.toLowerCase().trim();
         let prefix = null;
@@ -2210,6 +2168,83 @@ function handleFile(file){
           }
         }
       });
+
+      showToast("Procesando Sugerencias con Inteligencia Artificial...", "info");
+      let commCrudos = [];
+      let commRefs = [];
+      Object.keys(nComm).forEach(dept => {
+          nComm[dept].forEach((txt, idx) => {
+              if(!txt.startsWith('[PET_')) {
+                  commCrudos.push(txt);
+                  commRefs.push({dept, idx, txt});
+              }
+          });
+      });
+
+      if(commCrudos.length > 0) {
+          const resCom = await clasificarLoteConIA(commCrudos, 'sugerencias');
+          let newNComm = {};
+          Object.keys(nComm).forEach(d => newNComm[d] = []);
+          
+          Object.keys(nComm).forEach(dept => {
+              nComm[dept].forEach(txt => {
+                  if(txt.startsWith('[PET_')) {
+                      newNComm[dept].push(txt);
+                  } else {
+                      const refIdx = commRefs.findIndex(r => r.dept === dept && r.txt === txt);
+                      const cats = resCom.mapeo[`texto_${refIdx}`] || ["General"];
+                      cats.forEach(cat => {
+                          newNComm[dept].push(`[CAT:${cat}] ${txt}`);
+                      });
+                  }
+              });
+          });
+          
+          Object.keys(nComm).forEach(d => {
+              nComm[d].length = 0;
+              nComm[d].push(...newNComm[d]);
+          });
+      }
+
+      showToast("Procesando Preguntas Abiertas con Inteligencia Artificial...", "info");
+      let openCrudos = [];
+      let openRefs = [];
+      Object.keys(nOpenQ).forEach(q => {
+          Object.keys(nOpenQ[q]).forEach(dept => {
+              nOpenQ[q][dept].forEach((txt, idx) => {
+                  openCrudos.push(txt);
+                  openRefs.push({q, dept, txt});
+              });
+          });
+      });
+
+      if(openCrudos.length > 0) {
+          const resOpen = await clasificarLoteConIA(openCrudos, 'preguntas');
+          let newNOpenQ = {};
+          Object.keys(nOpenQ).forEach(q => {
+              newNOpenQ[q] = {};
+              Object.keys(nOpenQ[q]).forEach(dept => newNOpenQ[q][dept] = []);
+          });
+
+          Object.keys(nOpenQ).forEach(q => {
+              Object.keys(nOpenQ[q]).forEach(dept => {
+                  nOpenQ[q][dept].forEach(txt => {
+                      const refIdx = openRefs.findIndex(r => r.q === q && r.dept === dept && r.txt === txt);
+                      const cats = resOpen.mapeo[`texto_${refIdx}`] || ["Sin clasificar"];
+                      cats.forEach(cat => {
+                          newNOpenQ[q][dept].push(`[CAT:${cat}] ${txt}`);
+                      });
+                  });
+              });
+          });
+          
+          Object.keys(nOpenQ).forEach(q => {
+              Object.keys(nOpenQ[q]).forEach(dept => {
+                  nOpenQ[q][dept].length = 0;
+                  nOpenQ[q][dept].push(...newNOpenQ[q][dept]);
+              });
+          });
+      }
 
       document.getElementById('importModal').classList.remove('open');
       rebuildDashboard(Array.from(newDirs), newDepts, newMap, nQ, nSc, nComm, nPart, file.name, nOpenQ);
