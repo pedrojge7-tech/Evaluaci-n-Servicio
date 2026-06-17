@@ -745,26 +745,11 @@ tbody td:first-child { text-align: left; }
 // ── CONFIGURACIÓN DE GROQ API ─────────────────────────────────────────────
 // =========================================================================
 const GROQ_API_KEY = "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";
-const GROQ_MODEL   = "llama-3.3-70b-versatile";
+const GROQ_MODEL   = "llama-3.1-8b-instant";  // más rápido y con mayor rate limit que 70b
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_CHUNK_SIZE  = 50;  // textos por chunk
+const GROQ_CHUNK_SIZE  = 60;  // textos por chunk — menos llamadas totales
 const GROQ_SAMPLE_SIZE = 40;  // muestra para inferir catálogo
-const GROQ_CONCURRENCY = 3;   // chunks en paralelo simultáneos
-
-// ── Ejecuta hasta `limit` promesas en paralelo ────────────────────────────
-async function _parallelLimit(tasks, limit) {
-  const results = [];
-  let i = 0;
-  async function worker() {
-    while (i < tasks.length) {
-      const idx = i++;
-      results[idx] = await tasks[idx]();
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker));
-  return results;
-}
 
 // ── Llamada base a Groq ───────────────────────────────────────────────────
 async function _groqCall(promptText, intentoActual = 1, maxIntentos = 5) {
@@ -793,14 +778,16 @@ async function _groqCall(promptText, intentoActual = 1, maxIntentos = 5) {
 
     // Rate limit: calcular espera desde el mensaje de Groq
     if (res.status === 429 || json.error?.code === 'rate_limit_exceeded') {
-      const match = (json.error?.message || '').match(/try again in ([0-9.]+)s/i);
-      const waitSecs = match ? Math.ceil(parseFloat(match[1])) + 1 : 15;
-      console.warn(`Rate limit Groq — esperando ${waitSecs}s (intento ${intentoActual}/${maxIntentos})`);
+      const errMsg = json.error?.message || '';
+      // Groq puede indicar "try again in 3.5s" o "Please try again in 3.567s"
+      const match = errMsg.match(/try again in ([0-9.]+)s/i) || errMsg.match(/([0-9.]+)\s*second/i);
+      const waitSecs = match ? Math.ceil(parseFloat(match[1])) + 1 : 8;
+      console.warn(`Rate limit Groq — esperando ${waitSecs}s (intento ${intentoActual}/${maxIntentos}) | msg: ${errMsg}`);
       if (intentoActual < maxIntentos) {
         await new Promise(r => setTimeout(r, waitSecs * 1000));
         return _groqCall(promptText, intentoActual + 1, maxIntentos);
       }
-      throw new Error(`Rate limit de Groq alcanzado. Espera un momento y vuelve a importar el archivo.`);
+      throw new Error(`Rate limit de Groq alcanzado tras ${maxIntentos} intentos. Espera un momento y vuelve a importar.`);
     }
 
     if (json.error) throw new Error(json.error.message || "Error desconocido de Groq");
@@ -2491,16 +2478,12 @@ function handleFile(file){
           const catalogoComm = await _inferirCatalogo(commCrudos, 'sugerencias');
           if (!catalogoComm) throw new Error('No se pudo generar el catálogo de comentarios. Verifica tu API key de Groq en la línea GROQ_API_KEY del archivo HTML.');
           const mapeoComm = {};
-          const chunksComm2 = [];
           for (let inicio = 0; inicio < commCrudos.length; inicio += GROQ_CHUNK_SIZE) {
-            chunksComm2.push({ inicio, chunk: commCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE) });
-          }
-          const tareasComm = chunksComm2.map(({ inicio, chunk }) => async () => {
             advanceStep();
+            const chunk = commCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE);
             const parcial = await _clasificarChunk(chunk, inicio, catalogoComm);
             Object.assign(mapeoComm, parcial);
-          });
-          await _parallelLimit(tareasComm, GROQ_CONCURRENCY);
+          }
           // Fallback: textos sin mapear
           const catDefaultComm = catalogoComm[0] || "Sin clasificar";
           commCrudos.forEach((_, idx) => {
@@ -2531,16 +2514,12 @@ function handleFile(file){
           const catalogoOpen = await _inferirCatalogo(openCrudos, 'preguntas');
           if (!catalogoOpen) throw new Error('No se pudo generar el catálogo de preguntas abiertas. Verifica tu API key de Groq e intenta de nuevo.');
           const mapeoOpen = {};
-          const chunksOpen2 = [];
           for (let inicio = 0; inicio < openCrudos.length; inicio += GROQ_CHUNK_SIZE) {
-            chunksOpen2.push({ inicio, chunk: openCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE) });
-          }
-          const tareasOpen = chunksOpen2.map(({ inicio, chunk }) => async () => {
             advanceStep();
+            const chunk = openCrudos.slice(inicio, inicio + GROQ_CHUNK_SIZE);
             const parcial = await _clasificarChunk(chunk, inicio, catalogoOpen);
             Object.assign(mapeoOpen, parcial);
-          });
-          await _parallelLimit(tareasOpen, GROQ_CONCURRENCY);
+          }
           const catDefaultOpen = catalogoOpen[0] || "Sin clasificar";
           openCrudos.forEach((_, idx) => {
             const key = `texto_${idx}`;
