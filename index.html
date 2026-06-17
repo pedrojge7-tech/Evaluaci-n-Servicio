@@ -710,41 +710,17 @@ tbody td:first-child { text-align: left; }
 // =========================================================================
 // ── CONFIGURACIÓN DE GROQ API ─────────────────────────────────────────────
 // =========================================================================
-const GROQ_API_KEY = "TU_API_KEY_DE_GROQ_AQUI";
+const GROQ_API_KEY = "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";
 const GROQ_MODEL   = "llama-3.3-70b-versatile";
 
-async function clasificarLoteConIA(listaTextos, tipoAnalisis) {
-  if (!listaTextos || listaTextos.length === 0) return { catalogo_creado: [], mapeo: {} };
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_CHUNK_SIZE  = 40;  // máximo de textos por llamada de clasificación
+const GROQ_SAMPLE_SIZE = 80;  // máximo de textos para inferir el catálogo global
 
-  const url = "https://api.groq.com/openai/v1/chat/completions";
-
-  const prompt = `Actúa como un experto analista cualitativo de Clima Organizacional y Auditoría de Servicio Interno. 
-Te proporcionaré una lista de textos (comentarios o respuestas) extraídos de una encuesta. Tu objetivo es realizar un análisis temático automatizado de este lote completo bajo los siguientes dos pasos rigurosos:
-
-PASO 1: GENERACIÓN DEL CATÁLOGO EMERGENTE (MÁXIMO 20 CATEGORÍAS)
-- Examina todos los comentarios juntos y define un catálogo de categorías compartidas dinámicamente.
-- Las categorías deben ser ultra-concisas (de 2 a 4 palabras, ej: "Tiempos de Respuesta", "Calidad del Servicio", "Falta de Personal").
-- REGLA CRÍTICA: No permitas más de DOS categorías que terminen teniendo un único comentario asignado. Si un tema es muy aislado, fuérzalo a agruparse en conceptos más amplios basados en afinidad contextual.
-- Queda estrictamente PROHIBIDO usar la palabra "Otros", "Misceláneos" o similares.
-
-PASO 2: ASIGNACIÓN MULTI-CATEGORÍA
-- Clasifica cada elemento usando EXCLUSIVAMENTE los nombres exactos de las categorías generadas en el Paso 1.
-- Si un comentario aborda más de un tema, asígnale múltiples categorías en un arreglo de cadenas (ej: ["Tema A", "Tema B"]).
-
-Devuelve ÚNICAMENTE un objeto JSON con la siguiente estructura exacta, sin textos adicionales, preámbulos ni marcas markdown (\`\`\`json):
-{
-  "catalogo_creado": ["Categoría A", "Categoría B"],
-  "mapeo": {
-    "texto_0": ["Categoría A"],
-    "texto_1": ["Categoría A", "Categoría B"]
-  }
-}
-
-Aquí está la lista de textos a analizar:
-${JSON.stringify(listaTextos.map((t, idx) => `texto_${idx}: ${t}`))}`;
-
+// ── Llamada base a Groq ───────────────────────────────────────────────────
+async function _groqCall(promptText, intento = 1) {
   try {
-    const response = await fetch(url, {
+    const res = await fetch(GROQ_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -752,18 +728,104 @@ ${JSON.stringify(listaTextos.map((t, idx) => `texto_${idx}: ${t}`))}`;
       },
       body: JSON.stringify({
         model: GROQ_MODEL,
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
+        messages: [{ role: "user", content: promptText }],
+        temperature: 0.2,
         response_format: { type: "json_object" }
       })
     });
-    const json = await response.json();
-    const rawText = json.choices[0].message.content;
-    return JSON.parse(rawText);
-  } catch (error) {
-    console.error("Error llamando a Groq:", error);
-    return { catalogo_creado: ["General"], mapeo: {} };
+    const json = await res.json();
+    if (json.error) throw new Error(json.error.message || "Error Groq");
+    return JSON.parse(json.choices[0].message.content);
+  } catch (err) {
+    if (intento < 3) {
+      await new Promise(r => setTimeout(r, 1500 * intento));
+      return _groqCall(promptText, intento + 1);
+    }
+    console.error("Groq falló tras 3 intentos:", err);
+    return null;
   }
+}
+
+// ── PASO 1: Generar catálogo global a partir de una muestra ──────────────
+async function _inferirCatalogo(listaTextos, tipoAnalisis) {
+  const muestra = listaTextos.length > GROQ_SAMPLE_SIZE
+    ? listaTextos.filter((_, i) => i % Math.ceil(listaTextos.length / GROQ_SAMPLE_SIZE) === 0).slice(0, GROQ_SAMPLE_SIZE)
+    : listaTextos;
+
+  const contexto = tipoAnalisis === 'sugerencias'
+    ? 'comentarios y sugerencias de mejora de servicio/clima organizacional'
+    : 'respuestas directas a preguntas abiertas de una encuesta';
+
+  const prompt = `Eres un experto analista cualitativo. Analiza esta muestra de ${contexto} y genera un catálogo de categorías temáticas compartidas.
+
+REGLAS:
+- Máximo 18 categorías. Mínimo 3.
+- Cada categoría: 2 a 4 palabras, en español, en formato título (ej: "Tiempos de Respuesta").
+- No uses "Otros", "Misceláneos", "General" ni similares como categorías.
+- Si un tema es muy aislado, agrúpalo con el concepto más afín.
+- Las categorías deben cubrir la mayoría de los textos proporcionados.
+
+Textos de muestra:
+${JSON.stringify(muestra)}
+
+Devuelve SOLO JSON con esta estructura exacta (sin markdown):
+{"catalogo": ["Categoría A", "Categoría B", "Categoría C"]}`;
+
+  const resultado = await _groqCall(prompt);
+  if (resultado && Array.isArray(resultado.catalogo) && resultado.catalogo.length > 0) {
+    return resultado.catalogo;
+  }
+  return ["Calidad del Servicio", "Tiempos de Respuesta", "Comunicación", "Infraestructura"];
+}
+
+// ── PASO 2: Clasificar un chunk usando el catálogo fijo ───────────────────
+async function _clasificarChunk(textos, offsetGlobal, catalogo) {
+  const catalogoStr = catalogo.map(c => `"${c}"`).join(", ");
+  const entradas = textos.map((t, i) => `texto_${offsetGlobal + i}: ${t}`);
+
+  const prompt = `Clasifica cada texto usando ÚNICAMENTE las categorías del catálogo. Un texto puede pertenecer a más de una categoría si trata varios temas.
+
+CATÁLOGO DISPONIBLE: [${catalogoStr}]
+
+REGLAS:
+- Usa EXACTAMENTE los nombres del catálogo (respeta mayúsculas/acentos).
+- Si el texto es vago, muy corto o no encaja en ninguna, asígnale la categoría más cercana del catálogo.
+- No inventes categorías nuevas.
+
+Textos a clasificar:
+${JSON.stringify(entradas)}
+
+Devuelve SOLO JSON sin markdown:
+{"mapeo": {"texto_0": ["Categoría X"], "texto_1": ["Categoría X", "Categoría Y"]}}`;
+
+  const resultado = await _groqCall(prompt);
+  return resultado?.mapeo || {};
+}
+
+// ── Función principal exportada al resto del dashboard ────────────────────
+async function clasificarLoteConIA(listaTextos, tipoAnalisis) {
+  if (!listaTextos || listaTextos.length === 0) return { catalogo_creado: [], mapeo: {} };
+
+  // Paso 1: inferir catálogo global
+  const catalogo = await _inferirCatalogo(listaTextos, tipoAnalisis);
+
+  // Paso 2: clasificar por chunks manteniendo índices globales
+  const mapeoFinal = {};
+  for (let inicio = 0; inicio < listaTextos.length; inicio += GROQ_CHUNK_SIZE) {
+    const chunk = listaTextos.slice(inicio, inicio + GROQ_CHUNK_SIZE);
+    const parcial = await _clasificarChunk(chunk, inicio, catalogo);
+    Object.assign(mapeoFinal, parcial);
+  }
+
+  // Garantizar que cada texto tenga al menos una categoría
+  listaTextos.forEach((_, idx) => {
+    const key = `texto_${idx}`;
+    if (!mapeoFinal[key] || !Array.isArray(mapeoFinal[key]) || mapeoFinal[key].length === 0) {
+      mapeoFinal[key] = [catalogo[0]];
+    }
+  });
+
+  return { catalogo_creado: catalogo, mapeo: mapeoFinal };
 }
 
 Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
@@ -2171,7 +2233,7 @@ function handleFile(file){
         }
       });
 
-      showToast("Procesando Sugerencias con Inteligencia Artificial...", "info");
+      showToast("Analizando sugerencias con IA…", "info");
       let commCrudos = [];
       let commRefs = [];
       Object.keys(nComm).forEach(dept => {
@@ -2208,7 +2270,7 @@ function handleFile(file){
           });
       }
 
-      showToast("Procesando Preguntas Abiertas con Inteligencia Artificial...", "info");
+      showToast("Analizando preguntas abiertas con IA…", "info");
       let openCrudos = [];
       let openRefs = [];
       Object.keys(nOpenQ).forEach(q => {
